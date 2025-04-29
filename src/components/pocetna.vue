@@ -9,12 +9,16 @@
       <div class="row">
         <div class="col-12 col-md-4">
           <div class="w-100 py-5 my-6">
-            <button class="btn btn-custom btn-lg sirina-b mb-3">
-              Log In Now
-            </button>
-            <button class="btn btn-custom btn-lg sirina-b mb-3">
-              Create an Account
-            </button>
+            <router-link to="/login">
+              <button class="btn btn-custom btn-lg sirina-b mb-3">
+                Log In Now
+              </button>
+            </router-link>
+            <router-link to="/register">
+              <button class="btn btn-custom btn-lg sirina-b mb-3">
+                Create an Account
+              </button>
+            </router-link>
             <button class="btn btn-light btn-lg sirina-b btn-g">
               <img
                 src="@/assets/google-color-svgrepo-com.svg"
