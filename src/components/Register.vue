@@ -42,7 +42,7 @@ export default {
     return {
       email: "",
       password: "",
-      userType: "", // dodano za select
+      userType: "",
     };
   },
   methods: {
