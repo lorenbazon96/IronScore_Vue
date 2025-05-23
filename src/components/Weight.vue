@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard-container">
+  <div class="weight-container">
     <aside class="sidebar">
       <div class="logo">
         <img src="@/assets/logo-t.png" alt="IronScore Logo" />
@@ -25,55 +25,33 @@
       </nav>
     </aside>
 
-    <main class="dashboard-content">
-      <header class="dashboard-header">
+    <main class="weight-content">
+      <header class="weight-header">
         <h2 class="title">Dashboard</h2>
         <router-link to="/" class="btn btn-link text-warning fw-bold p-0"
           >Log Out</router-link
         >
       </header>
 
-      <section class="container-fluid px-0">
-        <div class="row g-4">
-          <div class="col-md-6">
-            <DashboardCard
-              title="Weight (kg)"
-              :chart-data="weightData"
-              button-text="View more about weight"
-              route="/weight"
-            />
+      <section class="container-fluid">
+        <div class="row g-4 align-items-start">
+          <div class="col-md-8">
+            <div class="card bg-dark text-white p-3 text-center">
+              <h5 class="text-white mb-3">Weight (kg)</h5>
+              <canvas id="weightChart"></canvas>
+            </div>
           </div>
 
-          <div
-            class="col-md-6 d-flex flex-column align-items-center justify-content-center"
-          >
-            <img
-              src="@/assets/goal.png"
-              alt="My Goals"
-              class="img-fluid"
-              style="max-width: 250px"
-            />
-            <router-link to="/goals" class="btn btn-warning fw-bold mt-3"
-              >My goals</router-link
-            >
-          </div>
+          <div class="col-md-4">
+            <div class="card bg-white text-dark p-4">
+              <h6 class="fw-bold mb-3">Date:</h6>
+              <input type="date" class="form-control mb-3" value="2025-05-02" />
 
-          <div class="col-md-6">
-            <DashboardCard
-              title="Workouts Per Week"
-              :chart-data="workoutData"
-              button-text="View more about workouts"
-              route="/workouts"
-            />
-          </div>
+              <h6 class="fw-bold mb-3">Weight:</h6>
+              <input type="text" class="form-control mb-3" placeholder="80.0" />
 
-          <div class="col-md-6">
-            <DashboardCard
-              title="BMI"
-              :chart-data="bmiData"
-              button-text="View more about BMI"
-              route="/bmi"
-            />
+              <button class="btn btn-dark w-100">Add</button>
+            </div>
           </div>
         </div>
       </section>
@@ -82,27 +60,66 @@
 </template>
 
 <script>
-import Dashboard from "@/components/Dashboard.vue";
-import DashboardCard from "@/components/DashboardCard.vue";
+import Weight from "@/components/Weight.vue";
+import { Chart, registerables } from "chart.js";
+Chart.register(...registerables);
 
 export default {
-  name: "Dashboard",
+  name: "Weight",
   components: {
-    Dashboard,
-    DashboardCard,
+    Weight,
   },
   data() {
-    return {
-      weightData: [78.1, 78.8, 79.3, 79.9, 80.0, 79.7],
-      workoutData: [3, 4.5, 5, 3, 6, 4.8],
-      bmiData: [25.5, 25.6, 25.6, 25.8, 25.8, 25.6],
-    };
+    return {};
+  },
+  mounted() {
+    const ctx = document.getElementById("weightChart").getContext("2d");
+    new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: [
+          "Mar 1",
+          "Mar 8",
+          "Mar 15",
+          "Mar 22",
+          "Mar 29",
+          "Apr 5",
+          "Apr 12",
+        ],
+        datasets: [
+          {
+            label: "Weight (kg)",
+            data: [78.0, 78.4, 78.9, 79.4, 80.0, 79.7, 79.2],
+            borderColor: "rgba(255, 193, 7, 1)",
+            backgroundColor: "rgba(255, 193, 7, 0.2)",
+            tension: 0.3,
+            fill: true,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { labels: { color: "#fff" } },
+        },
+        scales: {
+          x: {
+            ticks: { color: "#ccc" },
+            grid: { color: "#333" },
+          },
+          y: {
+            ticks: { color: "#ccc" },
+            grid: { color: "#333" },
+          },
+        },
+      },
+    });
   },
 };
 </script>
 
 <style scoped>
-.dashboard-container {
+.weight-container {
   display: flex;
   height: 100vh;
   font-family: "Roboto", sans-serif;
@@ -147,14 +164,14 @@ export default {
   color: #ffc107 !important;
 }
 
-.dashboard-content {
+.weight-content {
   flex: 1;
   padding: 30px;
   background: #000;
   overflow-y: auto;
 }
 
-.dashboard-header {
+.weight-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -174,22 +191,6 @@ export default {
   color: #ffc107;
   font-weight: bold;
   cursor: pointer;
-}
-
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-}
-
-.medal {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: #111;
-  padding: 20px;
-  border-radius: 10px;
 }
 
 .gold-button {

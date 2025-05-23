@@ -27,11 +27,24 @@ const routes = [
     name: "dashboard",
     component: () => import("../views/DashboardView.vue"),
   },
+  {
+    path: "/weight",
+    name: "weight",
+    component: () => import("../views/WeightView.vue"),
+  },
+  {
+    path: "/workouts",
+    name: "workouts",
+    component: () => import("@/views/WorkoutsView.vue"),
+  },
+  {
+    path: "/bmi",
+    name: "bmi",
+    component: () => import("@/views/BmiView.vue"),
+  },
 ];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 });
-
-export default router;
