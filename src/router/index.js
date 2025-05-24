@@ -28,6 +28,21 @@ const routes = [
     component: () => import("../views/DashboardView.vue"),
   },
   {
+    path: "/competitions",
+    name: "competitions",
+    component: () => import("../views/CompetitionsView.vue"),
+  },
+  {
+    path: "/ncompetitions",
+    name: "ncompetitions",
+    component: () => import("../views/NcompetitionsView.vue"),
+  },
+  {
+    path: "/goals",
+    name: "goals",
+    component: () => import("../views/GoalsView.vue"),
+  },
+  {
     path: "/weight",
     name: "weight",
     component: () => import("../views/WeightView.vue"),
@@ -48,3 +63,5 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 });
+
+export default router;
