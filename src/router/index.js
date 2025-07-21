@@ -57,6 +57,11 @@ const routes = [
     name: "bmi",
     component: () => import("@/views/BmiView.vue"),
   },
+  {
+    path: "/community",
+    name: "community",
+    component: () => import("@/views/CommunityView.vue"),
+  },
 ];
 
 const router = createRouter({

@@ -123,7 +123,6 @@
             </div>
           </div>
 
-          <!-- Trofej i gumb -->
           <div class="col-md-4">
             <div class="card bg-black text-center text-white py-4">
               <div class="fs-1">
