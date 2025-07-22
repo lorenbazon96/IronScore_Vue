@@ -62,6 +62,11 @@ const routes = [
     name: "community",
     component: () => import("@/views/CommunityView.vue"),
   },
+  {
+    path: "/trainings",
+    name: "Training",
+    component: () => import("@/views/TrainingView.vue"),
+  },
 ];
 
 const router = createRouter({
