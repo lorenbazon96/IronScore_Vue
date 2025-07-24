@@ -35,12 +35,18 @@
 
       <div class="d-flex gap-4 align-items-start mb-5 flex-wrap">
         <div class="d-flex flex-column gap-3" style="width: 250px">
-          <button class="btn btn-warning fw-bold text-start">
+          <router-link
+            to="/new-training-daily"
+            class="btn btn-warning fw-bold text-start"
+          >
             Create new training (Daily)
-          </button>
-          <button class="btn btn-warning fw-bold text-start">
+          </router-link>
+          <router-link
+            to="/new-training-weekly"
+            class="btn btn-warning fw-bold text-start"
+          >
             Create new training (Weekly)
-          </button>
+          </router-link>
         </div>
 
         <section

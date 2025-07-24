@@ -67,6 +67,16 @@ const routes = [
     name: "Training",
     component: () => import("@/views/TrainingView.vue"),
   },
+  {
+    path: "/new-training-daily",
+    name: "TrainingD",
+    component: () => import("@/views/TrainingDView.vue"),
+  },
+  {
+    path: "/new-training-weekly",
+    name: "TrainingW",
+    component: () => import("@/views/TrainingWView.vue"),
+  },
 ];
 
 const router = createRouter({
