@@ -77,6 +77,11 @@ const routes = [
     name: "TrainingW",
     component: () => import("@/views/TrainingWView.vue"),
   },
+  {
+    path: "/timer",
+    name: "timer",
+    component: () => import("@/views/TimerView.vue"),
+  },
 ];
 
 const router = createRouter({
