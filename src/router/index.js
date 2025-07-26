@@ -82,6 +82,26 @@ const routes = [
     name: "timer",
     component: () => import("@/views/TimerView.vue"),
   },
+  {
+    path: "/forgot-password",
+    name: "Forgot",
+    component: () => import("@/views/ForgotView.vue"),
+  },
+  {
+    path: "/privacy-policy",
+    name: "Privacy",
+    component: () => import("@/views/PrivacyView.vue"),
+  },
+  {
+    path: "/terms-of-use",
+    name: "Terms",
+    component: () => import("@/views/TermsView.vue"),
+  },
+  {
+    path: "/edit-account",
+    name: "Edit",
+    component: () => import("@/views/EditView.vue"),
+  },
 ];
 
 const router = createRouter({

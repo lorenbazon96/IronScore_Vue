@@ -23,9 +23,9 @@
         placeholder="Your password"
         class="input-field"
       />
-      <div class="forgot-password" @click="forgotPassword">
+      <router-link to="/forgot-password" class="forgot-password">
         Forgot password?
-      </div>
+      </router-link>
       <button class="login-button sirina-b" @click="login">Log In</button>
     </div>
   </div>
@@ -43,9 +43,6 @@ export default {
   methods: {
     login() {
       console.log("Logging in with:", this.email, this.password);
-    },
-    forgotPassword() {
-      console.log("Forgot password clicked");
     },
     goBack() {
       this.$router.go(-1);
@@ -129,5 +126,19 @@ export default {
   width: 100%;
   padding: 1em;
   margin-top: 5px;
+}
+
+@media (max-width: 477.98px) {
+  .arrow-img {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@media (max-width: 350.98px) {
+  .arrow-img {
+    width: 40px !important;
+    height: 40px !important;
+  }
 }
 </style>

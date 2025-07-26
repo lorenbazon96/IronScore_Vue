@@ -5,7 +5,7 @@
         <img src="@/assets/logo-t.png" alt="IronScore Logo" />
       </div>
       <div class="user-info">
-        <h4>Edit Account</h4>
+        <router-link to="/edit-account" class="edit">Edit Account</router-link>
         <p><strong>Name:</strong> Example</p>
         <p><strong>Surname:</strong> Example</p>
         <p><strong>Email:</strong> example@gmail.com</p>
@@ -28,7 +28,10 @@
     <main class="training-content trainings-content container-fluid px-5">
       <header class="training-header trainings-header">
         <h2 class="title trainings-title">Trainings</h2>
-        <router-link to="/" class="btn btn-link text-warning fw-bold p-0">
+        <router-link
+          to="/"
+          class="btn btn-link text-warning fw-bold p-0 logout-link"
+        >
           Log Out
         </router-link>
       </header>
@@ -226,12 +229,10 @@ export default {
   font-weight: bold;
 }
 
-.logout {
-  background: none;
-  border: none;
-  color: #ffc107;
-  font-weight: bold;
-  cursor: pointer;
+.logout-link {
+  color: #ffc107 !important;
+  font-size: 14px;
+  text-transform: uppercase;
 }
 
 .trainings-header {
@@ -329,5 +330,9 @@ export default {
 
 .custom-table thead th.hr {
   border-bottom: 2px solid #888;
+}
+
+.edit {
+  color: #ffc107;
 }
 </style>

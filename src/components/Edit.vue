@@ -1,5 +1,5 @@
 <template>
-  <div class="competitions-container">
+  <div class="edit-container">
     <aside class="sidebar">
       <div class="logo">
         <img src="@/assets/logo-t.png" alt="IronScore Logo" />
@@ -14,7 +14,7 @@
       </div>
       <nav class="menu">
         <router-link to="/dashboard" class="menu-item">Dashboard</router-link>
-        <router-link to="/competitions" class="menu-item active-item"
+        <router-link to="/competitions" class="menu-item"
           >competitions</router-link
         >
         <router-link to="/community" class="menu-item">Community</router-link>
@@ -23,9 +23,9 @@
       </nav>
     </aside>
 
-    <main class="competitions-content container-fluid">
+    <main class="edit-content container-fluid">
       <header class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-warning fw-bold text-uppercase">Competitions</h2>
+        <h2 class="text-warning fw-bold text-uppercase">Edit Account</h2>
         <router-link
           to="/"
           class="btn btn-link text-warning fw-bold p-0 logout-link"
@@ -34,67 +34,74 @@
       </header>
 
       <section>
-        <h3
-          class="d-flex text-white text-uppercase fw-bold mb-3 align-items-start"
-        >
-          Create New Competition
-        </h3>
         <div class="row justify-content-center">
           <div class="col-md-10">
             <div class="card text-white p-4 border border-secondary">
               <form>
                 <div class="mb-3">
                   <label for="name" class="form-label d-flex align-items-start"
-                    >Name of competition:</label
+                    >Name:</label
                   >
                   <input
                     type="text"
                     class="form-control bg-dark text-white border-secondary"
                     id="name"
-                    placeholder="Arnold Classic"
-                  />
-                </div>
-
-                <div class="mb-3">
-                  <label for="date" class="form-label d-flex align-items-start"
-                    >Date</label
-                  >
-                  <input
-                    type="date"
-                    class="form-control bg-dark text-white border-secondary"
-                    id="date"
-                    value="2025-05-02"
+                    placeholder="Example"
                   />
                 </div>
 
                 <div class="mb-3">
                   <label
-                    for="location"
+                    for="surname"
                     class="form-label d-flex align-items-start"
-                    >Location</label
+                    >Surname:</label
                   >
                   <input
                     type="text"
                     class="form-control bg-dark text-white border-secondary"
-                    id="location"
-                    placeholder="London"
+                    id="surname"
+                    placeholder="Example"
                   />
                 </div>
 
                 <div class="mb-3">
-                  <label for="info" class="form-label d-flex align-items-start"
-                    >More information</label
+                  <label for="mail" class="form-label d-flex align-items-start"
+                    >Email:</label
                   >
-                  <textarea
+                  <input
+                    type="text"
                     class="form-control bg-dark text-white border-secondary"
-                    id="info"
-                    rows="3"
-                    placeholder="competition categories, conditions, course of the competition, time of award ceremony,..."
-                  ></textarea>
+                    id="mail"
+                    placeholder="example@gmail.com"
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label for="age" class="form-label d-flex align-items-start"
+                    >Age:</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control bg-dark text-white border-secondary"
+                    id="age"
+                    placeholder="25"
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label for="type" class="form-label d-flex align-items-start"
+                    >Account type:</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control bg-dark text-white border-secondary"
+                    id="type"
+                    placeholder="Regular"
+                  />
                 </div>
 
                 <button type="submit" class="btn btn-warning w-100 fw-bold">
-                  Submit
+                  Change
                 </button>
               </form>
             </div>
@@ -106,12 +113,12 @@
 </template>
 
 <script>
-import Ncompetitions from "@/components/Ncompetitions.vue";
+import Edit from "@/components/Edit.vue";
 
 export default {
-  name: "Ncompetitions",
+  name: "Edit",
   components: {
-    Ncompetitions,
+    Edit,
   },
   data() {
     return {};
@@ -120,7 +127,7 @@ export default {
 </script>
 
 <style scoped>
-.competitions-container {
+.edit-container {
   display: flex;
   height: 100vh;
   font-family: "Roboto", sans-serif;
@@ -161,18 +168,14 @@ export default {
   text-transform: uppercase;
 }
 
-.active-item {
-  color: #ffc107 !important;
-}
-
-.competitions-content {
+.edit-content {
   flex: 1;
   padding: 30px;
   background: #000;
   overflow-y: auto;
 }
 
-.competitions-header {
+.edit-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -190,15 +193,6 @@ export default {
   color: #ffc107 !important;
   font-size: 14px;
   text-transform: uppercase;
-}
-.medal {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: #111;
-  padding: 20px;
-  border-radius: 10px;
 }
 
 .gold-button {

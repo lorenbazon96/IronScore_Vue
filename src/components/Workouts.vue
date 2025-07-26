@@ -5,7 +5,7 @@
         <img src="@/assets/logo-t.png" alt="IronScore Logo" />
       </div>
       <div class="user-info">
-        <h4>Edit Account</h4>
+        <router-link to="/edit-account" class="edit">Edit Account</router-link>
         <p><strong>Name:</strong> Example</p>
         <p><strong>Surname:</strong> Example</p>
         <p><strong>Email:</strong> example@gmail.com</p>
@@ -28,7 +28,9 @@
     <main class="workouts-content">
       <header class="workouts-header">
         <h2 class="title">Dashboard</h2>
-        <router-link to="/" class="btn btn-link text-warning fw-bold p-0"
+        <router-link
+          to="/"
+          class="btn btn-link text-warning fw-bold p-0 logout-link"
           >Log Out</router-link
         >
       </header>
@@ -196,11 +198,13 @@ export default {
   font-weight: bold;
 }
 
-.logout {
-  background: none;
-  border: none;
+.logout-link {
+  color: #ffc107 !important;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.edit {
   color: #ffc107;
-  font-weight: bold;
-  cursor: pointer;
 }
 </style>

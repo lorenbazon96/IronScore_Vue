@@ -5,7 +5,7 @@
         <img src="@/assets/logo-t.png" alt="IronScore Logo" />
       </div>
       <div class="user-info">
-        <h4>Edit Account</h4>
+        <router-link to="/edit-account" class="edit">Edit Account</router-link>
         <p><strong>Name:</strong> Example</p>
         <p><strong>Surname:</strong> Example</p>
         <p><strong>Email:</strong> example@gmail.com</p>
@@ -173,11 +173,13 @@ export default {
   text-transform: uppercase;
   font-weight: 900;
   letter-spacing: 1px;
+  color: #ffc107;
 }
 
 .logout-link {
   color: #ffc107 !important;
   font-size: 14px;
+  text-transform: uppercase;
 }
 
 .post-list {
@@ -223,5 +225,9 @@ export default {
   color: #ffff;
   font-size: 15px;
   border: 50px;
+}
+
+.edit {
+  color: #ffc107;
 }
 </style>

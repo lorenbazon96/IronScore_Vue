@@ -8,7 +8,7 @@
     <div class="container">
       <div class="row">
         <div class="col-12 col-md-4">
-          <div class="w-100 py-5 my-6">
+          <div class="w-100 py-5 my-1">
             <router-link to="/login">
               <button class="btn btn-custom btn-lg sirina-b mb-3">
                 Log In Now
@@ -36,8 +36,8 @@
           </div>
         </div>
 
-        <div class="col-12 col-md-8">
-          <div class="mt-2 py-3 text-start fw-bold velikaS">
+        <div class="col-12 col-md-8 py-2">
+          <div class="mt-2 py-1 text-start fw-bold velikaS">
             Whether you're an athlete, competitor, or judge, this app has
             everything you need:
           </div>
@@ -60,8 +60,9 @@
     </div>
     <div class="footer-text">
       By continuing, you agree to IronScore
-      <a href="#">Terms of Use</a> and confirm that you have read its
-      <a href="#">Privacy Policy</a>.
+      <router-link to="/terms-of-use"> Terms of Use</router-link> and confirm
+      that you have read its
+      <router-link to="/privacy-policy"> Privacy Policy</router-link>.
     </div>
   </div>
 </template>
@@ -107,7 +108,7 @@ body {
   padding: 30px 10px;
 }
 .logo {
-  width: 50%;
+  width: 40%;
   margin-bottom: 20px;
 }
 .title {
@@ -164,7 +165,6 @@ body {
 }
 .footer-text {
   font-size: 12px;
-  margin-top: 40px;
   color: white;
 }
 a {
@@ -181,5 +181,64 @@ a:hover {
 .my-6 {
   margin-top: 6em;
   margin-bottom: 6em;
+}
+@media (max-width: 1400.98px) {
+  .subtitle {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: -45px;
+    margin-bottom: 30px;
+  }
+}
+
+@media (max-width: 1200.98px) {
+  .subtitle {
+    font-size: 14px !important;
+  }
+}
+
+@media (max-width: 992.98px) {
+  .logo {
+    width: 80% !important;
+    margin-bottom: 5px !important;
+  }
+
+  .subtitle {
+    font-size: 19px !important;
+    margin-top: -30px !important;
+    margin-bottom: 20px !important;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .logo {
+    width: 100% !important;
+    margin-bottom: 30px !important;
+  }
+
+  .subtitle {
+    font-size: 18px !important;
+    margin-top: -55px !important;
+  }
+}
+
+@media (max-width: 300.98px) {
+  .subtitle {
+    font-size: 11px !important;
+    margin-top: -40px !important;
+    margin-bottom: 30px !important;
+  }
+}
+
+@media (max-width: 450.98px) {
+  .subtitle {
+    font-size: 14px !important;
+    margin-top: -40px !important;
+    margin-bottom: 30px !important;
+  }
+
+  .feature-list {
+    font-size: 14px !important;
+  }
 }
 </style>

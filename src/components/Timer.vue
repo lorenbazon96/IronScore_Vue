@@ -5,7 +5,7 @@
         <img src="@/assets/logo-t.png" alt="IronScore Logo" />
       </div>
       <div class="user-info">
-        <h4>Edit Account</h4>
+        <router-link to="/edit-account" class="edit">Edit Account</router-link>
         <p><strong>Name:</strong> Example</p>
         <p><strong>Surname:</strong> Example</p>
         <p><strong>Email:</strong> example@gmail.com</p>
@@ -28,7 +28,9 @@
     <main class="timer-content">
       <header class="timer-header">
         <h2 class="title">timer</h2>
-        <router-link to="/" class="btn btn-link text-warning fw-bold p-0"
+        <router-link
+          to="/"
+          class="btn btn-link text-warning fw-bold p-0 logout-link"
           >Log Out</router-link
         >
       </header>
@@ -138,13 +140,10 @@ html {
   color: #ffc107 !important;
 }
 
-.logout {
-  position: absolute;
-  top: 20px;
-  right: 30px;
-  color: #ffd700;
+.logout-link {
+  color: #ffc107 !important;
   font-size: 14px;
-  cursor: pointer;
+  text-transform: uppercase;
 }
 
 .set-time {
@@ -240,5 +239,9 @@ html {
 .user-info {
   border-top: 1px solid #333;
   padding-top: 10px;
+}
+
+.edit {
+  color: #ffc107;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="register-container">
+  <div class="login-container">
     <div class="back-arrow" @click="goBack">
       <img
         src="@/assets/left-arrow-back-svgrepo-com.svg"
@@ -17,42 +17,22 @@
         placeholder="Your mail"
         class="input-field"
       />
-      <input
-        type="password"
-        v-model="password"
-        placeholder="Your password"
-        class="input-field"
-      />
-      <select v-model="userType" class="input-field">
-        <option disabled value="">Type of user</option>
-        <option value="regular">Regular</option>
-        <option value="referee">Referee</option>
-      </select>
-      <button class="register-button sirina-b" @click="register">
-        Register
-      </button>
+      <button class="login-button sirina-b" @click="send">Send</button>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "Register",
+  name: "Login",
   data() {
     return {
       email: "",
-      password: "",
-      userType: "",
     };
   },
   methods: {
-    register() {
-      console.log(
-        "Registering with:",
-        this.email,
-        this.password,
-        this.userType
-      );
+    send() {
+      console.log("We need new pass for:", this.email);
     },
     goBack() {
       this.$router.go(-1);
@@ -62,7 +42,7 @@ export default {
 </script>
 
 <style scoped>
-.register-container {
+.login-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -111,20 +91,23 @@ export default {
   font-size: 16px;
 }
 
-.input-field:focus {
-  outline: none;
+.forgot-password {
+  color: white;
+  font-size: 14px;
+  text-align: right;
+  margin-bottom: 20px;
+  cursor: pointer;
 }
 
-.register-button {
+.login-button {
   background-color: #ffc107;
   color: #303030;
   font-weight: bold;
   border-radius: 5px;
   font-size: 15px;
-  padding: 14px;
 }
 
-.register-button:hover {
+.login-button:hover {
   background-color: #e0a800;
   color: #000;
 }
