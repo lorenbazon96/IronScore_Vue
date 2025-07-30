@@ -28,7 +28,11 @@
         <option value="regular">Regular</option>
         <option value="referee">Referee</option>
       </select>
-      <button class="register-button sirina-b" @click="register">
+      <button
+        type="button"
+        class="register-button sirina-b"
+        @click="register()"
+      >
         Register
       </button>
     </div>
@@ -36,6 +40,9 @@
 </template>
 
 <script>
+import { auth } from "@/firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+
 export default {
   name: "Register",
   data() {
@@ -47,12 +54,15 @@ export default {
   },
   methods: {
     register() {
-      console.log(
-        "Registering with:",
-        this.email,
-        this.password,
-        this.userType
-      );
+      createUserWithEmailAndPassword(auth, this.email, this.password)
+        .then(() => {
+          console.log("Uspješna registracija");
+        })
+        .catch((error) => {
+          console.error("Došlo je do greške:", error);
+        });
+
+      console.log("Nastavak");
     },
     goBack() {
       this.$router.go(-1);
