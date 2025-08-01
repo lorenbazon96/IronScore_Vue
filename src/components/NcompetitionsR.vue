@@ -5,21 +5,20 @@
         <img src="@/assets/logo-t.png" alt="IronScore Logo" />
       </div>
       <div class="user-info">
-        <router-link to="/edit-account" class="edit">Edit Account</router-link>
+        <router-link to="/edit-r-account" class="edit"
+          >Edit Account</router-link
+        >
         <p><strong>Name:</strong> Example</p>
         <p><strong>Surname:</strong> Example</p>
         <p><strong>Email:</strong> example@gmail.com</p>
         <p><strong>Age:</strong> 25</p>
-        <p><strong>Account type:</strong> Regular</p>
+        <p><strong>Account type:</strong> Referee</p>
       </div>
       <nav class="menu">
-        <router-link to="/dashboard" class="menu-item">Dashboard</router-link>
-        <router-link to="/competitions" class="menu-item active-item"
+        <router-link to="/competitionsr" class="menu-item active-item"
           >competitions</router-link
         >
-        <router-link to="/community" class="menu-item">Community</router-link>
-        <router-link to="/timer" class="menu-item">Timer</router-link>
-        <router-link to="/trainings" class="menu-item">Trainings</router-link>
+        <router-link to="/communityfr" class="menu-item">Community</router-link>
       </nav>
     </aside>
 

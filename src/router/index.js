@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
+import HomeView from "@/views/HomeView.vue";
 
 const routes = [
   {
@@ -10,42 +10,42 @@ const routes = [
   {
     path: "/about",
     name: "about",
-    component: () => import("../views/AboutView.vue"),
+    component: () => import("@/views/AboutView.vue"),
   },
   {
     path: "/login",
     name: "login",
-    component: () => import("../views/LoginView.vue"),
+    component: () => import("@/views/LoginView.vue"),
   },
   {
     path: "/register",
     name: "register",
-    component: () => import("../views/RegisterView.vue"),
+    component: () => import("@/views/RegisterView.vue"),
   },
   {
     path: "/dashboard",
     name: "dashboard",
-    component: () => import("../views/DashboardView.vue"),
+    component: () => import("@/views/DashboardView.vue"),
   },
   {
     path: "/competitions",
     name: "competitions",
-    component: () => import("../views/CompetitionsView.vue"),
+    component: () => import("@/views/CompetitionsView.vue"),
   },
   {
     path: "/ncompetitions",
     name: "ncompetitions",
-    component: () => import("../views/NcompetitionsView.vue"),
+    component: () => import("@/views/NcompetitionsView.vue"),
   },
   {
     path: "/goals",
     name: "goals",
-    component: () => import("../views/GoalsView.vue"),
+    component: () => import("@/views/GoalsView.vue"),
   },
   {
     path: "/weight",
     name: "weight",
-    component: () => import("../views/WeightView.vue"),
+    component: () => import("@/views/WeightView.vue"),
   },
   {
     path: "/workouts",
@@ -101,6 +101,56 @@ const routes = [
     path: "/edit-account",
     name: "Edit",
     component: () => import("@/views/EditView.vue"),
+  },
+  {
+    path: "/competitionsr",
+    name: "competitionsr",
+    component: () => import("@/views/CompetitionsRView.vue"),
+  },
+  {
+    path: "/competitionr",
+    name: "competitionr",
+    component: () => import("@/views/CompetitionRView.vue"),
+  },
+  {
+    path: "/grade",
+    name: "grade",
+    component: () => import("@/views/GradeView.vue"),
+  },
+  {
+    path: "/communityp",
+    name: "community",
+    component: () => import("@/views/CommunityView.vue"),
+  },
+  {
+    path: "/communitypr",
+    name: "communityr",
+    component: () => import("@/views/CommunityRView.vue"),
+  },
+  {
+    path: "/communityfr",
+    name: "communityfr",
+    component: () => import("@/views/CommunityFRView.vue"),
+  },
+  {
+    path: "/edit-r-account",
+    name: "EditR",
+    component: () => import("@/views/EditRView.vue"),
+  },
+  {
+    path: "/ncompetitionsr",
+    name: "ncompetitionsr",
+    component: () => import("@/views/NcompetitionsRView.vue"),
+  },
+  {
+    path: "/resultsr",
+    name: "resultsr",
+    component: () => import("@/views/ResultsRView.vue"),
+  },
+  {
+    path: "/results",
+    name: "results",
+    component: () => import("@/views/ResultsView.vue"),
   },
 ];
 

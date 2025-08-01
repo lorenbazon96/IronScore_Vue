@@ -37,11 +37,16 @@
       </header>
 
       <section class="post-list">
-        <div v-for="(post, index) in posts" :key="index" class="single-post">
+        <router-link
+          v-for="(post, index) in posts"
+          :key="index"
+          :to="`/communityp?id=${index}`"
+          class="single-post text-decoration-none text-white"
+        >
           <div class="post-author">{{ post.author }}</div>
           <div class="post-content">"{{ post.content }}"</div>
           <div class="post-date">{{ post.timestamp }}</div>
-        </div>
+        </router-link>
       </section>
       <div>
         <input type="text" placeholder="Insert new post" class="new-post" />

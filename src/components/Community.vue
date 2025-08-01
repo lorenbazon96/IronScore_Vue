@@ -56,13 +56,24 @@
             <small>{{ comment.timestamp }}</small>
 
             <div class="d-flex align-items-center mt-2 gap-3">
-              <button class="btn btn-link text-white p-0">Like 👍</button>
-              <button class="btn btn-link text-white p-0">Reply 💬</button>
-
-              <span class="ms-auto">
-                {{ post.likes }} 👍 &nbsp; {{ post.comments.length }} 💬
-              </span>
+              <button
+                class="btn btn-link text-white p-0"
+                @click="likeComment(index, cIndex)"
+              >
+                Like 👍
+              </button>
+              <span class="ms-auto">{{ comment.likes }} 👍</span>
             </div>
+          </div>
+
+          <div class="d-flex align-items-center mt-2 gap-3">
+            <button
+              class="btn btn-link text-white p-0"
+              @click="likePost(index)"
+            >
+              Like 👍
+            </button>
+            <span class="ms-auto">{{ post.likes }} 👍</span>
           </div>
 
           <input
@@ -99,16 +110,19 @@ export default {
               author: "Petra Horvat",
               text: "I finally managed to do 5 proper pull-ups without assistance! 💪 A month ago, I could barely do one.",
               timestamp: "March 6, 2022, at 9:12 AM",
+              likes: 0,
             },
             {
               author: "Marko Perić",
               text: "For the first time ever, I completed an entire HIIT session without a break! My cardio is way better than last month.",
               timestamp: "March 8, 2022, at 6:30 PM",
+              likes: 0,
             },
             {
               author: "Lucija Novak",
               text: "Held a plank for 3 minutes and 15 seconds! A month ago, I could barely last one. Super proud of the progress 💥",
               timestamp: "March 15, 2022, at 8:47 PM",
+              likes: 0,
             },
           ],
         },
@@ -120,16 +134,20 @@ export default {
     likePost(index) {
       this.posts[index].likes++;
     },
+    likeComment(postIndex, commentIndex) {
+      this.posts[postIndex].comments[commentIndex].likes++;
+    },
     submitComment(index) {
       const commentText = this.newComments[index].trim();
       if (commentText) {
         this.posts[index].comments.push({
-          author: "You", // or from logged-in user
+          author: "You",
           text: commentText,
           timestamp: new Date().toLocaleString("en-US", {
             dateStyle: "medium",
             timeStyle: "short",
           }),
+          likes: 0, // 🆕 moraš dodati likes i za novi komentar
         });
         this.newComments[index] = "";
       }
