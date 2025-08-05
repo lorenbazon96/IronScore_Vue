@@ -1,95 +1,105 @@
 <template>
-  <div class="community-container">
-    <aside class="sidebar">
-      <div class="logo">
-        <img src="@/assets/logo-t.png" alt="IronScore Logo" />
-      </div>
-      <div class="user-info">
-        <router-link to="/edit-account" class="edit">Edit Account</router-link>
-        <p><strong>Name:</strong> Example</p>
-        <p><strong>Surname:</strong> Example</p>
-        <p><strong>Email:</strong> example@gmail.com</p>
-        <p><strong>Age:</strong> 25</p>
-        <p><strong>Account type:</strong> Regular</p>
-      </div>
-      <nav class="menu">
-        <router-link to="/dashboard" class="menu-item">Dashboard</router-link>
-        <router-link to="/competitions" class="menu-item"
-          >competitions</router-link
-        >
-        <router-link to="/community" class="menu-item active-item"
-          >Community</router-link
-        >
-        <router-link to="/timer" class="menu-item">Timer</router-link>
-        <router-link to="/trainings" class="menu-item">Trainings</router-link>
-      </nav>
-    </aside>
-
-    <main class="community-content">
-      <header class="community-header">
-        <h2 class="title">Community</h2>
-        <router-link
-          to="/"
-          class="btn btn-link text-warning fw-bold p-0 logout-link"
-        >
-          Log Out
-        </router-link>
-      </header>
-
-      <section class="container-fluid px-0">
-        <div
-          v-for="(post, index) in posts"
-          :key="index"
-          class="post bg-dark text-white mb-3 p-3 rounded"
-        >
-          <strong>{{ post.author }}</strong>
-          <p class="mb-1">{{ post.content }}</p>
-          <small>{{ post.timestamp }}</small>
-
-          <div
-            v-for="(comment, cIndex) in post.comments"
-            :key="cIndex"
-            class="comment-box mt-3 p-3"
+  <div class="container-fluid">
+    <div class="row min-vh-100">
+      <aside class="col-12 col-md-3 sidebar bg-dark text-white p-3">
+        <div class="logo mb-3">
+          <img
+            src="@/assets/logo-t.png"
+            alt="IronScore Logo"
+            class="img-fluid"
+          />
+        </div>
+        <div class="user-info border-top pt-2 mb-3">
+          <router-link to="/edit-account" class="edit d-block mb-2"
+            >Edit Account</router-link
           >
-            <strong>{{ comment.author }}</strong>
-            <p class="mb-1">{{ comment.text }}</p>
-            <small>{{ comment.timestamp }}</small>
+          <p><strong>Name:</strong> Example</p>
+          <p><strong>Surname:</strong> Example</p>
+          <p><strong>Email:</strong> example@gmail.com</p>
+          <p><strong>Age:</strong> 25</p>
+          <p><strong>Account type:</strong> Regular</p>
+        </div>
+        <nav class="menu d-flex flex-column gap-2">
+          <router-link to="/dashboard" class="menu-item">Dashboard</router-link>
+          <router-link to="/competitions" class="menu-item"
+            >competitions</router-link
+          >
+          <router-link to="/community" class="menu-item active-item"
+            >Community</router-link
+          >
+          <router-link to="/timer" class="menu-item">Timer</router-link>
+          <router-link to="/trainings" class="menu-item">Trainings</router-link>
+        </nav>
+      </aside>
+
+      <main class="col-12 col-md-9 community-content">
+        <header class="community-header">
+          <h2 class="title text-warning fw-bold text-uppercase mb-2 mb-md-0">
+            Community
+          </h2>
+          <router-link
+            to="/"
+            class="btn btn-link text-warning fw-bold p-0 logout-link"
+          >
+            Log Out
+          </router-link>
+        </header>
+
+        <section class="container-fluid px-0">
+          <div
+            v-for="(post, index) in posts"
+            :key="index"
+            class="post bg-dark text-white mb-3 p-3 rounded"
+          >
+            <strong>{{ post.author }}</strong>
+            <p class="mb-1">{{ post.content }}</p>
+            <small>{{ post.timestamp }}</small>
+
+            <div
+              v-for="(comment, cIndex) in post.comments"
+              :key="cIndex"
+              class="comment-box mt-3 p-3"
+            >
+              <strong>{{ comment.author }}</strong>
+              <p class="mb-1">{{ comment.text }}</p>
+              <small>{{ comment.timestamp }}</small>
+
+              <div class="d-flex align-items-center mt-2 gap-3">
+                <button
+                  class="btn btn-link text-white p-0"
+                  @click="likeComment(index, cIndex)"
+                >
+                  Like 👍
+                </button>
+                <span class="ms-auto">{{ comment.likes }} 👍</span>
+              </div>
+            </div>
 
             <div class="d-flex align-items-center mt-2 gap-3">
               <button
                 class="btn btn-link text-white p-0"
-                @click="likeComment(index, cIndex)"
+                @click="likePost(index)"
               >
                 Like 👍
               </button>
-              <span class="ms-auto">{{ comment.likes }} 👍</span>
+              <span class="ms-auto">{{ post.likes }} 👍</span>
             </div>
+
+            <input
+              v-model="newComments[index]"
+              type="text"
+              class="form-control form-control-sm mt-2"
+              placeholder="Type your comment..."
+              @keyup.enter="submitComment(index)"
+            />
           </div>
 
-          <div class="d-flex align-items-center mt-2 gap-3">
-            <button
-              class="btn btn-link text-white p-0"
-              @click="likePost(index)"
-            >
-              Like 👍
-            </button>
-            <span class="ms-auto">{{ post.likes }} 👍</span>
+          <div class="text-center mt-4">
+            <button class="btn btn-warning fw-bold">Add new comment</button>
           </div>
-
-          <input
-            v-model="newComments[index]"
-            type="text"
-            class="form-control form-control-sm mt-2"
-            placeholder="Type your comment..."
-            @keyup.enter="submitComment(index)"
-          />
-        </div>
-
-        <div class="text-center mt-4">
-          <button class="btn btn-warning fw-bold">Add new comment</button>
-        </div>
-      </section>
-    </main>
+        </section>
+      </main>
+    </div>
   </div>
 </template>
 
@@ -157,30 +167,6 @@ export default {
 </script>
 
 <style scoped>
-.community-container {
-  display: flex;
-  height: 100vh;
-  font-family: "Roboto", sans-serif;
-  color: #fff;
-  background: #000;
-}
-
-@media (min-width: 992px) {
-  .community-container {
-    flex-direction: row;
-  }
-}
-
-.sidebar {
-  width: 250px;
-  background: #111;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 20px;
-}
-
 .logo img {
   width: 100%;
 }

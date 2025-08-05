@@ -1,64 +1,68 @@
 <template>
-  <div class="training-container">
-    <aside class="sidebar">
-      <div class="logo">
-        <img src="@/assets/logo-t.png" alt="IronScore Logo" />
-      </div>
-      <div class="user-info">
-        <router-link to="/edit-r-account" class="edit"
-          >Edit Account</router-link
-        >
-        <p><strong>Name:</strong> Example</p>
-        <p><strong>Surname:</strong> Example</p>
-        <p><strong>Email:</strong> example@gmail.com</p>
-        <p><strong>Age:</strong> 25</p>
-        <p><strong>Account type:</strong> Referee</p>
-      </div>
-      <nav class="menu">
-        <router-link to="/competitionsr" class="menu-item active-item"
-          >Competitions</router-link
-        >
-        <router-link to="/communityfr" class="menu-item">Community</router-link>
-      </nav>
-    </aside>
+  <div class="container-fluid">
+    <div class="row min-vh-100">
+      <aside class="col-12 col-md-3 sidebar bg-dark text-white p-3">
+        <div class="logo">
+          <img src="@/assets/logo-t.png" alt="IronScore Logo" />
+        </div>
+        <div class="user-info border-top pt-2 mb-3">
+          <router-link to="/edit-r-account" class="edit"
+            >Edit Account</router-link
+          >
+          <p><strong>Name:</strong> Example</p>
+          <p><strong>Surname:</strong> Example</p>
+          <p><strong>Email:</strong> example@gmail.com</p>
+          <p><strong>Age:</strong> 25</p>
+          <p><strong>Account type:</strong> Referee</p>
+        </div>
+        <nav class="menu">
+          <router-link to="/competitionsr" class="menu-item active-item"
+            >Competitions</router-link
+          >
+          <router-link to="/communityfr" class="menu-item"
+            >Community</router-link
+          >
+        </nav>
+      </aside>
 
-    <main class="training-content container-fluid px-5">
-      <header class="training-header trainings-header">
-        <h2 class="trainings-title">Final Results</h2>
-        <router-link
-          to="/"
-          class="btn btn-link text-warning fw-bold p-0 logout-link"
-        >
-          Log Out
-        </router-link>
-      </header>
+      <main class="training-content col-12 col-md-9 p-4 bg-black text-white">
+        <header class="training-header trainings-header">
+          <h2 class="trainings-title">Final Results</h2>
+          <router-link
+            to="/"
+            class="btn btn-link text-warning fw-bold p-0 logout-link"
+          >
+            Log Out
+          </router-link>
+        </header>
 
-      <h4 class="text-white text-uppercase fw-bold mb-4">
-        Ultimate Physique Championships
-      </h4>
+        <h4 class="text-white text-uppercase fw-bold mb-4">
+          Ultimate Physique Championships
+        </h4>
 
-      <div class="bg-white text-black p-4 rounded">
-        <h5 class="text-uppercase fw-bold mb-3">Competitor Results</h5>
-        <table class="table table-bordered table-striped">
-          <thead class="table-dark">
-            <tr>
-              <th>#</th>
-              <th>Category</th>
-              <th>Grades</th>
-              <th>Average Grade</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(competitor, index) in finalResults" :key="index">
-              <td>Competitor {{ index + 1 }}</td>
-              <td>{{ competitor.category }}</td>
-              <td>{{ competitor.grades.join(", ") }}</td>
-              <td>{{ average(competitor.grades).toFixed(2) }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </main>
+        <div class="bg-white text-black p-4 rounded">
+          <h5 class="text-uppercase fw-bold mb-3">Competitor Results</h5>
+          <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+              <tr>
+                <th>#</th>
+                <th>Category</th>
+                <th>Grades</th>
+                <th>Average Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(competitor, index) in finalResults" :key="index">
+                <td>Competitor {{ index + 1 }}</td>
+                <td>{{ competitor.category }}</td>
+                <td>{{ competitor.grades.join(", ") }}</td>
+                <td>{{ average(competitor.grades).toFixed(2) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
   </div>
 </template>
 
@@ -98,23 +102,6 @@ export default {
 </script>
 
 <style scoped>
-.training-container {
-  display: flex;
-  height: 100vh;
-  font-family: "Roboto", sans-serif;
-  background: #000;
-  color: #fff;
-}
-
-.sidebar {
-  width: 250px;
-  background: #111;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
 .logo img {
   width: 100%;
 }

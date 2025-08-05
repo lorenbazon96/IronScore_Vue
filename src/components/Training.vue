@@ -1,119 +1,129 @@
 <template>
-  <div class="training-container">
-    <aside class="sidebar">
-      <div class="logo">
-        <img src="@/assets/logo-t.png" alt="IronScore Logo" />
-      </div>
-      <div class="user-info">
-        <router-link to="/edit-account" class="edit">Edit Account</router-link>
-        <p><strong>Name:</strong> Example</p>
-        <p><strong>Surname:</strong> Example</p>
-        <p><strong>Email:</strong> example@gmail.com</p>
-        <p><strong>Age:</strong> 25</p>
-        <p><strong>Account type:</strong> Regular</p>
-      </div>
-      <nav class="menu">
-        <router-link to="/dashboard" class="menu-item">Dashboard</router-link>
-        <router-link to="/competitions" class="menu-item"
-          >competitions</router-link
-        >
-        <router-link to="/community" class="menu-item">Community</router-link>
-        <router-link to="/timer" class="menu-item">Timer</router-link>
-        <router-link to="/trainings" class="menu-item active-item"
-          >Trainings</router-link
-        >
-      </nav>
-    </aside>
-
-    <main class="training-content trainings-content container-fluid px-5">
-      <header class="training-header trainings-header">
-        <h2 class="title trainings-title">Trainings</h2>
-        <router-link
-          to="/"
-          class="btn btn-link text-warning fw-bold p-0 logout-link"
-        >
-          Log Out
-        </router-link>
-      </header>
-
-      <div class="d-flex gap-4 align-items-start mb-5 flex-wrap">
-        <div class="d-flex flex-column gap-3" style="width: 250px">
-          <router-link
-            to="/new-training-daily"
-            class="btn btn-warning fw-bold text-start"
+  <div class="container-fluid">
+    <div class="row min-vh-100">
+      <aside class="col-12 col-md-3 sidebar bg-dark text-white p-3">
+        <div class="logo mb-3">
+          <img
+            src="@/assets/logo-t.png"
+            alt="IronScore Logo"
+            class="img-fluid"
+          />
+        </div>
+        <div class="user-info border-top pt-2 mb-3">
+          <router-link to="/edit-account" class="edit d-block mb-2"
+            >Edit Account</router-link
           >
-            Create new training (Daily)
-          </router-link>
-          <router-link
-            to="/new-training-weekly"
-            class="btn btn-warning fw-bold text-start"
+          <p><strong>Name:</strong> Example</p>
+          <p><strong>Surname:</strong> Example</p>
+          <p><strong>Email:</strong> example@gmail.com</p>
+          <p><strong>Age:</strong> 25</p>
+          <p><strong>Account type:</strong> Regular</p>
+        </div>
+        <nav class="menu d-flex flex-column gap-2">
+          <router-link to="/dashboard" class="menu-item">Dashboard</router-link>
+          <router-link to="/competitions" class="menu-item"
+            >Competitions</router-link
           >
-            Create new training (Weekly)
+          <router-link to="/community" class="menu-item">Community</router-link>
+          <router-link to="/timer" class="menu-item">Timer</router-link>
+          <router-link to="/trainings" class="menu-item active-item"
+            >Trainings</router-link
+          >
+        </nav>
+      </aside>
+
+      <main class="col-12 col-md-9 training-content trainings-content p-4">
+        <header class="training-header trainings-header">
+          <h2 class="title trainings-title">Trainings</h2>
+          <router-link
+            to="/"
+            class="btn btn-link text-warning fw-bold p-0 logout-link"
+          >
+            Log Out
           </router-link>
+        </header>
+
+        <div class="d-flex gap-4 align-items-start mb-5 flex-wrap">
+          <div class="d-flex flex-column gap-3" style="width: 250px">
+            <router-link
+              to="/new-training-daily"
+              class="btn btn-warning fw-bold text-start"
+            >
+              Create new training (Daily)
+            </router-link>
+            <router-link
+              to="/new-training-weekly"
+              class="btn btn-warning fw-bold text-start"
+            >
+              Create new training (Weekly)
+            </router-link>
+          </div>
+
+          <section
+            class="training-plan custom-card"
+            style="flex: 1; min-width: 300px"
+          >
+            <h4 class="section-title">FULL BODY WEEKLY PLAN</h4>
+            <div class="table-responsive mt-3">
+              <table class="table custom-table text-white">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th class="hr">Exercise</th>
+                    <th class="hr">Sets</th>
+                    <th class="hr">Reps</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(exercise, index) in weeklyPlan" :key="index">
+                    <td
+                      :class="{
+                        'text-warning fw-bold': exercise.day === 'FRI',
+                      }"
+                    >
+                      {{ exercise.day }}
+                    </td>
+                    <td>{{ exercise.name }}</td>
+                    <td>{{ exercise.sets || "-" }}</td>
+                    <td>{{ exercise.reps || "-" }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
         </div>
 
-        <section
-          class="training-plan custom-card"
-          style="flex: 1; min-width: 300px"
-        >
-          <h4 class="section-title">FULL BODY WEEKLY PLAN</h4>
-          <div class="table-responsive mt-3">
+        <section class="custom-card mb-5">
+          <h5 class="section-title">MY TRAININGS LIST</h5>
+          <div class="table-responsive">
             <table class="table custom-table text-white">
               <thead>
                 <tr>
-                  <th></th>
-                  <th class="hr">Exercise</th>
-                  <th class="hr">Sets</th>
-                  <th class="hr">Reps</th>
+                  <th class="hr">Training Name</th>
+                  <th class="hr">Create at</th>
+                  <th class="hr">Type</th>
+                  <th class="hr">Muscle group</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(exercise, index) in weeklyPlan" :key="index">
-                  <td
-                    :class="{ 'text-warning fw-bold': exercise.day === 'FRI' }"
-                  >
-                    {{ exercise.day }}
-                  </td>
-                  <td>{{ exercise.name }}</td>
-                  <td>{{ exercise.sets || "-" }}</td>
-                  <td>{{ exercise.reps || "-" }}</td>
+                <tr
+                  v-for="(training, index) in trainings"
+                  :key="index"
+                  :class="{
+                    'highlight-row': training.name === 'Upper Body Shred',
+                  }"
+                >
+                  <td>{{ training.name }}</td>
+                  <td>{{ training.created }}</td>
+                  <td>{{ training.type }}</td>
+                  <td>{{ training.group }}</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </section>
-      </div>
-
-      <section class="custom-card mb-5">
-        <h5 class="section-title">MY TRAININGS LIST</h5>
-        <div class="table-responsive">
-          <table class="table custom-table text-white">
-            <thead>
-              <tr>
-                <th class="hr">Training Name</th>
-                <th class="hr">Create at</th>
-                <th class="hr">Type</th>
-                <th class="hr">Muscle group</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="(training, index) in trainings"
-                :key="index"
-                :class="{
-                  'highlight-row': training.name === 'Upper Body Shred',
-                }"
-              >
-                <td>{{ training.name }}</td>
-                <td>{{ training.created }}</td>
-                <td>{{ training.type }}</td>
-                <td>{{ training.group }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </main>
+      </main>
+    </div>
   </div>
 </template>
 
@@ -157,30 +167,6 @@ export default {
 </script>
 
 <style scoped>
-.training-container {
-  display: flex;
-  height: 100vh !important;
-  font-family: "Roboto", sans-serif;
-  color: #fff;
-  background: #000;
-}
-
-@media (min-width: 992px) {
-  .training-container {
-    flex-direction: row;
-  }
-}
-
-.sidebar {
-  width: 250px;
-  background: #111;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 20px;
-}
-
 .logo img {
   width: 100%;
 }

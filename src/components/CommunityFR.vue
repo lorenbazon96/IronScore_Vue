@@ -1,59 +1,63 @@
 <template>
-  <div class="community-container">
-    <aside class="sidebar">
-      <div class="logo">
-        <img src="@/assets/logo-t.png" alt="IronScore Logo" />
-      </div>
-      <div class="user-info">
-        <router-link to="/edit-r-account" class="edit"
-          >Edit Account</router-link
-        >
-        <p><strong>Name:</strong> Example</p>
-        <p><strong>Surname:</strong> Example</p>
-        <p><strong>Email:</strong> example@gmail.com</p>
-        <p><strong>Age:</strong> 25</p>
-        <p><strong>Account type:</strong> Referee</p>
-      </div>
-      <nav class="menu">
-        <router-link to="/competitionsr" class="menu-item"
-          >competitions</router-link
-        >
-        <router-link to="/communityfr" class="menu-item active-item"
-          >Community</router-link
-        >
-      </nav>
-    </aside>
+  <div class="container-fluid">
+    <div class="row min-vh-100">
+      <aside class="col-12 col-md-3 sidebar bg-dark text-white p-3">
+        <div class="logo">
+          <img src="@/assets/logo-t.png" alt="IronScore Logo" />
+        </div>
+        <div class="user-info border-top pt-2 mb-3">
+          <router-link to="/edit-r-account" class="edit"
+            >Edit Account</router-link
+          >
+          <p><strong>Name:</strong> Example</p>
+          <p><strong>Surname:</strong> Example</p>
+          <p><strong>Email:</strong> example@gmail.com</p>
+          <p><strong>Age:</strong> 25</p>
+          <p><strong>Account type:</strong> Referee</p>
+        </div>
+        <nav class="menu d-flex flex-column gap-2">
+          <router-link to="/competitionsr" class="menu-item"
+            >competitions</router-link
+          >
+          <router-link to="/communityfr" class="menu-item active-item"
+            >Community</router-link
+          >
+        </nav>
+      </aside>
 
-    <main class="community-new-content">
-      <header class="community-header-new">
-        <h2 class="community-title">COMMUNITY</h2>
-        <router-link
-          to="/"
-          class="btn btn-link text-warning fw-bold p-0 logout-link"
-        >
-          Log Out
-        </router-link>
-      </header>
+      <main
+        class="col-12 col-md-9 community-new-content p-4 bg-black text-white"
+      >
+        <header class="community-header-new">
+          <h2 class="community-title">COMMUNITY</h2>
+          <router-link
+            to="/"
+            class="btn btn-link text-warning fw-bold p-0 logout-link"
+          >
+            Log Out
+          </router-link>
+        </header>
 
-      <section class="post-list">
-        <router-link
-          v-for="(post, index) in posts"
-          :key="index"
-          :to="`/communitypr?id=${index}`"
-          class="single-post text-decoration-none text-white"
-        >
-          <div class="post-author">{{ post.author }}</div>
-          <div class="post-content">"{{ post.content }}"</div>
-          <div class="post-date">{{ post.timestamp }}</div>
-        </router-link>
-      </section>
-      <div>
-        <input type="text" placeholder="Insert new post" class="new-post" />
-      </div>
-      <div class="add-post-button-wrapper">
-        <button class="btn btn-warning fw-bold w-100">Add new post</button>
-      </div>
-    </main>
+        <section class="post-list">
+          <router-link
+            v-for="(post, index) in posts"
+            :key="index"
+            :to="`/communitypr?id=${index}`"
+            class="single-post text-decoration-none text-white"
+          >
+            <div class="post-author">{{ post.author }}</div>
+            <div class="post-content">"{{ post.content }}"</div>
+            <div class="post-date">{{ post.timestamp }}</div>
+          </router-link>
+        </section>
+        <div>
+          <input type="text" placeholder="Insert new post" class="new-post" />
+        </div>
+        <div class="add-post-button-wrapper">
+          <button class="btn btn-warning fw-bold w-100">Add new post</button>
+        </div>
+      </main>
+    </div>
   </div>
 </template>
 
@@ -106,30 +110,6 @@ export default {
 </script>
 
 <style scoped>
-.community-container {
-  display: flex;
-  height: 100vh;
-  font-family: "Roboto", sans-serif;
-  color: #fff;
-  background: #000;
-}
-
-@media (min-width: 992px) {
-  .community-container {
-    flex-direction: row;
-  }
-}
-
-.sidebar {
-  width: 250px;
-  background: #111;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 20px;
-}
-
 .logo img {
   width: 100%;
 }
@@ -173,10 +153,7 @@ export default {
 }
 
 .community-title {
-  font-size: 32px;
-  text-transform: uppercase;
-  font-weight: 900;
-  letter-spacing: 1px;
+  font-weight: bold;
   color: #ffc107;
 }
 

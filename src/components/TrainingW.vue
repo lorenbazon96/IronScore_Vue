@@ -1,148 +1,161 @@
 <template>
-  <div class="training-container">
-    <aside class="sidebar">
-      <div class="logo">
-        <img src="@/assets/logo-t.png" alt="IronScore Logo" />
-      </div>
-      <div class="user-info">
-        <router-link to="/edit-account" class="edit">Edit Account</router-link>
-        <p><strong>Name:</strong> Example</p>
-        <p><strong>Surname:</strong> Example</p>
-        <p><strong>Email:</strong> example@gmail.com</p>
-        <p><strong>Age:</strong> 25</p>
-        <p><strong>Account type:</strong> Regular</p>
-      </div>
-      <nav class="menu">
-        <router-link to="/dashboard" class="menu-item">Dashboard</router-link>
-        <router-link to="/competitions" class="menu-item"
-          >Competitions</router-link
-        >
-        <router-link to="/community" class="menu-item">Community</router-link>
-        <router-link to="/timer" class="menu-item">Timer</router-link>
-        <router-link to="/trainings" class="menu-item active-item"
-          >Trainings</router-link
-        >
-      </nav>
-    </aside>
+  <div class="container-fluid">
+    <div class="row min-vh-100">
+      <aside class="col-12 col-md-3 sidebar bg-dark text-white p-3">
+        <div class="logo mb-3">
+          <img
+            src="@/assets/logo-t.png"
+            alt="IronScore Logo"
+            class="img-fluid"
+          />
+        </div>
+        <div class="user-info border-top pt-2 mb-3">
+          <router-link to="/edit-account" class="edit d-block mb-2"
+            >Edit Account</router-link
+          >
+          <p><strong>Name:</strong> Example</p>
+          <p><strong>Surname:</strong> Example</p>
+          <p><strong>Email:</strong> example@gmail.com</p>
+          <p><strong>Age:</strong> 25</p>
+          <p><strong>Account type:</strong> Regular</p>
+        </div>
+        <nav class="menu d-flex flex-column gap-2">
+          <router-link to="/dashboard" class="menu-item">Dashboard</router-link>
+          <router-link to="/competitions" class="menu-item"
+            >Competitions</router-link
+          >
+          <router-link to="/community" class="menu-item">Community</router-link>
+          <router-link to="/timer" class="menu-item">Timer</router-link>
+          <router-link to="/trainings" class="menu-item active-item"
+            >Trainings</router-link
+          >
+        </nav>
+      </aside>
 
-    <main class="training-content container-fluid px-5">
-      <header class="training-header trainings-header">
-        <h2 class="title trainings-title">Trainings</h2>
-        <router-link
-          to="/"
-          class="btn btn-link text-warning fw-bold p-0 logout-link"
-        >
-          Log Out
-        </router-link>
-      </header>
+      <main class="col-12 col-md-9 training-content p-4 bg-black text-white">
+        <header class="training-header trainings-header">
+          <h2 class="title trainings-title">Trainings</h2>
+          <router-link
+            to="/"
+            class="btn btn-link text-warning fw-bold p-0 logout-link"
+          >
+            Log Out
+          </router-link>
+        </header>
 
-      <div class="mb-3">
-        <label for="trainingName" class="text-white fw-bold me-2 text-start"
-          >Training Name:</label
-        >
-        <input
-          type="text"
-          id="trainingName"
-          class="form-control d-inline-block"
-          style="width: 300px"
-          v-model="trainingName"
-          placeholder="example weekly training"
-        />
-      </div>
+        <div class="mb-3">
+          <label for="trainingName" class="text-white fw-bold me-2 text-start"
+            >Training Name:</label
+          >
+          <input
+            type="text"
+            id="trainingName"
+            class="form-control d-inline-block"
+            style="width: 300px"
+            v-model="trainingName"
+            placeholder="example weekly training"
+          />
+        </div>
 
-      <div class="d-flex gap-5 align-items-start flex-wrap">
-        <div
-          class="custom-card p-3"
-          style="flex: 1; min-width: 300px; max-height: 600px; overflow-y: auto"
-        >
-          <div v-for="group in muscleGroups" :key="group" class="mb-4">
-            <h5 class="section-title">{{ group.toUpperCase() }}</h5>
-            <hr />
-            <div
-              v-for="(exercise, index) in exercisesByGroup(group)"
-              :key="index"
-              class="d-flex align-items-start gap-3 border-bottom pb-3 mb-3"
-            >
-              <img
-                :src="exercise.image"
-                alt="exercise"
-                width="160"
-                height="160"
-              />
-              <div class="flex-grow-1">
-                <strong class="exercise-name">{{ exercise.name }}</strong>
-                <div class="d-flex gap-4 mt-2 flex-wrap">
-                  <span>Sets</span>
-                  <input
-                    v-model.number="exercise.sets"
-                    type="number"
-                    min="1"
-                    class="form-control form-control-sm"
-                    placeholder="Sets"
-                    style="width: 70px"
-                  />
-                  <span>Reps</span>
-                  <input
-                    v-model.number="exercise.reps"
-                    type="number"
-                    min="1"
-                    class="form-control form-control-sm"
-                    placeholder="Reps"
-                    style="width: 70px"
-                  />
-                  <span>Day</span>
-                  <select
-                    v-model="exercise.day"
-                    class="form-select form-select-sm"
-                    style="width: 100px"
-                  >
-                    <option disabled value="">Day</option>
-                    <option v-for="day in days" :key="day">{{ day }}</option>
-                  </select>
-                  <button
-                    class="btn btn-md btn-warning"
-                    @click="addExercise(exercise)"
-                  >
-                    Add
-                  </button>
+        <div class="d-flex gap-5 align-items-start flex-wrap">
+          <div
+            class="custom-card p-3"
+            style="
+              flex: 1;
+              min-width: 300px;
+              max-height: 600px;
+              overflow-y: auto;
+            "
+          >
+            <div v-for="group in muscleGroups" :key="group" class="mb-4">
+              <h5 class="section-title">{{ group.toUpperCase() }}</h5>
+              <hr />
+              <div
+                v-for="(exercise, index) in exercisesByGroup(group)"
+                :key="index"
+                class="d-flex align-items-start gap-3 border-bottom pb-3 mb-3"
+              >
+                <img
+                  :src="exercise.image"
+                  alt="exercise"
+                  width="160"
+                  height="160"
+                />
+                <div class="flex-grow-1">
+                  <strong class="exercise-name">{{ exercise.name }}</strong>
+                  <div class="d-flex gap-4 mt-2 flex-wrap">
+                    <span>Sets</span>
+                    <input
+                      v-model.number="exercise.sets"
+                      type="number"
+                      min="1"
+                      class="form-control form-control-sm"
+                      placeholder="Sets"
+                      style="width: 70px"
+                    />
+                    <span>Reps</span>
+                    <input
+                      v-model.number="exercise.reps"
+                      type="number"
+                      min="1"
+                      class="form-control form-control-sm"
+                      placeholder="Reps"
+                      style="width: 70px"
+                    />
+                    <span>Day</span>
+                    <select
+                      v-model="exercise.day"
+                      class="form-select form-select-sm"
+                      style="width: 100px"
+                    >
+                      <option disabled value="">Day</option>
+                      <option v-for="day in days" :key="day">{{ day }}</option>
+                    </select>
+                    <button
+                      class="btn btn-md btn-warning"
+                      @click="addExercise(exercise)"
+                    >
+                      Add
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div
-          class="custom-card-finish p-3"
-          style="width: 400px; max-height: 500px; overflow-y: auto"
-        >
-          <h5 class="section-title-finish">ADDED ON TRAINING</h5>
-          <div v-for="day in days" :key="day" class="mb-2">
-            <strong class="text-white text-uppercase">{{ day }}</strong>
-            <div v-for="group in visibleGroupsByDay[day]" :key="group">
-              <strong class="text-white ms-2">{{ group }}</strong>
-              <ul class="list-group mb-2">
-                <li
-                  v-for="(ex, i) in exercisesByDayAndGroup(day, group)"
-                  :key="i"
-                  class="list-group-item text-dark d-flex justify-content-between align-items-center border-secondary"
-                >
-                  {{ ex.name }} – {{ ex.sets }} sets x {{ ex.reps }} reps
-                  <button
-                    class="btn btn-sm btn-danger"
-                    @click="removeExercise(ex)"
+          <div
+            class="custom-card-finish p-3"
+            style="width: 400px; max-height: 500px; overflow-y: auto"
+          >
+            <h5 class="section-title-finish">ADDED ON TRAINING</h5>
+            <div v-for="day in days" :key="day" class="mb-2">
+              <strong class="text-white text-uppercase">{{ day }}</strong>
+              <div v-for="group in visibleGroupsByDay[day]" :key="group">
+                <strong class="text-white ms-2">{{ group }}</strong>
+                <ul class="list-group mb-2">
+                  <li
+                    v-for="(ex, i) in exercisesByDayAndGroup(day, group)"
+                    :key="i"
+                    class="list-group-item text-dark d-flex justify-content-between align-items-center border-secondary"
                   >
-                    Remove
-                  </button>
-                </li>
-              </ul>
+                    {{ ex.name }} – {{ ex.sets }} sets x {{ ex.reps }} reps
+                    <button
+                      class="btn btn-sm btn-danger"
+                      @click="removeExercise(ex)"
+                    >
+                      Remove
+                    </button>
+                  </li>
+                </ul>
+              </div>
             </div>
+            <button class="btn btn-warning w-100 fw-bold mt-3">
+              Finish and save training
+            </button>
           </div>
-          <button class="btn btn-warning w-100 fw-bold mt-3">
-            Finish and save training
-          </button>
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   </div>
 </template>
 
@@ -714,30 +727,6 @@ export default {
 </script>
 
 <style scoped>
-.training-container {
-  display: flex;
-  height: 100vh !important;
-  font-family: "Roboto", sans-serif;
-  color: #fff;
-  background: #000;
-}
-
-@media (min-width: 992px) {
-  .training-container {
-    flex-direction: row;
-  }
-}
-
-.sidebar {
-  width: 250px;
-  background: #111;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 20px;
-}
-
 .logo img {
   width: 100%;
 }
@@ -823,11 +812,6 @@ export default {
   color: #000000 !important;
   margin-bottom: 10px;
   text-transform: uppercase;
-}
-
-.custom-card {
-  background-color: #2b2b2b;
-  border-radius: 15px;
 }
 
 .section-title-finish {

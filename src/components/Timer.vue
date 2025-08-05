@@ -1,54 +1,66 @@
 <template>
-  <div class="time-container">
-    <aside class="sidebar">
-      <div class="logo">
-        <img src="@/assets/logo-t.png" alt="IronScore Logo" />
-      </div>
-      <div class="user-info">
-        <router-link to="/edit-account" class="edit">Edit Account</router-link>
-        <p><strong>Name:</strong> Example</p>
-        <p><strong>Surname:</strong> Example</p>
-        <p><strong>Email:</strong> example@gmail.com</p>
-        <p><strong>Age:</strong> 25</p>
-        <p><strong>Account type:</strong> Regular</p>
-      </div>
-      <nav class="menu">
-        <router-link to="/dashboard" class="menu-item">dashboard</router-link>
-        <router-link to="/competitions" class="menu-item"
-          >competitions</router-link
-        >
-        <router-link to="/community" class="menu-item">Community</router-link>
-        <router-link to="/timer" class="menu-item active-item"
-          >Timer</router-link
-        >
-        <router-link to="/trainings" class="menu-item">Trainings</router-link>
-      </nav>
-    </aside>
+  <div class="container-fluid">
+    <div class="row min-vh-100">
+      <aside class="col-12 col-md-3 sidebar bg-dark text-white p-3">
+        <div class="logo mb-3">
+          <img
+            src="@/assets/logo-t.png"
+            alt="IronScore Logo"
+            class="img-fluid"
+          />
+        </div>
+        <div class="user-info border-top pt-2 mb-3">
+          <router-link to="/edit-account" class="edit d-block mb-2"
+            >Edit Account</router-link
+          >
+          <p><strong>Name:</strong> Example</p>
+          <p><strong>Surname:</strong> Example</p>
+          <p><strong>Email:</strong> example@gmail.com</p>
+          <p><strong>Age:</strong> 25</p>
+          <p><strong>Account type:</strong> Regular</p>
+        </div>
+        <nav class="menu d-flex flex-column gap-2">
+          <router-link to="/dashboard" class="menu-item">Dashboard</router-link>
+          <router-link to="/competitions" class="menu-item"
+            >Competitions</router-link
+          >
+          <router-link to="/community" class="menu-item">Community</router-link>
+          <router-link to="/timer" class="menu-item active-item"
+            >Timer</router-link
+          >
+          <router-link to="/trainings" class="menu-item">Trainings</router-link>
+        </nav>
+      </aside>
 
-    <main class="timer-content">
-      <header class="timer-header">
-        <h2 class="title">timer</h2>
-        <router-link
-          to="/"
-          class="btn btn-link text-warning fw-bold p-0 logout-link"
-          >Log Out</router-link
+      <main class="col-12 col-md-9 timer-content p-4 bg-black text-white">
+        <header
+          class="timer-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4"
         >
-      </header>
-      <div class="set-time">
-        <label>Set time:</label>
-        <input type="number" v-model.number="inputMinutes" min="0" max="59" />
-        <span>:</span>
-        <input type="number" v-model.number="inputSeconds" min="0" max="59" />
-        <button @click="setTime">Set</button>
-      </div>
+          <h2 class="title text-warning fw-bold text-uppercase mb-2 mb-md-0">
+            timer
+          </h2>
+          <router-link
+            to="/"
+            class="btn btn-link text-warning fw-bold p-0 logout-link"
+            >Log Out</router-link
+          >
+        </header>
+        <div class="set-time">
+          <label>Set time:</label>
+          <input type="number" v-model.number="inputMinutes" min="0" max="59" />
+          <span>:</span>
+          <input type="number" v-model.number="inputSeconds" min="0" max="59" />
+          <button @click="setTime">Set</button>
+        </div>
 
-      <div id="display">{{ formattedTime }}</div>
+        <div id="display">{{ formattedTime }}</div>
 
-      <div class="controls">
-        <button @click="startTimer" :disabled="isRunning">Start</button>
-        <button @click="resetTimer">Reset</button>
-      </div>
-    </main>
+        <div class="controls">
+          <button @click="startTimer" :disabled="isRunning">Start</button>
+          <button @click="resetTimer">Reset</button>
+        </div>
+      </main>
+    </div>
   </div>
 </template>
 
@@ -100,23 +112,6 @@ body,
 html {
   margin: 0;
   font-family: "Segoe UI", sans-serif;
-}
-
-.container {
-  display: flex;
-  height: 100vh;
-  color: white;
-  background: #000;
-}
-
-.sidebar {
-  width: 250px;
-  background: #111;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 20px;
 }
 
 .logo img {
