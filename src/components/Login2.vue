@@ -32,6 +32,9 @@
 </template>
 
 <script>
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from "../firebase";
+import { doc, getDoc } from "firebase/firestore";
 export default {
   name: "Login",
   data() {
@@ -41,11 +44,39 @@ export default {
     };
   },
   methods: {
-    login() {
-      console.log("Logging in with:", this.email, this.password);
-    },
-    goBack() {
-      this.$router.go(-1);
+    async login() {
+      try {
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          this.email,
+          this.password
+        );
+        const user = userCredential.user;
+
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+
+        if (userDocSnap.exists()) {
+          const userData = userDocSnap.data();
+          console.log(
+            "Uspješno prijavljen:",
+            user.email,
+            "Role:",
+            userData.role
+          );
+
+          if (userData.role === "regular") {
+            this.$router.push({ name: "dashboard" });
+          } else {
+            this.$router.push({ name: "competitionsr" });
+          }
+        } else {
+          alert("Nema korisničkih podataka u bazi!");
+        }
+      } catch (error) {
+        console.error("Greška kod prijave:", error.message);
+        alert("Neuspješna prijava: " + error.message);
+      }
     },
   },
 };

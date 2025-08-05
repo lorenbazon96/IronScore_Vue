@@ -40,8 +40,9 @@
 </template>
 
 <script>
-import { auth } from "@/firebase";
+import { auth, db } from "@/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { setDoc, doc } from "firebase/firestore";
 
 export default {
   name: "Register",
@@ -53,17 +54,35 @@ export default {
     };
   },
   methods: {
-    register() {
-      createUserWithEmailAndPassword(auth, this.email, this.password)
-        .then(() => {
-          console.log("Uspješna registracija");
-        })
-        .catch((error) => {
-          console.error("Došlo je do greške:", error);
+    async register() {
+      if (!this.userType) {
+        alert("Odaberi tip korisnika!");
+        return;
+      }
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          this.email,
+          this.password
+        );
+        const user = userCredential.user;
+
+        await setDoc(doc(db, "users", user.uid), {
+          email: this.email,
+          role: this.userType,
+          createdAt: new Date(),
         });
 
-      console.log("Nastavak");
+        console.log("Uspješna registracija i spremanje podataka");
+
+        this.$router.push({ name: "login" });
+      } catch (error) {
+        console.error("Došlo je do greške:", error.message);
+        alert("Greška pri registraciji: " + error.message);
+      }
     },
+
     goBack() {
       this.$router.go(-1);
     },

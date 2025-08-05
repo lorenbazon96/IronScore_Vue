@@ -23,6 +23,9 @@
 </template>
 
 <script>
+import { sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "../firebase";
+
 export default {
   name: "Login",
   data() {
@@ -31,8 +34,19 @@ export default {
     };
   },
   methods: {
-    send() {
-      console.log("We need new pass for:", this.email);
+    async send() {
+      if (!this.email) {
+        alert("Molimo unesite email.");
+        return;
+      }
+      try {
+        await sendPasswordResetEmail(auth, this.email);
+        alert("Email za resetiranje lozinke je poslan.");
+        this.email = ""; // očisti polje
+      } catch (error) {
+        console.error("Greška pri slanju emaila:", error.message);
+        alert("Greška: " + error.message);
+      }
     },
     goBack() {
       this.$router.go(-1);
