@@ -17,7 +17,6 @@
           <p><strong>Surname:</strong> Example</p>
           <p><strong>Email:</strong> example@gmail.com</p>
           <p><strong>Age:</strong> 25</p>
-          <p><strong>Account type:</strong> Regular</p>
         </div>
         <nav class="menu d-flex flex-column gap-2">
           <router-link to="/dashboard" class="menu-item">Dashboard</router-link>

@@ -13,11 +13,10 @@
           <router-link to="/edit-account" class="edit d-block mb-2"
             >Edit Account</router-link
           >
-          <p><strong>Name:</strong> Example</p>
-          <p><strong>Surname:</strong> Example</p>
-          <p><strong>Email:</strong> example@gmail.com</p>
-          <p><strong>Age:</strong> 25</p>
-          <p><strong>Account type:</strong> Regular</p>
+          <p><strong>Name:</strong> {{ userStore.name }}</p>
+          <p><strong>Surname:</strong> {{ userStore.surname }}</p>
+          <p><strong>Email:</strong> {{ userStore.email }}</p>
+          <p><strong>Age:</strong> {{ userStore.age }}</p>
         </div>
         <nav class="menu d-flex flex-column gap-2">
           <router-link to="/dashboard" class="menu-item active-item"
@@ -96,6 +95,7 @@
 <script>
 import Dashboard from "@/components/Dashboard.vue";
 import DashboardCard from "@/components/DashboardCard.vue";
+import { useUserStore } from "@/stores/user";
 
 export default {
   name: "Dashboard",
@@ -109,6 +109,11 @@ export default {
       workoutData: [3, 4.5, 5, 3, 6, 4.8],
       bmiData: [25.5, 25.6, 25.6, 25.8, 25.8, 25.6],
     };
+  },
+  computed: {
+    userStore() {
+      return useUserStore();
+    },
   },
 };
 </script>

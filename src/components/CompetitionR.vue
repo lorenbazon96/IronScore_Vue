@@ -9,11 +9,10 @@
           <router-link to="/edit-r-account" class="edit"
             >Edit Account</router-link
           >
-          <p><strong>Name:</strong> Example</p>
-          <p><strong>Surname:</strong> Example</p>
-          <p><strong>Email:</strong> example@gmail.com</p>
-          <p><strong>Age:</strong> 25</p>
-          <p><strong>Account type:</strong> Referee</p>
+          <p><strong>Name:</strong> {{ userStore.name }}</p>
+          <p><strong>Surname:</strong> {{ userStore.surname }}</p>
+          <p><strong>Email:</strong> {{ userStore.email }}</p>
+          <p><strong>Age:</strong> {{ userStore.age }}</p>
         </div>
         <nav class="menu">
           <router-link to="/competitionsr" class="menu-item active-item"
@@ -111,10 +110,16 @@
 </template>
 
 <script>
+import { useUserStore } from "@/stores/user";
 export default {
   name: "CompetitionR",
   data() {
     return {};
+  },
+  computed: {
+    userStore() {
+      return useUserStore();
+    },
   },
 };
 </script>

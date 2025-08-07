@@ -65,7 +65,7 @@ export default {
             userData.role
           );
 
-          if (userData.role === "regular") {
+          if (userData.role === "Regular" || userData.role === "regular") {
             this.$router.push({ name: "dashboard" });
           } else {
             this.$router.push({ name: "competitionsr" });

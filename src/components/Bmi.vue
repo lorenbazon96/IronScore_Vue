@@ -13,11 +13,10 @@
           <router-link to="/edit-account" class="edit d-block mb-2"
             >Edit Account</router-link
           >
-          <p><strong>Name:</strong> Example</p>
-          <p><strong>Surname:</strong> Example</p>
-          <p><strong>Email:</strong> example@gmail.com</p>
-          <p><strong>Age:</strong> 25</p>
-          <p><strong>Account type:</strong> Regular</p>
+          <p><strong>Name:</strong> {{ userStore.name }}</p>
+          <p><strong>Surname:</strong> {{ userStore.surname }}</p>
+          <p><strong>Email:</strong> {{ userStore.email }}</p>
+          <p><strong>Age:</strong> {{ userStore.age }}</p>
         </div>
         <nav class="menu d-flex flex-column gap-2">
           <router-link to="/dashboard" class="menu-item active-item"
@@ -82,6 +81,7 @@
 
 <script>
 import { Chart, registerables } from "chart.js";
+import { useUserStore } from "@/stores/user";
 Chart.register(...registerables);
 
 export default {
@@ -139,6 +139,11 @@ export default {
         this.newDate = "";
         this.newValue = "";
       }
+    },
+  },
+  computed: {
+    userStore() {
+      return useUserStore();
     },
   },
 };

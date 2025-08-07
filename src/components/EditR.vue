@@ -105,6 +105,7 @@
                       class="form-control bg-dark text-white border-secondary"
                       id="type"
                       placeholder="Regular"
+                      disabled
                     />
                   </div>
 
@@ -125,7 +126,89 @@
 export default {
   name: "EditR",
   data() {
-    return {};
+    return {
+      name: "",
+      surname: "",
+      email: "",
+      age: "",
+      type: "",
+    };
+  },
+  async mounted() {
+    const user = auth.currentUser;
+    if (!user) {
+      console.warn("Korisnik nije prijavljen.");
+      return;
+    }
+
+    try {
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        this.name = data.name || "";
+        this.surname = data.surname || "";
+        this.email = data.email || "";
+        this.age = data.age || "";
+        this.type = data.type || "";
+      }
+    } catch (err) {
+      console.error("Greška pri dohvaćanju podataka:", err.message);
+    }
+  },
+  methods: {
+    async updateUserData(e) {
+      e.preventDefault();
+
+      const user = auth.currentUser;
+      if (!user) {
+        alert("Nema prijavljenog korisnika.");
+        return;
+      }
+
+      try {
+        const docRef = doc(db, "users", user.uid);
+        const existingDoc = await getDoc(docRef);
+        let existingRole = "regular";
+
+        if (existingDoc.exists()) {
+          const existingData = existingDoc.data();
+          existingRole = existingData.role || "regular";
+        }
+
+        if (this.email !== user.email) {
+          await updateEmail(user, this.email);
+        }
+
+        await setDoc(
+          docRef,
+          {
+            name: this.name,
+            surname: this.surname,
+            email: this.email,
+            age: this.age,
+            type: this.type,
+          },
+          { merge: true }
+        );
+
+        alert("Podaci uspješno ažurirani.");
+      } catch (error) {
+        console.error("Greška pri spremanju:", error.message);
+        alert("Greška: " + error.message);
+      }
+    },
+
+    async sendVerificationEmail() {
+      const user = auth.currentUser;
+      if (user) {
+        try {
+          await sendEmailVerification(user);
+          alert("Verifikacijski email poslan.");
+        } catch (err) {
+          console.error("Greška kod slanja verifikacije:", err.message);
+        }
+      }
+    },
   },
 };
 </script>

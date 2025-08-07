@@ -26,3 +26,25 @@ nav {
   }
 }
 </style>
+<script>
+import { useUserStore } from "@/stores/user";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/firebase";
+
+export default {
+  name: "App",
+
+  mounted() {
+    const userStore = useUserStore();
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        await userStore.fetchUser();
+        console.log("Korisnik prijavljen:", user.email);
+      } else {
+        console.log("Nema prijavljenog korisnika");
+      }
+    });
+  },
+};
+</script>
