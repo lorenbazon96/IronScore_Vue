@@ -9,6 +9,7 @@ export const useUserStore = defineStore("user", {
     email: "",
     age: "",
     accountType: "",
+    uid: "",
   }),
 
   actions: {
@@ -16,6 +17,7 @@ export const useUserStore = defineStore("user", {
       const user = auth.currentUser;
       console.log("Trenutni korisnik:", user);
       if (!user) return;
+      this.uid = user.uid;
 
       try {
         const docRef = doc(db, "users", user.uid);
@@ -27,7 +29,7 @@ export const useUserStore = defineStore("user", {
           this.surname = data.surname || "";
           this.email = data.email || "";
           this.age = data.age || "";
-          this.accountType = data.type || ""; // ako se zove 'type' u bazi
+          this.accountType = data.type || "";
         }
       } catch (err) {
         console.error("Greška kod dohvaćanja korisnika:", err.message);

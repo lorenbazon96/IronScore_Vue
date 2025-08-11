@@ -54,22 +54,83 @@
 
             <div class="col-md-4">
               <div class="card bg-white text-dark p-4">
-                <h6 class="fw-bold mb-3">Date:</h6>
+                <h6 class="fw-bold mb-2">Date:</h6>
                 <input
                   type="date"
                   class="form-control mb-3"
                   v-model="newDate"
                 />
 
-                <h6 class="fw-bold mb-3">BMI:</h6>
-                <input
-                  type="number"
-                  class="form-control mb-3"
-                  v-model="newValue"
-                  placeholder="25.8"
-                />
+                <div class="row">
+                  <div class="col-6">
+                    <h6 class="fw-bold mb-2">Weight (kg):</h6>
+                    <input
+                      type="number"
+                      class="form-control mb-3"
+                      v-model.number="newWeight"
+                      step="0.1"
+                      min="20"
+                      placeholder="72.5"
+                    />
+                  </div>
+                  <div class="col-6">
+                    <h6 class="fw-bold mb-2">Height (cm):</h6>
+                    <input
+                      type="number"
+                      class="form-control mb-3"
+                      v-model.number="newHeightCm"
+                      step="0.1"
+                      min="80"
+                      placeholder="178"
+                    />
+                  </div>
+                </div>
 
-                <button class="btn btn-dark w-100" @click="addBMI">Add</button>
+                <div
+                  class="alert alert-secondary py-2 mb-3"
+                  v-if="calculatedBMI"
+                >
+                  <small
+                    >Calculated BMI: <strong>{{ calculatedBMI }}</strong></small
+                  >
+                </div>
+
+                <button class="btn btn-dark w-100" @click="addEntry">
+                  Add
+                </button>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="card bg-dark text-white p-3">
+                <h6 class="mb-3">Saved entries</h6>
+                <div class="table-responsive">
+                  <table
+                    class="table table-dark table-striped align-middle mb-0"
+                  >
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th class="text-end">Weight (kg)</th>
+                        <th class="text-end">Height (cm)</th>
+                        <th class="text-end">BMI</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="e in entries" :key="e.date">
+                        <td>{{ e.date }}</td>
+                        <td class="text-end">{{ e.weight.toFixed(1) }}</td>
+                        <td class="text-end">{{ e.height_cm.toFixed(1) }}</td>
+                        <td class="text-end">{{ e.bmi.toFixed(1) }}</td>
+                      </tr>
+                      <tr v-if="entries.length === 0">
+                        <td colspan="4" class="text-center text-muted">
+                          No entries yet.
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
@@ -82,6 +143,19 @@
 <script>
 import { Chart, registerables } from "chart.js";
 import { useUserStore } from "@/stores/user";
+import { markRaw, nextTick } from "vue";
+
+import { auth, db } from "@/firebase";
+import {
+  collection,
+  doc,
+  setDoc,
+  onSnapshot,
+  query,
+  orderBy,
+} from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
+
 Chart.register(...registerables);
 
 export default {
@@ -90,60 +164,136 @@ export default {
     return {
       chart: null,
       newDate: "",
-      newValue: "",
-      chartLabels: ["Mar 1", "Mar 8", "Mar 15", "Mar 22", "Mar 29", "Apr 5"],
-      chartData: [25.5, 25.6, 25.6, 25.8, 25.8, 25.6],
+      newWeight: null,
+      newHeightCm: null,
+      entries: [],
+      unsub: null,
+      stopAuthWatch: null,
     };
   },
+  async created() {
+    this.newDate = new Date().toISOString().slice(0, 10);
+    await this.userStore.fetchUser();
+
+    this.stopAuthWatch = onAuthStateChanged(auth, (u) => {
+      if (!u) {
+        if (this.unsub) {
+          this.unsub();
+          this.unsub = null;
+        }
+        this.entries = [];
+        this.rebuildChart();
+        return;
+      }
+      if (this.unsub) {
+        this.unsub();
+        this.unsub = null;
+      }
+      const col = collection(db, "users", u.uid, "bmiEntries");
+      const q = query(col, orderBy("date"));
+      this.unsub = onSnapshot(q, (snap) => {
+        this.entries = snap.docs.map((d) => d.data());
+        this.rebuildChart();
+      });
+    });
+  },
   mounted() {
-    const ctx = document.getElementById("bmiChart").getContext("2d");
-    this.chart = new Chart(ctx, {
+    const ctx = document.getElementById("bmiChart")?.getContext("2d");
+    if (!ctx) return;
+
+    const config = {
       type: "line",
       data: {
-        labels: this.chartLabels,
+        labels: [],
         datasets: [
           {
             label: "BMI",
-            data: this.chartData,
+            data: [],
             borderColor: "rgba(255, 87, 34, 1)",
             backgroundColor: "rgba(255, 87, 34, 0.2)",
             tension: 0.3,
             fill: true,
+            pointRadius: 3,
           },
         ],
       },
       options: {
         responsive: true,
         plugins: {
-          legend: { labels: { color: "#fff" } },
+          title: { display: false, text: "BMI", fullSize: true },
+          legend: { display: true, labels: { color: "#fff" } },
+          tooltip: {
+            callbacks: {
+              label: (c) => `BMI: ${Number(c.parsed.y).toFixed(1)}`,
+            },
+          },
         },
         scales: {
-          x: {
-            ticks: { color: "#ccc" },
-            grid: { color: "#333" },
-          },
+          x: { ticks: { color: "#ccc" }, grid: { color: "#333" } },
           y: {
             ticks: { color: "#ccc" },
             grid: { color: "#333" },
+            suggestedMin: 15,
+            suggestedMax: 35,
           },
         },
       },
-    });
+    };
+
+    this.chart = markRaw(new Chart(ctx, config));
+    nextTick(() => this.rebuildChart());
   },
-  methods: {
-    addBMI() {
-      if (this.newDate && this.newValue) {
-        this.chart.data.labels.push(this.newDate);
-        this.chart.data.datasets[0].data.push(parseFloat(this.newValue));
-        this.chart.update();
-        this.newDate = "";
-        this.newValue = "";
-      }
-    },
+  beforeUnmount() {
+    if (this.chart) {
+      this.chart.destroy();
+      this.chart = null;
+    }
+    if (this.unsub) {
+      this.unsub();
+      this.unsub = null;
+    }
+    if (this.stopAuthWatch) this.stopAuthWatch();
   },
   computed: {
     userStore() {
       return useUserStore();
+    },
+    calculatedBMI() {
+      if (!this.newWeight || !this.newHeightCm) return null;
+      const h = this.newHeightCm / 100;
+      if (h <= 0) return null;
+      const bmi = this.newWeight / (h * h);
+      return Number.isFinite(bmi) ? bmi.toFixed(1) : null;
+    },
+  },
+  methods: {
+    async addEntry() {
+      const uid = auth.currentUser?.uid;
+      if (!uid) return alert("Prijavi se prije spremanja.");
+      if (!this.newDate) return alert("Odaberi datum.");
+      if (!this.newWeight || this.newWeight < 20 || this.newWeight > 400)
+        return alert("Unesi težinu 20–400 kg.");
+      if (!this.newHeightCm || this.newHeightCm < 80 || this.newHeightCm > 250)
+        return alert("Unesi visinu 80–250 cm.");
+
+      const h = this.newHeightCm / 100;
+      const payload = {
+        date: this.newDate,
+        weight: Number(this.newWeight),
+        height_cm: Number(this.newHeightCm),
+        bmi: Number(this.newWeight / (h * h)),
+      };
+
+      const col = collection(db, "users", uid, "bmiEntries");
+      await setDoc(doc(col, this.newDate), payload);
+    },
+    rebuildChart() {
+      if (!this.chart) return;
+      const labels = this.entries.map((e) => e.date);
+      const data = this.entries.map((e) => Number(e.bmi.toFixed(1)));
+      this.chart.data.labels = [...labels];
+      this.chart.data.datasets[0].data = [...data];
+      this.chart.update();
     },
   },
 };

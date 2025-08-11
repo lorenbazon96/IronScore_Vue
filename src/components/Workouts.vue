@@ -65,8 +65,10 @@
                 <input
                   type="number"
                   class="form-control mb-3"
-                  v-model="newValue"
+                  v-model.number="newValue"
                   placeholder="5"
+                  min="0"
+                  step="0.5"
                 />
 
                 <button class="btn btn-dark w-100" @click="addWorkout">
@@ -84,6 +86,19 @@
 <script>
 import { useUserStore } from "@/stores/user";
 import { Chart, registerables } from "chart.js";
+import { markRaw, nextTick } from "vue";
+
+import { auth, db } from "@/firebase";
+import {
+  collection,
+  doc,
+  setDoc,
+  onSnapshot,
+  orderBy,
+  query,
+} from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
+
 Chart.register(...registerables);
 
 export default {
@@ -91,26 +106,59 @@ export default {
   data() {
     return {
       chart: null,
+      entries: [],
       newDate: "",
-      newValue: "",
-      chartData: [3, 4.5, 5, 3, 6, 4.8],
-      chartLabels: ["Mar 1", "Mar 8", "Mar 15", "Mar 22", "Mar 29", "Apr 5"],
+      newValue: null,
+      unsub: null,
+      stopAuthWatch: null,
     };
   },
+  computed: {
+    userStore() {
+      return useUserStore();
+    },
+  },
+  created() {
+    this.newDate = new Date().toISOString().slice(0, 10);
+
+    this.stopAuthWatch = onAuthStateChanged(auth, (u) => {
+      if (!u) {
+        if (this.unsub) {
+          this.unsub();
+          this.unsub = null;
+        }
+        this.entries = [];
+        this.rebuildChart();
+        return;
+      }
+      if (this.unsub) {
+        this.unsub();
+        this.unsub = null;
+      }
+      const col = collection(db, "users", u.uid, "workoutEntries");
+      const q = query(col, orderBy("date"));
+      this.unsub = onSnapshot(q, (snap) => {
+        this.entries = snap.docs.map((d) => d.data());
+        this.rebuildChart();
+      });
+    });
+  },
   mounted() {
-    const ctx = document.getElementById("workoutsChart").getContext("2d");
-    this.chart = new Chart(ctx, {
+    const ctx = document.getElementById("workoutsChart")?.getContext("2d");
+    if (!ctx) return;
+    const cfg = {
       type: "line",
       data: {
-        labels: this.chartLabels,
+        labels: [],
         datasets: [
           {
             label: "Workouts Per Week",
-            data: this.chartData,
+            data: [],
             borderColor: "rgba(0, 255, 255, 1)",
             backgroundColor: "rgba(0, 255, 255, 0.2)",
             tension: 0.3,
             fill: true,
+            pointRadius: 3,
           },
         ],
       },
@@ -118,34 +166,82 @@ export default {
         responsive: true,
         plugins: {
           legend: { labels: { color: "#fff" } },
+          title: { display: false, text: "Workouts", fullSize: true },
         },
         scales: {
-          x: {
-            ticks: { color: "#ccc" },
-            grid: { color: "#333" },
-          },
+          x: { ticks: { color: "#ccc" }, grid: { color: "#333" } },
           y: {
             ticks: { color: "#ccc" },
             grid: { color: "#333" },
+            suggestedMin: 0,
+            suggestedMax: 10,
           },
         },
       },
-    });
+    };
+    this.chart = markRaw(new Chart(ctx, cfg));
+    nextTick(() => this.rebuildChart());
+  },
+  beforeUnmount() {
+    if (this.chart) {
+      this.chart.destroy();
+      this.chart = null;
+    }
+    if (this.unsub) {
+      this.unsub();
+      this.unsub = null;
+    }
+    if (this.stopAuthWatch) this.stopAuthWatch();
   },
   methods: {
-    addWorkout() {
-      if (this.newDate && this.newValue) {
-        this.chart.data.labels.push(this.newDate);
-        this.chart.data.datasets[0].data.push(parseFloat(this.newValue));
-        this.chart.update();
-        this.newDate = "";
-        this.newValue = "";
-      }
+    async addWorkout() {
+      const uid = auth.currentUser?.uid;
+      if (!uid) return alert("Prijavi se prije spremanja.");
+      if (!this.newDate) return alert("Odaberi datum.");
+      if (this.newValue === null || this.newValue < 0 || this.newValue > 21)
+        return alert("Unesi broj treninga 0–21.");
+
+      const payload = { date: this.newDate, workouts: Number(this.newValue) };
+      const col = collection(db, "users", uid, "workoutEntries");
+      await setDoc(doc(col, this.newDate), payload);
     },
-  },
-  computed: {
-    userStore() {
-      return useUserStore();
+    rebuildChart() {
+      if (!this.chart) return;
+
+      const cleanedEntries = this.entries
+        .filter((e) => e && typeof e.date === "string" && e.date.trim() !== "")
+        .map((e) => ({
+          date: e.date,
+          workouts: Number(e.workouts) || 0,
+        }));
+
+      if (cleanedEntries.length === 0) {
+        this.chart.data.labels = [];
+        this.chart.data.datasets[0].data = [];
+        this.chart.update();
+        return;
+      }
+
+      const labels = cleanedEntries.map((e) => e.date);
+      const data = cleanedEntries.map((e) => e.workouts);
+
+      if (!this.chart.data.datasets || !this.chart.data.datasets[0]) {
+        this.chart.data.datasets = [
+          {
+            label: "Workouts Per Week",
+            data: [],
+            borderColor: "rgba(0, 255, 255, 1)",
+            backgroundColor: "rgba(0, 255, 255, 0.2)",
+            tension: 0.3,
+            fill: true,
+            pointRadius: 3,
+          },
+        ];
+      }
+
+      this.chart.data.labels = [...labels];
+      this.chart.data.datasets[0].data = [...data];
+      this.chart.update();
     },
   },
 };
