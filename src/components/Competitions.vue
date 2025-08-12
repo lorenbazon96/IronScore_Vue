@@ -51,84 +51,49 @@
           </h3>
           <div class="row g-4">
             <div class="col-md-8">
-              <div class="card bg-white text-black">
-                <div class="card-body">
-                  <div
-                    class="d-flex justify-content-between align-items-start border-bottom py-2"
-                  >
-                    <div class="d-flex align-items-start">
-                      <span class="me-2 text-warning">⭐</span>
-                      <div>
-                        <strong>Arnold Classic 2024</strong><br />
-                        <small
-                          >Date: 3. ožujka 2024.<br />Location: Columbus, Ohio,
-                          SAD</small
+              <section>
+                <div class="row g-4">
+                  <div class="col-md-12">
+                    <div class="card bg-white text-black">
+                      <div class="card-body">
+                        <div
+                          v-for="competition in sortedCompetitions"
+                          :key="competition.id"
+                          class="d-flex justify-content-between align-items-start border-bottom py-2"
                         >
-                      </div>
-                    </div>
-                    <div class="text-warning fw-bold">🏆 5</div>
-                  </div>
-
-                  <div
-                    class="d-flex justify-content-between align-items-start border-bottom py-2"
-                  >
-                    <div class="d-flex align-items-start">
-                      <span class="me-2 text-warning">⭐</span>
-                      <div>
-                        <strong>IFBB Europsko prvenstvo 2024</strong><br />
-                        <small
-                          >Date: 1. svibnja 2024.<br />Location: Santa Susanna,
-                          Španjolska</small
+                          <div class="d-flex align-items-start">
+                            <span class="me-2">
+                              <i
+                                :class="{
+                                  'fa-solid fa-star': isPast(competition.date),
+                                  'fa-regular fa-star': !isPast(
+                                    competition.date
+                                  ),
+                                }"
+                                style="color: #ffc107"
+                              ></i>
+                            </span>
+                            <div>
+                              <strong>{{ competition.name }}</strong
+                              ><br />
+                              <small>
+                                Date: {{ formatDate(competition.date) }}<br />
+                                Location: {{ competition.location }}
+                              </small>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          v-if="sortedCompetitions.length === 0"
+                          class="text-center py-4"
                         >
+                          No competitions found.
+                        </div>
                       </div>
-                    </div>
-                    <div class="text-warning fw-bold">🏆 3</div>
-                  </div>
-
-                  <div
-                    class="d-flex justify-content-between align-items-start border-bottom py-2"
-                  >
-                    <div class="d-flex align-items-start">
-                      <span class="me-2 text-warning">⭐</span>
-                      <div>
-                        <strong>IBFF Svjetsko prvenstvo 2024</strong><br />
-                        <small
-                          >Date: 5. listopada 2024.<br />Location: Koper,
-                          Slovenia</small
-                        >
-                      </div>
-                    </div>
-                    <div class="text-warning fw-bold">🏆 15</div>
-                  </div>
-
-                  <hr class="border-secondary" />
-
-                  <div class="d-flex align-items-start border-bottom py-2">
-                    <span class="me-2 text-secondary">☆</span>
-                    <div>
-                      <strong>Arnold Classic 2025</strong><br />
-                      <small
-                        >Date: 2. ožujka 2025.<br />Location: Columbus, Ohio,
-                        SAD</small
-                      >
-                    </div>
-                  </div>
-
-                  <div class="d-flex align-items-start py-2">
-                    <span class="me-2 text-secondary">☆</span>
-                    <div>
-                      <strong
-                        >Europsko prvenstvo u bodybuildingu i fitnessu
-                        2025</strong
-                      ><br />
-                      <small
-                        >Date: 5. svibnja 2025.<br />Location: Santa Susanna,
-                        Španjolska</small
-                      >
                     </div>
                   </div>
                 </div>
-              </div>
+              </section>
             </div>
 
             <div class="col-md-4">
@@ -158,15 +123,71 @@
 
 <script>
 import { useUserStore } from "@/stores/user";
+import { db } from "@/firebase";
+import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+
 export default {
   name: "Competitions",
   data() {
-    return {};
+    return { competitions: [] };
   },
   computed: {
     userStore() {
       return useUserStore();
     },
+    sortedCompetitions() {
+      return this.competitions.sort(
+        (a, b) => new Date(a.date) - new Date(b.date)
+      );
+    },
+  },
+  methods: {
+    async loadCompetitions() {
+      if (!this.userStore.uid) return;
+      try {
+        const snapshot = await getDocs(
+          collection(db, "users", this.userStore.uid, "competitions")
+        );
+        this.competitions = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+      } catch (error) {
+        console.error("Error loading competitions:", error);
+      }
+    },
+    isPast(date) {
+      const today = new Date();
+      const compDate = new Date(date);
+      return compDate < today;
+    },
+    formatDate(date) {
+      const options = { year: "numeric", month: "long", day: "numeric" };
+      return new Date(date).toLocaleDateString(undefined, options);
+    },
+    async fetchCompetitions() {
+      try {
+        const auth = getAuth();
+        const userId = auth.currentUser?.uid;
+        if (!userId) {
+          console.warn("User not logged in");
+          return;
+        }
+        const competitionsCol = collection(db, "users", userId, "competitions");
+
+        const snapshot = await getDocs(competitionsCol);
+        this.competitions = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+      } catch (error) {
+        console.error("Error fetching competitions:", error);
+      }
+    },
+  },
+  mounted() {
+    this.loadCompetitions();
   },
 };
 </script>

@@ -41,8 +41,9 @@
           <router-link
             to="/"
             class="btn btn-link text-warning fw-bold p-0 logout-link"
-            >Log Out</router-link
           >
+            Log Out
+          </router-link>
         </header>
 
         <section>
@@ -52,7 +53,7 @@
           <div class="row justify-content-center">
             <div class="col-md-10">
               <div class="card text-white p-4 border border-secondary">
-                <form>
+                <form @submit.prevent="addCompetition">
                   <div class="mb-3">
                     <label
                       for="name"
@@ -61,6 +62,7 @@
                     >
                     <input
                       type="text"
+                      v-model="competition.name"
                       class="form-control bg-dark text-white border-secondary"
                       id="name"
                       placeholder="Arnold Classic"
@@ -75,9 +77,9 @@
                     >
                     <input
                       type="date"
+                      v-model="competition.date"
                       class="form-control bg-dark text-white border-secondary"
                       id="date"
-                      value="2025-05-02"
                     />
                   </div>
 
@@ -89,144 +91,38 @@
                     >
                     <input
                       type="text"
+                      v-model="competition.location"
                       class="form-control bg-dark text-white border-secondary"
                       id="location"
                       placeholder="London"
                     />
                   </div>
+
                   <div class="mb-3">
-                    <label
-                      for="referee"
-                      class="form-label d-flex align-items-start"
-                      >Referee</label
+                    <label class="form-label d-flex align-items-start"
+                      >Referees</label
                     >
                     <input
+                      v-for="(ref, index) in competition.referees"
+                      :key="index"
                       type="text"
-                      class="form-control bg-dark text-white border-secondary"
-                      id="referee"
-                      placeholder="Referee 1"
-                    />
-                    <input
-                      type="text"
-                      class="form-control bg-dark text-white border-secondary"
-                      id="referee"
-                      placeholder="Referee 2"
-                    />
-                    <input
-                      type="text"
-                      class="form-control bg-dark text-white border-secondary"
-                      id="referee"
-                      placeholder="Referee 3"
-                    />
-                    <input
-                      type="text"
-                      class="form-control bg-dark text-white border-secondary"
-                      id="referee"
-                      placeholder="Referee 4"
-                    />
-                    <input
-                      type="text"
-                      class="form-control bg-dark text-white border-secondary"
-                      id="referee"
-                      placeholder="Referee 5"
-                    />
-                    <input
-                      type="text"
-                      class="form-control bg-dark text-white border-secondary"
-                      id="referee"
-                      placeholder="Referee 6"
-                    />
-                    <input
-                      type="text"
-                      class="form-control bg-dark text-white border-secondary"
-                      id="referee"
-                      placeholder="Referee 7"
-                    />
-                    <input
-                      type="text"
-                      class="form-control bg-dark text-white border-secondary"
-                      id="referee"
-                      placeholder="Referee 8"
-                    />
-                    <input
-                      type="text"
-                      class="form-control bg-dark text-white border-secondary"
-                      id="referee"
-                      placeholder="Referee 9"
-                    />
-                    <input
-                      type="text"
-                      class="form-control bg-dark text-white border-secondary"
-                      id="referee"
-                      placeholder="Referee 10"
+                      v-model="competition.referees[index]"
+                      class="form-control bg-dark text-white border-secondary mb-1"
+                      :placeholder="'Referee ' + (index + 1)"
                     />
                   </div>
 
                   <div class="mb-3">
-                    <label
-                      for="category"
-                      class="form-label d-flex align-items-start"
+                    <label class="form-label d-flex align-items-start"
                       >Categories</label
                     >
                     <input
+                      v-for="(cat, index) in competition.categories"
+                      :key="index"
                       type="text"
-                      class="form-control bg-dark text-white border-secondary"
-                      id="category"
-                      placeholder="category 1"
-                    />
-                    <input
-                      type="text"
-                      class="form-control bg-dark text-white border-secondary"
-                      id="category"
-                      placeholder="category 2"
-                    />
-                    <input
-                      type="text"
-                      class="form-control bg-dark text-white border-secondary"
-                      id="category"
-                      placeholder="category 3"
-                    />
-                    <input
-                      type="text"
-                      class="form-control bg-dark text-white border-secondary"
-                      id="category"
-                      placeholder="category 4"
-                    />
-                    <input
-                      type="text"
-                      class="form-control bg-dark text-white border-secondary"
-                      id="category"
-                      placeholder="category 5"
-                    />
-                    <input
-                      type="text"
-                      class="form-control bg-dark text-white border-secondary"
-                      id="category"
-                      placeholder="category 6"
-                    />
-                    <input
-                      type="text"
-                      class="form-control bg-dark text-white border-secondary"
-                      id="category"
-                      placeholder="category 7"
-                    />
-                    <input
-                      type="text"
-                      class="form-control bg-dark text-white border-secondary"
-                      id="category"
-                      placeholder="category 8"
-                    />
-                    <input
-                      type="text"
-                      class="form-control bg-dark text-white border-secondary"
-                      id="category"
-                      placeholder="category 9"
-                    />
-                    <input
-                      type="text"
-                      class="form-control bg-dark text-white border-secondary"
-                      id="category"
-                      placeholder="category 10"
+                      v-model="competition.categories[index]"
+                      class="form-control bg-dark text-white border-secondary mb-1"
+                      :placeholder="'Category ' + (index + 1)"
                     />
                   </div>
 
@@ -237,6 +133,7 @@
                       >More information</label
                     >
                     <textarea
+                      v-model="competition.info"
                       class="form-control bg-dark text-white border-secondary"
                       id="info"
                       rows="3"
@@ -259,14 +156,70 @@
 
 <script>
 import { useUserStore } from "@/stores/user";
+import { db } from "@/firebase";
+import { collection, addDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+
 export default {
   name: "Ncompetitions",
   data() {
-    return {};
+    return {
+      competition: {
+        name: "",
+        date: "",
+        location: "",
+        referees: Array(10).fill(""),
+        categories: Array(10).fill(""),
+        info: "",
+      },
+    };
   },
   computed: {
     userStore() {
       return useUserStore();
+    },
+  },
+  methods: {
+    async addCompetition() {
+      try {
+        const auth = getAuth();
+        const userId = auth.currentUser?.uid;
+
+        if (!userId) {
+          alert("You must be logged in to add a competition.");
+          return;
+        }
+
+        const filteredReferees = this.competition.referees.filter(
+          (r) => r.trim() !== ""
+        );
+        const filteredCategories = this.competition.categories.filter(
+          (c) => c.trim() !== ""
+        );
+
+        await addDoc(collection(db, "users", userId, "competitions"), {
+          name: this.competition.name,
+          date: this.competition.date,
+          location: this.competition.location,
+          referees: filteredReferees,
+          categories: filteredCategories,
+          info: this.competition.info,
+          createdAt: new Date(),
+        });
+
+        alert("Competition added successfully!");
+        this.competition = {
+          name: "",
+          date: "",
+          location: "",
+          referees: Array(10).fill(""),
+          categories: Array(10).fill(""),
+          info: "",
+        };
+      } catch (error) {
+        console.error("Error adding competition:", error);
+        alert("Failed to add competition. Check console for details.");
+      }
     },
   },
 };

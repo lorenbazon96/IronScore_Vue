@@ -10,9 +10,9 @@
           />
         </div>
         <div class="user-info mb-3 border-top pt-2">
-          <router-link to="/edit-account" class="edit d-block mb-2"
-            >Edit Account</router-link
-          >
+          <router-link to="/edit-account" class="edit d-block mb-2">
+            Edit Account
+          </router-link>
           <p><strong>Name:</strong> {{ userStore.name }}</p>
           <p><strong>Surname:</strong> {{ userStore.surname }}</p>
           <p><strong>Email:</strong> {{ userStore.email }}</p>
@@ -39,8 +39,9 @@
           <router-link
             to="/"
             class="btn btn-link text-warning fw-bold p-0 logout-link"
-            >Log Out</router-link
           >
+            Log Out
+          </router-link>
         </header>
 
         <section class="container-fluid">
@@ -50,53 +51,24 @@
               <div class="card bg-dark text-white p-4">
                 <h5 class="fw-bold text-uppercase mb-4">Goal List</h5>
 
-                <div class="mb-4">
+                <div v-for="goal in goals" :key="goal.id" class="mb-4">
                   <div class="form-check">
                     <input
                       class="form-check-input"
                       type="checkbox"
-                      checked
-                      disabled
+                      v-model="goal.completed"
+                      @change="toggleGoal(goal.id, goal.completed)"
                     />
-                    <label class="form-check-label fw-bold text-white"
-                      >Increase muscle mass by 5 kg in 12 weeks</label
-                    >
+                    <label class="form-check-label fw-bold text-white">
+                      {{ goal.title }}
+                    </label>
                   </div>
                   <p class="text-white-50 mb-0">
-                    Focus on hypertrophy training with progressive overload to
-                    gain 5 kilograms of lean muscle.
-                  </p>
-                </div>
-
-                <div class="mb-4">
-                  <div class="form-check">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      checked
-                      disabled
-                    />
-                    <label class="form-check-label fw-bold text-white"
-                      >Reduce body fat from 15% to 10% in 8 weeks</label
-                    >
-                  </div>
-                  <p class="text-white-50 mb-0">
-                    Implement a cutting phase with calorie deficit and cardio to
-                    enhance muscle definition.
-                  </p>
-                </div>
-
-                <div class="mb-1">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" />
-                    <label class="form-check-label fw-bold text-white"
-                      >Achieve a 150 kg squat within 16 weeks</label
-                    >
-                  </div>
-                  <p class="text-white-50 mb-1">
-                    Follow a structured strength program to progressively build
-                    lower body power.
-                    <span class="text-danger ms-2" style="cursor: pointer"
+                    {{ goal.description }}
+                    <span
+                      class="text-danger ms-2"
+                      style="cursor: pointer"
+                      @click="removeGoal(goal.id)"
                       >Remove</span
                     >
                   </p>
@@ -111,6 +83,7 @@
                   <input
                     type="text"
                     class="form-control"
+                    v-model="newGoal.title"
                     placeholder="Held a plank 10 minutes..."
                   />
                 </div>
@@ -118,10 +91,11 @@
                   <input
                     type="text"
                     class="form-control"
+                    v-model="newGoal.description"
                     placeholder="how..."
                   />
                 </div>
-                <button class="btn btn-dark w-100">Add</button>
+                <button class="btn btn-dark w-100" @click="addGoal">Add</button>
               </div>
             </div>
           </div>
@@ -133,15 +107,59 @@
 
 <script>
 import { useUserStore } from "@/stores/user";
+import { db } from "@/firebase";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
+
 export default {
   name: "Goals",
-
   data() {
-    return {};
+    return {
+      goals: [],
+      newGoal: { title: "", description: "", completed: false },
+    };
   },
   computed: {
     userStore() {
       return useUserStore();
+    },
+  },
+  async mounted() {
+    await this.fetchGoals();
+  },
+  methods: {
+    async fetchGoals() {
+      const querySnapshot = await getDocs(
+        collection(db, "users", this.userStore.uid, "goals")
+      );
+      this.goals = querySnapshot.docs.map((docSnap) => ({
+        id: docSnap.id,
+        ...docSnap.data(),
+      }));
+    },
+    async addGoal() {
+      if (!this.newGoal.title.trim()) return;
+      await addDoc(
+        collection(db, "users", this.userStore.uid, "goals"),
+        this.newGoal
+      );
+      this.newGoal = { title: "", description: "", completed: false };
+      await this.fetchGoals();
+    },
+    async removeGoal(id) {
+      await deleteDoc(doc(db, "users", this.userStore.uid, "goals", id));
+      await this.fetchGoals();
+    },
+    async toggleGoal(id, completed) {
+      await updateDoc(doc(db, "users", this.userStore.uid, "goals", id), {
+        completed,
+      });
     },
   },
 };
