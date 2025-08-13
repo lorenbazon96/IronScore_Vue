@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
     <div class="row min-vh-100">
-      <aside class="col-12 col-md-3 sidebar bg-dark text-white p-3">
+      <aside class="col-12 col-md-3 sidebar bg-darka text-white p-3">
         <div class="logo mb-3">
           <img
             src="@/assets/logo-t.png"
@@ -137,7 +137,10 @@
               </ul>
             </div>
 
-            <button class="btn btn-warning w-100 fw-bold mt-3">
+            <button
+              class="btn btn-warning w-100 fw-bold mt-3"
+              @click="saveTraining"
+            >
               Finish and save training
             </button>
           </div>
@@ -149,6 +152,10 @@
 
 <script>
 import { useUserStore } from "@/stores/user";
+import { db } from "@/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+
 export default {
   name: "TrainingD",
   data() {
@@ -654,6 +661,7 @@ export default {
         },
       ],
       selectedExercises: [],
+      saving: false,
     };
   },
   computed: {
@@ -689,10 +697,44 @@ export default {
     exercisesByGroupInSelection(group) {
       return this.selectedExercises.filter((ex) => ex.group === group);
     },
-  },
-  computed: {
-    userStore() {
-      return useUserStore();
+    async saveTraining() {
+      try {
+        if (!this.trainingName?.trim()) return alert("Upiši naziv treninga.");
+        if (!this.selectedExercises?.length)
+          return alert("Dodaj barem jednu vježbu.");
+
+        const uid = getAuth().currentUser?.uid;
+        if (!uid) return alert("Moraš biti prijavljen.");
+
+        this.saving = true;
+
+        const docRef = await addDoc(collection(db, "users", uid, "trainings"), {
+          type: "daily",
+          name: this.trainingName.trim(),
+          exercises: this.selectedExercises.map((e) => ({
+            name: e.name,
+            sets: Number(e.sets),
+            reps: Number(e.reps),
+            group: e.group,
+          })),
+          userId: uid,
+          userEmail: this.userStore?.email || "",
+          createdAt: serverTimestamp(),
+        });
+
+        this.trainingName = "";
+        this.selectedExercises = [];
+        alert(`Trening spremljen! (ID: ${docRef.id})`);
+      } catch (e) {
+        console.error("Firestore error:", e);
+        alert(
+          `Došlo je do greške pri spremanju treninga: ${
+            e.code || e.message || "unknown"
+          }`
+        );
+      } finally {
+        this.saving = false;
+      }
     },
   },
 };
@@ -826,5 +868,9 @@ export default {
 
 .edit {
   color: #ffc107;
+}
+
+.bg-darka {
+  background-color: #000 !important;
 }
 </style>

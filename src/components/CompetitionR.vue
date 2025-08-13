@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
     <div class="row min-vh-100">
-      <aside class="col-12 col-md-3 sidebar bg-dark text-white p-3">
+      <aside class="col-12 col-md-3 sidebar bg-darka text-white p-3">
         <div class="logo">
           <img src="@/assets/logo-t.png" alt="IronScore Logo" />
         </div>
@@ -240,5 +240,9 @@ section p,
 section ul {
   font-size: 14px;
   color: #fff;
+}
+
+.bg-darka {
+  background-color: #000 !important;
 }
 </style>

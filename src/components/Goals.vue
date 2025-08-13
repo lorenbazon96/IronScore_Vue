@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
     <div class="row min-vh-100">
-      <aside class="sidebar col-12 col-md-3 bg-dark text-white p-3">
+      <aside class="sidebar col-12 col-md-3 bg-darka text-white p-3">
         <div class="logo mb-3">
           <img
             src="@/assets/logo-t.png"
@@ -222,5 +222,9 @@ export default {
 
 .edit {
   color: #ffc107;
+}
+
+.bg-darka {
+  background-color: #000 !important;
 }
 </style>

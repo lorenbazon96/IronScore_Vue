@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
     <div class="row min-vh-100">
-      <aside class="col-12 col-md-3 sidebar bg-dark text-white p-3">
+      <aside class="col-12 col-md-3 sidebar bg-darka text-white p-3">
         <div class="logo mb-3">
           <img
             src="@/assets/logo-t.png"
@@ -148,7 +148,10 @@
                 </ul>
               </div>
             </div>
-            <button class="btn btn-warning w-100 fw-bold mt-3">
+            <button
+              class="btn btn-warning w-100 fw-bold mt-3"
+              @click="saveTraining"
+            >
               Finish and save training
             </button>
           </div>
@@ -160,6 +163,10 @@
 
 <script>
 import { useUserStore } from "@/stores/user";
+import { db } from "@/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+
 export default {
   name: "TrainingW",
   data() {
@@ -674,6 +681,7 @@ export default {
         },
       ],
       selectedExercises: [],
+      saving: false,
     };
   },
   computed: {
@@ -725,6 +733,84 @@ export default {
       return this.selectedExercises.filter(
         (ex) => ex.day === day && ex.group === group
       );
+    },
+
+    async saveTraining() {
+      try {
+        if (!this.trainingName?.trim()) return alert("Upiši naziv treninga.");
+        if (!this.selectedExercises?.length)
+          return alert("Dodaj barem jednu vježbu.");
+
+        const uid = getAuth().currentUser?.uid;
+        if (!uid) return alert("Moraš biti prijavljen.");
+
+        this.saving = true;
+
+        const plan = {};
+        this.days.forEach((day) => {
+          const dayItems = this.selectedExercises.filter(
+            (ex) => ex.day === day
+          );
+          if (!dayItems.length) return;
+          const byGroup = {};
+          dayItems.forEach((ex) => {
+            (byGroup[ex.group] ||= []).push({
+              name: ex.name,
+              sets: Number(ex.sets),
+              reps: Number(ex.reps),
+            });
+          });
+          plan[day] = byGroup;
+        });
+
+        const docRef = await addDoc(collection(db, "users", uid, "trainings"), {
+          type: "weekly",
+          name: this.trainingName.trim(),
+          plan,
+          flatExercises: this.selectedExercises.map((e) => ({
+            name: e.name,
+            sets: Number(e.sets),
+            reps: Number(e.reps),
+            group: e.group,
+            day: e.day,
+          })),
+          userId: uid,
+          userEmail: this.userStore?.email || "",
+          createdAt: serverTimestamp(),
+        });
+
+        this.trainingName = "";
+        this.selectedExercises = [];
+        alert(`Trening spremljen! (ID: ${docRef.id})`);
+      } catch (e) {
+        console.error("Firestore error:", e);
+        alert(
+          `Došlo je do greške pri spremanju treninga: ${
+            e.code || e.message || "unknown"
+          }`
+        );
+      } finally {
+        this.saving = false;
+      }
+    },
+
+    _buildWeeklyPlan() {
+      const plan = {};
+      this.days.forEach((day) => {
+        const dayItems = this.selectedExercises.filter((ex) => ex.day === day);
+        if (dayItems.length === 0) return;
+        const byGroup = {};
+        dayItems.forEach((ex) => {
+          if (!byGroup[ex.group]) byGroup[ex.group] = [];
+          byGroup[ex.group].push({
+            name: ex.name,
+            sets: ex.sets,
+            reps: ex.reps,
+          });
+        });
+        plan[day] = byGroup;
+      });
+      return plan;
     },
   },
 };
@@ -864,5 +950,9 @@ export default {
 
 .edit {
   color: #ffc107;
+}
+
+.bg-darka {
+  background-color: #000 !important;
 }
 </style>

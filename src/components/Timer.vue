@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
     <div class="row min-vh-100">
-      <aside class="col-12 col-md-3 sidebar bg-dark text-white p-3">
+      <aside class="col-12 col-md-3 sidebar bg-darka text-white p-3">
         <div class="logo mb-3">
           <img
             src="@/assets/logo-t.png"
@@ -13,10 +13,10 @@
           <router-link to="/edit-account" class="edit d-block mb-2"
             >Edit Account</router-link
           >
-          <p><strong>Name:</strong> Example</p>
-          <p><strong>Surname:</strong> Example</p>
-          <p><strong>Email:</strong> example@gmail.com</p>
-          <p><strong>Age:</strong> 25</p>
+          <p><strong>Name:</strong> {{ userStore.name }}</p>
+          <p><strong>Surname:</strong> {{ userStore.surname }}</p>
+          <p><strong>Email:</strong> {{ userStore.email }}</p>
+          <p><strong>Age:</strong> {{ userStore.age }}</p>
         </div>
         <nav class="menu d-flex flex-column gap-2">
           <router-link to="/dashboard" class="menu-item">Dashboard</router-link>
@@ -63,43 +63,62 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed, watch } from "vue";
+<script>
+import { useUserStore } from "@/stores/user";
 
-const inputMinutes = ref(0);
-const inputSeconds = ref(30);
-const totalSeconds = ref(30);
-const timer = ref(null);
-const isRunning = ref(false);
-
-const formattedTime = computed(() => {
-  const min = String(Math.floor(totalSeconds.value / 60)).padStart(2, "0");
-  const sec = String(totalSeconds.value % 60).padStart(2, "0");
-  return `${min}:${sec}`;
-});
-
-function setTime() {
-  totalSeconds.value = inputMinutes.value * 60 + inputSeconds.value;
-}
-
-function startTimer() {
-  if (isRunning.value || totalSeconds.value <= 0) return;
-  isRunning.value = true;
-  timer.value = setInterval(() => {
-    if (totalSeconds.value > 0) {
-      totalSeconds.value--;
-    } else {
-      clearInterval(timer.value);
-      isRunning.value = false;
-    }
-  }, 1000);
-}
-
-function resetTimer() {
-  clearInterval(timer.value);
-  isRunning.value = false;
-  setTime();
-}
+export default {
+  name: "Timer",
+  data() {
+    return {
+      inputMinutes: 0,
+      inputSeconds: 30,
+      totalSeconds: 30,
+      timer: null,
+      isRunning: false,
+    };
+  },
+  computed: {
+    formattedTime() {
+      const min = String(Math.floor(this.totalSeconds / 60)).padStart(2, "0");
+      const sec = String(this.totalSeconds % 60).padStart(2, "0");
+      return `${min}:${sec}`;
+    },
+    userStore() {
+      return useUserStore();
+    },
+  },
+  methods: {
+    setTime() {
+      const mins = Number(this.inputMinutes) || 0;
+      const secs = Number(this.inputSeconds) || 0;
+      this.totalSeconds = Math.max(0, mins * 60 + secs);
+    },
+    startTimer() {
+      if (this.isRunning || this.totalSeconds <= 0) return;
+      this.isRunning = true;
+      this.timer = setInterval(() => {
+        if (this.totalSeconds > 0) {
+          this.totalSeconds--;
+        } else {
+          clearInterval(this.timer);
+          this.timer = null;
+          this.isRunning = false;
+        }
+      }, 1000);
+    },
+    resetTimer() {
+      if (this.timer) {
+        clearInterval(this.timer);
+        this.timer = null;
+      }
+      this.isRunning = false;
+      this.setTime();
+    },
+  },
+  beforeUnmount() {
+    if (this.timer) clearInterval(this.timer);
+  },
+};
 </script>
 
 <style scoped>
@@ -237,5 +256,9 @@ html {
 
 .edit {
   color: #ffc107;
+}
+
+.bg-darka {
+  background-color: #000 !important;
 }
 </style>

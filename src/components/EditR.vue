@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
     <div class="row min-vh-100">
-      <aside class="sidebar col-12 col-md-3 bg-dark text-white p-3">
+      <aside class="sidebar col-12 col-md-3 bg-darka text-white p-3">
         <div class="logo">
           <img src="@/assets/logo-t.png" alt="IronScore Logo" />
         </div>
@@ -275,5 +275,9 @@ textarea::placeholder {
 
 .edit {
   color: #ffc107;
+}
+
+.bg-darka {
+  background-color: #000 !important;
 }
 </style>
