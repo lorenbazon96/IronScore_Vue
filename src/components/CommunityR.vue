@@ -10,7 +10,7 @@
           />
         </div>
         <div class="user-info border-top pt-2 mb-3">
-          <router-link to="/edit-r-account" class="edit d-block mb-2"
+          <router-link to="/edit-account" class="edit d-block mb-2"
             >Edit Account</router-link
           >
           <p><strong>Name:</strong> {{ userStore.name }}</p>
@@ -19,79 +19,81 @@
           <p><strong>Age:</strong> {{ userStore.age }}</p>
         </div>
         <nav class="menu d-flex flex-column gap-2">
-          <router-link to="/competitionsr" class="menu-item"
+          <router-link to="/dashboard" class="menu-item">Dashboard</router-link>
+          <router-link to="/competitions" class="menu-item"
             >competitions</router-link
           >
-          <router-link to="/communityfr" class="menu-item active-item"
+          <router-link to="/community" class="menu-item active-item"
             >Community</router-link
           >
+          <router-link to="/timer" class="menu-item">Timer</router-link>
+          <router-link to="/trainings" class="menu-item">Trainings</router-link>
         </nav>
       </aside>
 
-      <main class="col-12 col-md-9 community-content p-4 bg-black text-white">
+      <main class="col-12 col-md-9 community-content">
         <header class="community-header">
-          <h2 class="title">Community</h2>
+          <h2 class="title text-warning fw-bold text-uppercase mb-2 mb-md-0">
+            Community
+          </h2>
           <router-link
             to="/"
             class="btn btn-link text-warning fw-bold p-0 logout-link"
+            >Log Out</router-link
           >
-            Log Out
-          </router-link>
         </header>
 
-        <section class="container-fluid px-0">
-          <div
-            v-for="(post, index) in posts"
-            :key="index"
-            class="post bg-dark text-white mb-3 p-3 rounded"
-          >
+        <div v-if="loading" class="text-white">Loading…</div>
+        <div v-else-if="notFound" class="text-white">Post not found.</div>
+
+        <div v-else-if="post" class="text-white bg-black p-0">
+          <div class="bg-dark p-3 rounded mb-4">
             <strong>{{ post.author }}</strong>
             <p class="mb-1">{{ post.content }}</p>
             <small>{{ post.timestamp }}</small>
-
-            <div
-              v-for="(comment, cIndex) in post.comments"
-              :key="cIndex"
-              class="comment-box mt-3 p-3"
-            >
-              <strong>{{ comment.author }}</strong>
-              <p class="mb-1">{{ comment.text }}</p>
-              <small>{{ comment.timestamp }}</small>
-
-              <div class="d-flex align-items-center mt-2 gap-3">
-                <button
-                  class="btn btn-link text-white p-0"
-                  @click="likeComment(index, cIndex)"
-                >
-                  Like 👍
-                </button>
-                <span class="ms-auto">{{ comment.likes }} 👍</span>
-              </div>
-            </div>
-
-            <div class="d-flex align-items-center mt-2 gap-3">
-              <button
-                class="btn btn-link text-white p-0"
-                @click="likePost(index)"
-              >
-                Like 👍
+            <div class="mt-2 d-flex align-items-center gap-3">
+              <button @click="likePost" class="btn btn-link text-warning p-0">
+                {{ hasLikedPost() ? "Unlike 👎" : "Like 👍" }}
               </button>
-              <span class="ms-auto">{{ post.likes }} 👍</span>
+              <span>{{ postLikesCount() }} 👍</span>
             </div>
+          </div>
 
+          <div
+            v-for="(comment, cIndex) in post.comments"
+            :key="cIndex"
+            class="bg-secondary p-3 rounded mb-2"
+          >
+            <strong>{{ comment.author }}</strong>
+            <p class="mb-1">{{ comment.text }}</p>
+            <small>{{ comment.timestamp }}</small>
+            <div class="mt-2 d-flex align-items-center gap-3">
+              <button
+                @click="likeComment(cIndex)"
+                class="btn btn-link text-warning p-0"
+              >
+                {{ hasLikedComment(cIndex) ? "Unlike 👎" : "Like 👍" }}
+              </button>
+              <span>{{ commentLikesCount(cIndex) }} 👍</span>
+            </div>
+          </div>
+
+          <div class="mt-4">
             <input
-              v-model="newComments[index]"
+              v-model="newComment"
               type="text"
-              class="form-control form-control-sm mt-2"
+              class="form-control mb-2"
               placeholder="Type your comment..."
-              @keyup.enter="submitComment(index)"
+              @keyup.enter="submitComment"
             />
+            <button
+              @click="submitComment"
+              class="btn btn-warning fw-bold w-100"
+            >
+              Add new comment
+            </button>
           </div>
-
-          <div class="text-center mt-4">
-            <button class="btn btn-warning fw-bold">Add new comment</button>
-          </div>
-        </section>
+        </div>
       </main>
     </div>
   </div>
@@ -99,68 +101,150 @@
 
 <script>
 import { useUserStore } from "@/stores/user";
+import { db } from "@/firebase";
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+} from "firebase/firestore";
+import { useRoute } from "vue-router";
+
 export default {
   name: "CommunityR",
   data() {
     return {
-      posts: [
-        {
-          author: "Daniel Carter",
-          content:
-            "“What’s Your Biggest Gym Achievement This Month?” – Share your progress, whether it’s lifting heavier, improving form, or hitting a personal record!",
-          timestamp: "March 5, 2022, at 3:45 PM",
-          likes: 22,
-          comments: [
-            {
-              author: "Petra Horvat",
-              text: "I finally managed to do 5 proper pull-ups without assistance! 💪 A month ago, I could barely do one.",
-              timestamp: "March 6, 2022, at 9:12 AM",
-              likes: 0,
-            },
-            {
-              author: "Marko Perić",
-              text: "For the first time ever, I completed an entire HIIT session without a break! My cardio is way better than last month.",
-              timestamp: "March 8, 2022, at 6:30 PM",
-              likes: 0,
-            },
-            {
-              author: "Lucija Novak",
-              text: "Held a plank for 3 minutes and 15 seconds! A month ago, I could barely last one. Super proud of the progress 💥",
-              timestamp: "March 15, 2022, at 8:47 PM",
-              likes: 0,
-            },
-          ],
-        },
-      ],
-      newComments: [""],
+      post: null,
+      newComment: "",
+      loading: true,
+      notFound: false,
     };
-  },
-  methods: {
-    likePost(index) {
-      this.posts[index].likes++;
-    },
-    likeComment(postIndex, commentIndex) {
-      this.posts[postIndex].comments[commentIndex].likes++;
-    },
-    submitComment(index) {
-      const commentText = this.newComments[index].trim();
-      if (commentText) {
-        this.posts[index].comments.push({
-          author: "You",
-          text: commentText,
-          timestamp: new Date().toLocaleString("en-US", {
-            dateStyle: "medium",
-            timeStyle: "short",
-          }),
-          likes: 0,
-        });
-        this.newComments[index] = "";
-      }
-    },
   },
   computed: {
     userStore() {
       return useUserStore();
+    },
+    userKey() {
+      return this.userStore?.uid || this.userStore?.email || "anonymous";
+    },
+  },
+  async mounted() {
+    const route = useRoute();
+    const postId = route.query.id;
+    if (!postId) {
+      this.loading = false;
+      this.notFound = true;
+      return;
+    }
+
+    try {
+      const ref = doc(db, "posts", postId);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        this.notFound = true;
+      } else {
+        const data = snap.data();
+        this.post = {
+          id: snap.id,
+          author: data.author || "",
+          content: data.content || "",
+
+          likesBy: Array.isArray(data.likesBy)
+            ? data.likesBy
+            : data.likes
+            ? Array(data.likes).fill("legacy")
+            : [],
+          comments: Array.isArray(data.comments)
+            ? data.comments.map((c) => ({
+                author: c.author || "",
+                text: c.text || "",
+                timestamp: c.timestamp || "",
+                likesBy: Array.isArray(c.likesBy)
+                  ? c.likesBy
+                  : typeof c.likes === "number"
+                  ? Array(c.likes).fill("legacy")
+                  : [],
+              }))
+            : [],
+          timestamp: data.timestamp
+            ? data.timestamp.toDate().toLocaleString()
+            : "",
+        };
+      }
+    } catch (e) {
+      console.error(e);
+      this.notFound = true;
+    } finally {
+      this.loading = false;
+    }
+  },
+  methods: {
+    postLikesCount() {
+      return this.post?.likesBy?.length || 0;
+    },
+    commentLikesCount(cIndex) {
+      return this.post?.comments?.[cIndex]?.likesBy?.length || 0;
+    },
+    hasLikedPost() {
+      return this.post?.likesBy?.includes(this.userKey);
+    },
+    hasLikedComment(cIndex) {
+      const c = this.post?.comments?.[cIndex];
+      return c?.likesBy?.includes(this.userKey);
+    },
+
+    async likePost() {
+      if (!this.post) return;
+      const ref = doc(db, "posts", this.post.id);
+      const already = this.hasLikedPost();
+
+      if (already) {
+        await updateDoc(ref, { likesBy: arrayRemove(this.userKey) });
+        this.post.likesBy = this.post.likesBy.filter((u) => u !== this.userKey);
+      } else {
+        await updateDoc(ref, { likesBy: arrayUnion(this.userKey) });
+        this.post.likesBy = [...this.post.likesBy, this.userKey];
+      }
+    },
+
+    async likeComment(cIndex) {
+      if (!this.post) return;
+      const ref = doc(db, "posts", this.post.id);
+
+      const updated = this.post.comments.map((c, i) => {
+        if (i !== cIndex) return c;
+        const liked = c.likesBy?.includes(this.userKey);
+        const likesBy = liked
+          ? c.likesBy.filter((u) => u !== this.userKey)
+          : [...(c.likesBy || []), this.userKey];
+        return { ...c, likesBy };
+      });
+
+      await updateDoc(ref, { comments: updated });
+      this.post.comments = updated;
+    },
+
+    async submitComment() {
+      const text = this.newComment.trim();
+      if (!text || !this.post) return;
+
+      const newC = {
+        author:
+          `${this.userStore.name} ${this.userStore.surname}`.trim() ||
+          "Anonymous",
+        text,
+        timestamp: new Date().toLocaleString(),
+        likesBy: [],
+      };
+
+      const ref = doc(db, "posts", this.post.id);
+
+      const updated = [...this.post.comments, newC];
+      await updateDoc(ref, { comments: updated });
+
+      this.post.comments = updated;
+      this.newComment = "";
     },
   },
 };
