@@ -49,10 +49,10 @@
 
         <section class="post-list">
           <router-link
-            v-for="(post, index) in posts"
-            :key="index"
-            :to="`/communityp?id=${index}`"
-            class="single-post text-decoration-none text-white"
+            v-for="post in posts"
+            :key="post.id"
+            :to="`/communityp?id=${post.id}`"
+            class="single-post"
           >
             <div class="post-author">{{ post.author }}</div>
             <div class="post-content">"{{ post.content }}"</div>
@@ -60,15 +60,16 @@
           </router-link>
         </section>
 
-        <div>
-          <input
-            type="text"
-            placeholder="Insert new post"
-            class="new-post mt-5"
-          />
-        </div>
+        <input
+          type="text"
+          placeholder="Insert new post"
+          class="new-post mt-5"
+          v-model="newPostContent"
+        />
         <div class="add-post-button-wrapper">
-          <button class="btn btn-warning fw-bold w-100">Add new post</button>
+          <button class="btn btn-warning fw-bold w-100" @click="addPost">
+            Add new post
+          </button>
         </div>
       </main>
     </div>
@@ -77,53 +78,58 @@
 
 <script>
 import { useUserStore } from "@/stores/user";
+import { db } from "@/firebase";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  serverTimestamp,
+  query,
+  orderBy,
+  onSnapshot,
+  doc,
+} from "firebase/firestore";
+import { useRoute } from "vue-router";
+
 export default {
   name: "CommunityF",
   data() {
     return {
-      posts: [
-        {
-          author: "Daniel Carter",
-          content:
-            "What’s Your Biggest Gym Achievement This Month? – Share your progress, whether it’s lifting heavier, improving form, or hitting a personal record!",
-          timestamp: "March 5, 2022, at 3:45 PM",
-        },
-        {
-          author: "Emily Dawson",
-          content:
-            "Pre-Workout Rituals: What Gets You in the Zone? – Share your go-to warm-ups, favorite playlists, or supplements that boost your performance.",
-          timestamp: "July 18, 2019, at 10:30 AM",
-        },
-        {
-          author: "Michael Novak",
-          content:
-            "Struggles & Comebacks: How Did You Overcome a Training Plateau? – Inspire others by sharing how you pushed through stagnation and kept making gains!",
-          timestamp: "November 2, 2023, at 8:15 PM",
-        },
-        {
-          author: "Tina Šarić",
-          content:
-            "Which gym app do you use to track your progress? Looking for good suggestions that are beginner-friendly!",
-          timestamp: "February 12, 2024, at 5:45 PM",
-        },
-        {
-          author: "Ivan Petrov",
-          content:
-            "How do you manage recovery? I started foam rolling and it’s made a huge difference after leg day!",
-          timestamp: "May 3, 2023, at 9:12 AM",
-        },
-        {
-          author: "Sandra Vuković",
-          content:
-            "Nutrition tips for building lean muscle? I’m trying to get stronger without bulking up too much.",
-          timestamp: "August 9, 2023, at 1:30 PM",
-        },
-      ],
+      posts: [],
+      newPostContent: "",
+      comments: [],
+      newComment: "",
     };
   },
   computed: {
     userStore() {
       return useUserStore();
+    },
+  },
+  async mounted() {
+    await this.fetchPosts();
+  },
+  methods: {
+    async fetchPosts() {
+      const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+      const querySnapshot = await getDocs(q);
+      this.posts = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+        timestamp: doc.data().timestamp?.toDate().toLocaleString() || "",
+      }));
+    },
+    async addPost() {
+      if (!this.newPostContent.trim()) return;
+
+      await addDoc(collection(db, "posts"), {
+        author: `${this.userStore.name} ${this.userStore.surname}`,
+        content: this.newPostContent,
+        timestamp: serverTimestamp(),
+      });
+
+      this.newPostContent = "";
+      await this.fetchPosts();
     },
   },
 };
@@ -192,6 +198,7 @@ export default {
 .post-author {
   font-weight: bold;
   margin-bottom: 10px;
+  text-align: left;
 }
 
 .post-content {
@@ -222,8 +229,7 @@ export default {
 .edit {
   color: #ffc107;
 }
-
 .bg-darka {
-  background-color: #000 !important;
+  background-color: black !important;
 }
 </style>
