@@ -19,15 +19,12 @@
           <p><strong>Age:</strong> {{ userStore.age }}</p>
         </div>
         <nav class="menu d-flex flex-column gap-2">
-          <router-link to="/dashboard" class="menu-item">Dashboard</router-link>
-          <router-link to="/competitions" class="menu-item"
+          <router-link to="/competitionsr" class="menu-item"
             >competitions</router-link
           >
-          <router-link to="/community" class="menu-item active-item"
+          <router-link to="/communityfr" class="menu-item active-item"
             >Community</router-link
           >
-          <router-link to="/timer" class="menu-item">Timer</router-link>
-          <router-link to="/trainings" class="menu-item">Trainings</router-link>
         </nav>
       </aside>
 

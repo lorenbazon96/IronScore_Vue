@@ -18,23 +18,24 @@
           <p><strong>Email:</strong> {{ userStore.email }}</p>
           <p><strong>Age:</strong> {{ userStore.age }}</p>
         </div>
-        <nav class="menu d-flex flex-column gap-2">
-          <router-link to="/dashboard" class="menu-item">Dashboard</router-link>
-          <router-link to="/competitions" class="menu-item"
+        <nav class="menu">
+          <router-link to="/competitionsr" class="menu-item"
             >competitions</router-link
           >
-          <router-link to="/community" class="menu-item active-item"
+          <router-link to="/communityfr" class="menu-item active-item"
             >Community</router-link
           >
-          <router-link to="/timer" class="menu-item">Timer</router-link>
-          <router-link to="/trainings" class="menu-item">Trainings</router-link>
         </nav>
       </aside>
 
-      <main class="col-12 col-md-9 community-content">
-        <header class="community-header">
+      <main
+        class="col-12 col-md-9 community-new-content p-4 bg-black text-white"
+      >
+        <header
+          class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4"
+        >
           <h2 class="title text-warning fw-bold text-uppercase mb-2 mb-md-0">
-            Community
+            COMMUNITY
           </h2>
           <router-link
             to="/"
@@ -43,56 +44,29 @@
           >
         </header>
 
-        <div v-if="loading" class="text-white">Loading…</div>
-        <div v-else-if="notFound" class="text-white">Post not found.</div>
-
-        <div v-else-if="post" class="text-white bg-black p-0">
-          <div class="bg-dark p-3 rounded mb-4">
-            <strong>{{ post.author }}</strong>
-            <p class="mb-1">{{ post.content }}</p>
-            <small>{{ post.timestamp }}</small>
-            <div class="mt-2 d-flex align-items-center gap-3">
-              <button @click="likePost" class="btn btn-link text-warning p-0">
-                {{ hasLikedPost() ? "Unlike 👎" : "Like 👍" }}
-              </button>
-              <span>{{ postLikesCount() }} 👍</span>
-            </div>
-          </div>
-
-          <div
-            v-for="(comment, cIndex) in post.comments"
-            :key="cIndex"
-            class="bg-secondary p-3 rounded mb-2"
+        <section class="post-list">
+          <router-link
+            v-for="post in posts"
+            :key="post.id"
+            :to="`/communitypr?id=${post.id}`"
+            class="single-post"
           >
-            <strong>{{ comment.author }}</strong>
-            <p class="mb-1">{{ comment.text }}</p>
-            <small>{{ comment.timestamp }}</small>
-            <div class="mt-2 d-flex align-items-center gap-3">
-              <button
-                @click="likeComment(cIndex)"
-                class="btn btn-link text-warning p-0"
-              >
-                {{ hasLikedComment(cIndex) ? "Unlike 👎" : "Like 👍" }}
-              </button>
-              <span>{{ commentLikesCount(cIndex) }} 👍</span>
-            </div>
-          </div>
+            <div class="post-author">{{ post.author }}</div>
+            <div class="post-content">"{{ post.content }}"</div>
+            <div class="post-date">{{ post.timestamp }}</div>
+          </router-link>
+        </section>
 
-          <div class="mt-4">
-            <input
-              v-model="newComment"
-              type="text"
-              class="form-control mb-2"
-              placeholder="Type your comment..."
-              @keyup.enter="submitComment"
-            />
-            <button
-              @click="submitComment"
-              class="btn btn-warning fw-bold w-100"
-            >
-              Add new comment
-            </button>
-          </div>
+        <input
+          type="text"
+          placeholder="Insert new post"
+          class="new-post mt-5"
+          v-model="newPostContent"
+        />
+        <div class="add-post-button-wrapper">
+          <button class="btn btn-warning fw-bold w-100" @click="addPost">
+            Add new post
+          </button>
         </div>
       </main>
     </div>
@@ -103,148 +77,56 @@
 import { useUserStore } from "@/stores/user";
 import { db } from "@/firebase";
 import {
+  collection,
+  getDocs,
+  addDoc,
+  serverTimestamp,
+  query,
+  orderBy,
+  onSnapshot,
   doc,
-  getDoc,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
 } from "firebase/firestore";
 import { useRoute } from "vue-router";
 
 export default {
-  name: "CommunityR",
+  name: "CommunityFR",
   data() {
     return {
-      post: null,
+      posts: [],
+      newPostContent: "",
+      comments: [],
       newComment: "",
-      loading: true,
-      notFound: false,
     };
   },
   computed: {
     userStore() {
       return useUserStore();
     },
-    userKey() {
-      return this.userStore?.uid || this.userStore?.email || "anonymous";
-    },
   },
   async mounted() {
-    const route = useRoute();
-    const postId = route.query.id;
-    if (!postId) {
-      this.loading = false;
-      this.notFound = true;
-      return;
-    }
-
-    try {
-      const ref = doc(db, "posts", postId);
-      const snap = await getDoc(ref);
-      if (!snap.exists()) {
-        this.notFound = true;
-      } else {
-        const data = snap.data();
-        this.post = {
-          id: snap.id,
-          author: data.author || "",
-          content: data.content || "",
-
-          likesBy: Array.isArray(data.likesBy)
-            ? data.likesBy
-            : data.likes
-            ? Array(data.likes).fill("legacy")
-            : [],
-          comments: Array.isArray(data.comments)
-            ? data.comments.map((c) => ({
-                author: c.author || "",
-                text: c.text || "",
-                timestamp: c.timestamp || "",
-                likesBy: Array.isArray(c.likesBy)
-                  ? c.likesBy
-                  : typeof c.likes === "number"
-                  ? Array(c.likes).fill("legacy")
-                  : [],
-              }))
-            : [],
-          timestamp: data.timestamp
-            ? data.timestamp.toDate().toLocaleString()
-            : "",
-        };
-      }
-    } catch (e) {
-      console.error(e);
-      this.notFound = true;
-    } finally {
-      this.loading = false;
-    }
+    await this.fetchPosts();
   },
   methods: {
-    postLikesCount() {
-      return this.post?.likesBy?.length || 0;
+    async fetchPosts() {
+      const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+      const querySnapshot = await getDocs(q);
+      this.posts = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+        timestamp: doc.data().timestamp?.toDate().toLocaleString() || "",
+      }));
     },
-    commentLikesCount(cIndex) {
-      return this.post?.comments?.[cIndex]?.likesBy?.length || 0;
-    },
-    hasLikedPost() {
-      return this.post?.likesBy?.includes(this.userKey);
-    },
-    hasLikedComment(cIndex) {
-      const c = this.post?.comments?.[cIndex];
-      return c?.likesBy?.includes(this.userKey);
-    },
+    async addPost() {
+      if (!this.newPostContent.trim()) return;
 
-    async likePost() {
-      if (!this.post) return;
-      const ref = doc(db, "posts", this.post.id);
-      const already = this.hasLikedPost();
-
-      if (already) {
-        await updateDoc(ref, { likesBy: arrayRemove(this.userKey) });
-        this.post.likesBy = this.post.likesBy.filter((u) => u !== this.userKey);
-      } else {
-        await updateDoc(ref, { likesBy: arrayUnion(this.userKey) });
-        this.post.likesBy = [...this.post.likesBy, this.userKey];
-      }
-    },
-
-    async likeComment(cIndex) {
-      if (!this.post) return;
-      const ref = doc(db, "posts", this.post.id);
-
-      const updated = this.post.comments.map((c, i) => {
-        if (i !== cIndex) return c;
-        const liked = c.likesBy?.includes(this.userKey);
-        const likesBy = liked
-          ? c.likesBy.filter((u) => u !== this.userKey)
-          : [...(c.likesBy || []), this.userKey];
-        return { ...c, likesBy };
+      await addDoc(collection(db, "posts"), {
+        author: `${this.userStore.name} ${this.userStore.surname}`,
+        content: this.newPostContent,
+        timestamp: serverTimestamp(),
       });
 
-      await updateDoc(ref, { comments: updated });
-      this.post.comments = updated;
-    },
-
-    async submitComment() {
-      const text = this.newComment.trim();
-      if (!text || !this.post) return;
-
-      const newC = {
-        author:
-          `${this.userStore.name} ${this.userStore.surname}`.trim() ||
-          "Anonymous",
-        text,
-        timestamp: new Date().toLocaleString(),
-        likesBy: [],
-      };
-
-      const ref = doc(db, "posts", this.post.id);
-
-      const updated = [...this.post.comments, newC];
-      await updateDoc(ref, { comments: updated });
-
-      this.post.comments = updated;
-      this.newComment = "";
+      this.newPostContent = "";
+      await this.fetchPosts();
     },
   },
 };
@@ -277,67 +159,74 @@ export default {
 .active-item {
   color: #ffc107 !important;
 }
-
-.community-content {
+.community-new-content {
   flex: 1;
-  padding: 30px;
+  padding: 40px 30px;
   background: #000;
+  color: #fff;
   overflow-y: auto;
-}
-
-.community-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  color: #ffc107;
-  text-transform: uppercase;
-  font-weight: 900;
 }
 
 .title {
   font-weight: bold;
-  color: #ffc107;
 }
 
-.post {
-  background-color: #222;
-  border-radius: 5px;
-}
 .logout-link {
   color: #ffc107 !important;
   font-size: 14px;
   text-transform: uppercase;
 }
-.post input[type="text"] {
-  background: #111;
-  color: #fff;
-  border: 1px solid #555;
+
+.post-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 10px;
 }
 
-.post small {
-  color: #aaa;
-}
-
-.post button {
-  font-size: 0.9rem;
-}
-.comment-box {
-  background-color: #111;
-  border: 1px solid #333;
+.single-post {
+  background-color: #222;
+  padding: 20px;
   border-radius: 5px;
-  color: #fff;
+}
+
+.post-author {
+  font-weight: bold;
+  margin-bottom: 10px;
   text-align: left;
 }
-.comment-box small {
+
+.post-content {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.post-date {
+  font-size: 13px;
   color: #aaa;
+}
+
+.add-post-button-wrapper {
+  margin-top: 40px;
+}
+
+.new-post {
+  background: rgb(30, 30, 30);
+  width: 100%;
+  min-height: 60px !important;
+  margin-top: 60px;
+  padding: 10px 10px;
+  color: #ffff;
+  font-size: 15px;
+  border: 50px;
 }
 
 .edit {
   color: #ffc107;
 }
-
 .bg-darka {
-  background-color: #000 !important;
+  background-color: black !important;
 }
 </style>

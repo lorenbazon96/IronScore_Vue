@@ -197,7 +197,7 @@ export default {
           (c) => c.trim() !== ""
         );
 
-        await addDoc(collection(db, "users", userId, "competitions"), {
+        await addDoc(collection(db, "competitions"), {
           name: this.competition.name,
           date: this.competition.date,
           location: this.competition.location,

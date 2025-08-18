@@ -144,11 +144,8 @@ export default {
   },
   methods: {
     async loadCompetitions() {
-      if (!this.userStore.uid) return;
       try {
-        const snapshot = await getDocs(
-          collection(db, "users", this.userStore.uid, "competitions")
-        );
+        const snapshot = await getDocs(collection(db, "competitions"));
         this.competitions = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),

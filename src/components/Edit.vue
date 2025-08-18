@@ -17,7 +17,6 @@
           <p><strong>Surname:</strong> {{ surname }}</p>
           <p><strong>Email:</strong> {{ email }}</p>
           <p><strong>Age:</strong> {{ age }}</p>
-          <p><strong>Account type:</strong> {{ type }}</p>
         </div>
 
         <nav class="menu d-flex flex-column gap-2">
@@ -121,6 +120,7 @@
 import { db, auth } from "@/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { updateEmail, sendEmailVerification } from "firebase/auth";
+import { useRouter } from "vue-router";
 
 export default {
   name: "Edit",
@@ -153,6 +153,15 @@ export default {
     } catch (err) {
       console.error("Greška pri dohvaćanju podataka:", err.message);
     }
+  },
+  setup() {
+    const router = useRouter();
+
+    router.afterEach((to, from) => {
+      if (to.fullPath !== from.fullPath) {
+        window.location.reload();
+      }
+    });
   },
   methods: {
     async updateUserData(e) {

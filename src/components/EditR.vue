@@ -9,11 +9,10 @@
           <router-link to="/edit-r-account" class="edit"
             >Edit Account</router-link
           >
-          <p><strong>Name:</strong> Example</p>
-          <p><strong>Surname:</strong> Example</p>
-          <p><strong>Email:</strong> example@gmail.com</p>
-          <p><strong>Age:</strong> 25</p>
-          <p><strong>Account type:</strong> Referee</p>
+          <p><strong>Name:</strong> {{ name }}</p>
+          <p><strong>Surname:</strong> {{ surname }}</p>
+          <p><strong>Email:</strong> {{ email }}</p>
+          <p><strong>Age:</strong> {{ age }}</p>
         </div>
         <nav class="menu">
           <router-link to="/competitionsr" class="menu-item"
@@ -26,8 +25,10 @@
       </aside>
 
       <main class="edit-content col-12 col-md-9 p-4 bg-black text-white">
-        <header class="d-flex justify-content-between align-items-center mb-4">
-          <h2 class="text-warning fw-bold text-uppercase">Edit Account</h2>
+        <header
+          class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 text-warning text-uppercase fw-bold"
+        >
+          <h2 class="mb-2 mb-md-0 title">Edit Account</h2>
           <router-link
             to="/"
             class="btn btn-link text-warning fw-bold p-0 logout-link"
@@ -39,14 +40,11 @@
           <div class="row justify-content-center">
             <div class="col-md-10">
               <div class="card text-white p-4 border border-secondary">
-                <form>
+                <form @submit="updateUserData">
                   <div class="mb-3">
-                    <label
-                      for="name"
-                      class="form-label d-flex align-items-start"
-                      >Name:</label
-                    >
+                    <label for="name" class="form-label">Name:</label>
                     <input
+                      v-model="name"
                       type="text"
                       class="form-control bg-dark text-white border-secondary"
                       id="name"
@@ -55,12 +53,9 @@
                   </div>
 
                   <div class="mb-3">
-                    <label
-                      for="surname"
-                      class="form-label d-flex align-items-start"
-                      >Surname:</label
-                    >
+                    <label for="surname" class="form-label">Surname:</label>
                     <input
+                      v-model="surname"
                       type="text"
                       class="form-control bg-dark text-white border-secondary"
                       id="surname"
@@ -69,12 +64,9 @@
                   </div>
 
                   <div class="mb-3">
-                    <label
-                      for="mail"
-                      class="form-label d-flex align-items-start"
-                      >Email:</label
-                    >
+                    <label for="mail" class="form-label">Email:</label>
                     <input
+                      v-model="email"
                       type="text"
                       class="form-control bg-dark text-white border-secondary"
                       id="mail"
@@ -83,10 +75,9 @@
                   </div>
 
                   <div class="mb-3">
-                    <label for="age" class="form-label d-flex align-items-start"
-                      >Age:</label
-                    >
+                    <label for="age" class="form-label">Age:</label>
                     <input
+                      v-model="age"
                       type="text"
                       class="form-control bg-dark text-white border-secondary"
                       id="age"
@@ -95,16 +86,13 @@
                   </div>
 
                   <div class="mb-3">
-                    <label
-                      for="type"
-                      class="form-label d-flex align-items-start"
-                      >Account type:</label
-                    >
+                    <label for="type" class="form-label">Account type:</label>
                     <input
+                      v-model="type"
                       type="text"
                       class="form-control bg-dark text-white border-secondary"
                       id="type"
-                      placeholder="Regular"
+                      placeholder="Referee"
                       disabled
                     />
                   </div>
@@ -123,6 +111,11 @@
 </template>
 
 <script>
+import { db, auth } from "@/firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { updateEmail, sendEmailVerification } from "firebase/auth";
+import { useRouter } from "vue-router";
+
 export default {
   name: "EditR",
   data() {
@@ -149,11 +142,20 @@ export default {
         this.surname = data.surname || "";
         this.email = data.email || "";
         this.age = data.age || "";
-        this.type = data.type || "";
+
+        this.type = data.type ?? "referee";
       }
     } catch (err) {
       console.error("Greška pri dohvaćanju podataka:", err.message);
     }
+  },
+  setup() {
+    const router = useRouter();
+    router.afterEach((to, from) => {
+      if (to.fullPath !== from.fullPath) {
+        window.location.reload();
+      }
+    });
   },
   methods: {
     async updateUserData(e) {
@@ -166,19 +168,11 @@ export default {
       }
 
       try {
-        const docRef = doc(db, "users", user.uid);
-        const existingDoc = await getDoc(docRef);
-        let existingRole = "regular";
-
-        if (existingDoc.exists()) {
-          const existingData = existingDoc.data();
-          existingRole = existingData.role || "regular";
-        }
-
         if (this.email !== user.email) {
           await updateEmail(user, this.email);
         }
 
+        const docRef = doc(db, "users", user.uid);
         await setDoc(
           docRef,
           {
@@ -186,7 +180,7 @@ export default {
             surname: this.surname,
             email: this.email,
             age: this.age,
-            type: this.type,
+            type: "referee",
           },
           { merge: true }
         );
@@ -242,16 +236,6 @@ export default {
   padding: 30px;
   background: #000;
   overflow-y: auto;
-}
-
-.edit-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  color: #ffc107;
-  text-transform: uppercase;
-  font-weight: 900;
 }
 
 .title {
