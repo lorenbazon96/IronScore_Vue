@@ -40,9 +40,8 @@
         </header>
 
         <h4 class="text-white text-uppercase fw-bold mb-4">
-          Ultimate Physique Championships
+          {{ competition?.name || "Competition" }}
         </h4>
-
         <div class="d-flex gap-4 flex-wrap">
           <div
             class="bg-white p-4 rounded text-black"
@@ -82,9 +81,9 @@
                   style="flex: 1"
                 >
                   <option disabled value="">Choose category</option>
-                  <option>Men's Physique</option>
-                  <option>Classic Bodybuilding</option>
-                  <option>Women's Figure</option>
+                  <option v-for="(cat, i) in categories" :key="i" :value="cat">
+                    {{ cat }}
+                  </option>
                 </select>
               </div>
               <button
@@ -125,8 +124,13 @@
         </div>
 
         <div class="mt-4 text-end">
-          <button class="btn btn-warning fw-bold px-4 py-2">
-            Finish and save grades
+          <button
+            class="btn btn-warning fw-bold px-4 py-2"
+            :disabled="saving || grades.length === 0"
+            @click="finishAndSave"
+          >
+            <span v-if="!saving">Finish and save grades</span>
+            <span v-else>Saving…</span>
           </button>
         </div>
       </main>
@@ -136,36 +140,201 @@
 
 <script>
 import { useUserStore } from "@/stores/user";
+import { getAuth } from "firebase/auth";
+import { db } from "@/firebase";
+import {
+  doc,
+  getDoc,
+  collection,
+  setDoc,
+  serverTimestamp,
+} from "firebase/firestore";
+
 export default {
   name: "Grade",
   data() {
     return {
-      competitors: Array.from({ length: 7 }, () => ({
-        grade: "",
-        category: "",
-      })),
+      competitionId: null,
+      competition: null,
+      categories: [],
+      fallbackCount: 7,
+      competitors: [],
       grades: [],
+      loading: true,
+      saving: false,
+      basePath: null,
     };
   },
   methods: {
+    async loadCompetition() {
+      this.loading = true;
+      try {
+        this.competitionId = this.$route.query.id || null;
+        if (!this.competitionId) {
+          console.warn("Grade: missing ?id in URL");
+          this.categories = [];
+          this.competitors = Array.from({ length: this.fallbackCount }, () => ({
+            grade: "",
+            category: "",
+          }));
+          this.basePath = null;
+          return;
+        }
+
+        let ref = doc(db, "competitions", this.competitionId);
+        let snap = await getDoc(ref);
+        let basePath = ["competitions", this.competitionId];
+
+        if (!snap.exists()) {
+          const { getAuth } = await import("firebase/auth");
+          const uid = getAuth().currentUser?.uid;
+          if (uid) {
+            ref = doc(db, "users", uid, "competitions", this.competitionId);
+            const subSnap = await getDoc(ref);
+            if (subSnap.exists()) {
+              snap = subSnap;
+              basePath = ["users", uid, "competitions", this.competitionId];
+            }
+          }
+        }
+
+        console.log(
+          "[Grade] using basePath =",
+          basePath.join("/"),
+          "exists =",
+          snap.exists()
+        );
+        this.basePath = basePath;
+
+        this.competition = snap.exists()
+          ? { id: snap.id, ...snap.data() }
+          : null;
+
+        this.categories = Array.isArray(this.competition?.categories)
+          ? this.competition.categories
+          : [];
+        const count =
+          typeof this.competition?.competitorsCount === "number" &&
+          this.competition.competitorsCount > 0
+            ? this.competition.competitorsCount
+            : this.fallbackCount;
+
+        this.competitors = Array.from({ length: count }, () => ({
+          grade: "",
+          category: "",
+        }));
+      } catch (e) {
+        console.error("Error loading competition:", e);
+        this.categories = [];
+        this.competitors = Array.from({ length: this.fallbackCount }, () => ({
+          grade: "",
+          category: "",
+        }));
+        this.basePath = null;
+      } finally {
+        this.loading = false;
+      }
+    },
     addGrade(index) {
       const comp = this.competitors[index];
-      if (!comp.grade || !comp.category) {
-        alert("Please fill in both grade and category.");
+      const gradeNum = Number(comp.grade);
+      if (!gradeNum || !comp.category) {
+        alert("Please fill in both grade (number) and category.");
         return;
       }
-      this.grades.push({ ...comp, index });
+
+      const existingIdx = this.grades.findIndex((g) => g.index === index);
+      const payload = { index, grade: gradeNum, category: comp.category };
+      if (existingIdx !== -1) this.grades.splice(existingIdx, 1, payload);
+      else this.grades.push(payload);
 
       this.competitors[index].grade = "";
       this.competitors[index].category = "";
     },
-    removeGrade(index) {
-      this.grades.splice(index, 1);
+    removeGrade(idx) {
+      this.grades.splice(idx, 1);
+    },
+    async finishAndSave() {
+      const auth = getAuth();
+      const uid = auth.currentUser?.uid;
+      if (!uid) {
+        alert("You must be logged in to save grades.");
+        return;
+      }
+      if (!Array.isArray(this.grades) || this.grades.length === 0) {
+        alert("Add at least one grade.");
+        return;
+      }
+
+      const compId =
+        (this.basePath && this.basePath[1]) ||
+        this?.competition?.id ||
+        this.competitionId;
+      if (!compId) {
+        alert("Competition id not resolved.");
+        return;
+      }
+
+      const sanitized = this.grades.map((g) => ({
+        index: Number(g.index),
+        grade: Number(g.grade),
+        category: (g.category ?? "").toString().trim(),
+      }));
+      const invalid = sanitized.filter(
+        (g) =>
+          Number.isNaN(g.index) ||
+          Number.isNaN(g.grade) ||
+          g.grade <= 0 ||
+          !g.category
+      );
+      if (invalid.length) {
+        alert("Some grades are invalid. Check numbers and categories.");
+        return;
+      }
+
+      this.saving = true;
+      try {
+        const gradesCol = collection(db, "competitions", compId, "grades");
+
+        await Promise.all(
+          sanitized.map((g) =>
+            setDoc(
+              doc(gradesCol, `${uid}_${g.index}`),
+              {
+                judgeId: uid,
+                competitionId: compId,
+                competitorIndex: g.index,
+                category: g.category,
+                grade: g.grade,
+                updatedAt: serverTimestamp(),
+              },
+              { merge: true }
+            )
+          )
+        );
+
+        alert("Grades saved successfully.");
+      } catch (e) {
+        console.error("[SAVE] Firestore error:", e);
+        alert(`Failed to save grades: ${e?.message || e}`);
+      } finally {
+        this.saving = false;
+      }
     },
   },
   computed: {
     userStore() {
       return useUserStore();
+    },
+  },
+  mounted() {
+    console.log("[Grade] route.query.id =", this.$route.query.id);
+    this.loadCompetition();
+  },
+  watch: {
+    "$route.query.id"(n) {
+      console.log("[Grade] query id changed ->", n);
+      if (n) this.loadCompetition();
     },
   },
 };

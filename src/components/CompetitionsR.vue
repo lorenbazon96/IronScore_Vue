@@ -10,7 +10,7 @@
           />
         </div>
         <div class="user-info border-top pt-2 mb-3">
-          <router-link to="/edit-r-account" class="edit d-block mb-2"
+          <router-link to="/edit-account" class="edit d-block mb-2"
             >Edit Account</router-link
           >
           <p><strong>Name:</strong> {{ userStore.name }}</p>
@@ -60,7 +60,10 @@
                           :key="competition.id"
                           class="d-flex justify-content-between align-items-start border-bottom py-2"
                         >
-                          <div class="d-flex align-items-start">
+                          <router-link
+                            :to="`/competitionr?id=${competition.id}`"
+                            class="d-flex align-items-start text-decoration-none text-black w-100"
+                          >
                             <span class="me-2">
                               <i
                                 :class="{
@@ -80,7 +83,7 @@
                                 Location: {{ competition.location }}
                               </small>
                             </div>
-                          </div>
+                          </router-link>
                         </div>
                         <div
                           v-if="sortedCompetitions.length === 0"
@@ -201,14 +204,14 @@ export default {
 .menu {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px;
 }
 
 .menu-item {
   color: #ffffff;
   font-weight: bold;
   text-decoration: none;
-  font-size: 20px;
+  font-size: 10px;
   text-transform: uppercase;
 }
 
@@ -237,6 +240,14 @@ export default {
   width: 10em;
   height: auto;
   margin-bottom: 20px;
+}
+
+.menu-item {
+  color: #ffffff;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 20px;
+  text-transform: uppercase;
 }
 
 .edit {
