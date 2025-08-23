@@ -10,7 +10,7 @@
           />
         </div>
         <div class="user-info border-top pt-2 mb-3">
-          <router-link to="/edit-account" class="edit d-block mb-2"
+          <router-link to="/edit-r-account" class="edit d-block mb-2"
             >Edit Account</router-link
           >
           <p><strong>Name:</strong> {{ userStore.name }}</p>
@@ -256,5 +256,12 @@ export default {
 
 .bg-darka {
   background-color: #000 !important;
+}
+
+.card-body {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  max-height: 80vh;
 }
 </style>

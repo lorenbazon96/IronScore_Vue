@@ -152,6 +152,11 @@ const routes = [
     name: "results",
     component: () => import("@/views/ResultsView.vue"),
   },
+  {
+    path: "/competition",
+    name: "competition",
+    component: () => import("@/views/CompetitionView.vue"),
+  },
 ];
 
 const router = createRouter({

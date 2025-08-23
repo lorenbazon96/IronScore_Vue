@@ -19,20 +19,6 @@
                 Create an Account
               </button>
             </router-link>
-            <router-link to="/dashboard">
-              <button class="btn btn-custom btn-lg sirina-b mb-3">
-                Dashboard
-              </button>
-            </router-link>
-            <button class="btn btn-light btn-lg sirina-b btn-g">
-              <img
-                src="@/assets/google-color-svgrepo-com.svg"
-                width="20"
-                class="me-2"
-                alt="Google logo"
-              />
-              Continue with Google
-            </button>
           </div>
         </div>
 

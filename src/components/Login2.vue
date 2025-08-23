@@ -78,6 +78,9 @@ export default {
         alert("Neuspješna prijava: " + error.message);
       }
     },
+    goBack() {
+      this.$router.go(-1);
+    },
   },
 };
 </script>

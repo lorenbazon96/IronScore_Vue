@@ -59,9 +59,12 @@
                         <div
                           v-for="competition in sortedCompetitions"
                           :key="competition.id"
-                          class="d-flex justify-content-between align-items-start border-bottom py-2"
+                          class="border-bottom py-2"
                         >
-                          <div class="d-flex align-items-start">
+                          <router-link
+                            :to="`/competition?id=${competition.id}`"
+                            class="d-flex align-items-start text-decoration-none text-black w-100"
+                          >
                             <span class="me-2">
                               <i
                                 :class="{
@@ -81,8 +84,9 @@
                                 Location: {{ competition.location }}
                               </small>
                             </div>
-                          </div>
+                          </router-link>
                         </div>
+
                         <div
                           v-if="sortedCompetitions.length === 0"
                           class="text-center py-4"
@@ -124,8 +128,7 @@
 <script>
 import { useUserStore } from "@/stores/user";
 import { db } from "@/firebase";
-import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { collection, getDocs } from "firebase/firestore";
 
 export default {
   name: "Competitions",
@@ -162,25 +165,6 @@ export default {
     formatDate(date) {
       const options = { year: "numeric", month: "long", day: "numeric" };
       return new Date(date).toLocaleDateString(undefined, options);
-    },
-    async fetchCompetitions() {
-      try {
-        const auth = getAuth();
-        const userId = auth.currentUser?.uid;
-        if (!userId) {
-          console.warn("User not logged in");
-          return;
-        }
-        const competitionsCol = collection(db, "users", userId, "competitions");
-
-        const snapshot = await getDocs(competitionsCol);
-        this.competitions = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-      } catch (error) {
-        console.error("Error fetching competitions:", error);
-      }
     },
   },
   mounted() {
@@ -246,5 +230,12 @@ export default {
 
 .bg-darka {
   background-color: #000 !important;
+}
+
+.card-body {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  max-height: 80vh;
 }
 </style>

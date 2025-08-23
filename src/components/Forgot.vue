@@ -42,7 +42,7 @@ export default {
       try {
         await sendPasswordResetEmail(auth, this.email);
         alert("Email za resetiranje lozinke je poslan.");
-        this.email = ""; // očisti polje
+        this.email = "";
       } catch (error) {
         console.error("Greška pri slanju emaila:", error.message);
         alert("Greška: " + error.message);

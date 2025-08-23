@@ -56,6 +56,14 @@
           We may update this Privacy Policy occasionally. Users will be notified
           of significant changes.
         </p>
+
+        <p><strong>8. Customer Support</strong></p>
+        <p>
+          For questions about this Privacy Policy or any other support needs,
+          contact us at
+          <a :href="supportMailTo">{{ supportEmail }}</a
+          >.
+        </p>
       </div>
     </div>
   </div>
@@ -64,6 +72,19 @@
 <script>
 export default {
   name: "PrivacyPolicy",
+  data() {
+    return {
+      supportEmail: "support@ironscore.app",
+    };
+  },
+  computed: {
+    supportMailTo() {
+      const subject = "IronScore Support – Privacy Policy";
+      return `mailto:${this.supportEmail}?subject=${encodeURIComponent(
+        subject
+      )}`;
+    },
+  },
   methods: {
     goBack() {
       this.$router.go(-1);

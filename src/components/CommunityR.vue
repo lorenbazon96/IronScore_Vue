@@ -10,7 +10,7 @@
           />
         </div>
         <div class="user-info border-top pt-2 mb-3">
-          <router-link to="/edit-account" class="edit d-block mb-2"
+          <router-link to="/edit-r-account" class="edit d-block mb-2"
             >Edit Account</router-link
           >
           <p><strong>Name:</strong> {{ userStore.name }}</p>

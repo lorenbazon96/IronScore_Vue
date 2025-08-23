@@ -1,12 +1,16 @@
 <template>
   <div class="container-fluid">
     <div class="row min-vh-100">
-      <aside class="col-12 col-md-3 sidebar bg-darka text-white p-3">
-        <div class="logo">
-          <img src="@/assets/logo-t.png" alt="IronScore Logo" />
+      <aside class="col-12 col-md-3 bg-darka text-white p-3">
+        <div class="logo mb-3">
+          <img
+            src="@/assets/logo-t.png"
+            alt="IronScore Logo"
+            class="img-fluid"
+          />
         </div>
-        <div class="user-info border-top pt-2 mb-3">
-          <router-link to="/edit-r-account" class="edit"
+        <div class="user-info mb-3 border-top pt-2">
+          <router-link to="/edit-account" class="edit d-block mb-2"
             >Edit Account</router-link
           >
           <p><strong>Name:</strong> {{ userStore.name }}</p>
@@ -14,13 +18,14 @@
           <p><strong>Email:</strong> {{ userStore.email }}</p>
           <p><strong>Age:</strong> {{ userStore.age }}</p>
         </div>
-        <nav class="menu">
-          <router-link to="/competitionsr" class="menu-item active-item"
-            >competitions</router-link
+        <nav class="menu d-flex flex-column gap-2">
+          <router-link to="/dashboard" class="menu-item">Dashboard</router-link>
+          <router-link to="/competitions" class="menu-item active-item"
+            >Competitions</router-link
           >
-          <router-link to="/communityfr" class="menu-item"
-            >Community</router-link
-          >
+          <router-link to="/community" class="menu-item">Community</router-link>
+          <router-link to="/timer" class="menu-item">Timer</router-link>
+          <router-link to="/trainings" class="menu-item">Trainings</router-link>
         </nav>
       </aside>
 
@@ -44,7 +49,7 @@
           <h3 class="fw-bold text-uppercase mb-3">Competition not found</h3>
           <router-link
             class="btn btn-warning mt-2"
-            :to="{ name: 'CompetitionsR' }"
+            :to="{ name: 'Competitions' }"
             >Back to list</router-link
           >
         </section>
@@ -75,46 +80,6 @@
           >
             <div class="text-center">
               <button
-                v-if="
-                  !(
-                    isEventDayStrict(competition.date) &&
-                    isJudgeAllowed &&
-                    !mySubmitted
-                  )
-                "
-                class="btn btn-secondary px-4"
-                disabled
-              >
-                Start Judging
-              </button>
-
-              <div
-                class="text-warning mt-1 small"
-                v-if="!isEventDayStrict(competition.date)"
-              >
-                starting will be possible on the date of the event
-              </div>
-              <div class="text-danger mt-1 small" v-else-if="!isReferee">
-                your account is not a referee
-              </div>
-              <div class="text-danger mt-1 small" v-else-if="!isOnJudgesList">
-                your account is not on the judges list for this competition
-              </div>
-              <div class="text-info mt-1 small" v-else-if="mySubmitted">
-                you have already submitted your grades
-              </div>
-
-              <router-link
-                v-else
-                class="btn btn-warning text-black fw-bold px-4"
-                :to="{ name: 'grade', query: { id: competition.id } }"
-              >
-                Start Judging
-              </router-link>
-            </div>
-
-            <div class="text-center">
-              <button
                 v-if="!canSeeResults"
                 class="btn btn-secondary px-4"
                 disabled
@@ -133,14 +98,14 @@
               <router-link
                 v-else
                 class="btn btn-warning text-black fw-bold px-4"
-                :to="{ name: 'resultsr', query: { id: competition.id } }"
+                :to="{ name: 'results', query: { id: competition.id } }"
               >
                 See result
               </router-link>
             </div>
 
             <div class="text-center">
-              <router-link class="btn btn-warning mt-2" to="/competitionsr">
+              <router-link class="btn btn-warning mt-2" to="/competitions">
                 Back to list
               </router-link>
             </div>
@@ -155,19 +120,16 @@
 import { useUserStore } from "@/stores/user";
 import { db } from "@/firebase";
 import { doc, getDoc, collection, onSnapshot } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
 
 export default {
-  name: "CompetitionR",
+  name: "Competition",
   data() {
     return {
       competition: null,
       loading: true,
       stopGradesWatcher: null,
       expectedTotalGrades: 0,
-      userRole: null,
       submittedJudgeIds: new Set(),
-      mySubmitted: false,
     };
   },
   computed: {
@@ -207,64 +169,7 @@ export default {
     canSeeResults() {
       return this.allJudgesSubmitted;
     },
-    isReferee() {
-      const fromStore = (
-        this.userStore?.role ||
-        this.userStore?.type ||
-        ""
-      ).toLowerCase();
-      const eff = fromStore || this.userRole || "";
-      return eff === "referee";
-    },
 
-    isOnJudgesList() {
-      const comp = this.competition;
-      if (!comp) return false;
-
-      const fullUserName = this._normFullName(
-        this.userStore?.name,
-        this.userStore?.surname
-      );
-      const userEmail = (this.userStore?.email || "").trim().toLowerCase();
-
-      const judgeNameStrings = new Set();
-      const pushName = (n) => {
-        const nn = this._normString(n);
-        if (nn) judgeNameStrings.add(nn);
-      };
-
-      const candidates =
-        comp?.judges ??
-        comp?.allowedJudges ??
-        comp?.judgesNames ??
-        comp?.referees ??
-        [];
-
-      if (Array.isArray(candidates)) {
-        for (const item of candidates) {
-          if (typeof item === "string") pushName(item);
-          else if (item && typeof item === "object") {
-            if (item.fullName) pushName(item.fullName);
-            else pushName(this._composeName(item.name, item.surname));
-          }
-        }
-      }
-
-      const judgeEmails = Array.isArray(comp?.judgeEmails)
-        ? comp.judgeEmails
-        : [];
-      const emailAllowed = judgeEmails
-        .map((e) => (e || "").toString().trim().toLowerCase())
-        .includes(userEmail);
-
-      if (emailAllowed) return true;
-      if (fullUserName && judgeNameStrings.has(fullUserName)) return true;
-      return false;
-    },
-
-    isJudgeAllowed() {
-      return this.isReferee && this.isOnJudgesList;
-    },
     allJudgesSubmitted() {
       const c = this.competition || {};
       let expected =
@@ -288,7 +193,6 @@ export default {
   mounted() {
     const cid = this.$route.query.id;
     if (cid) this.loadCompetition(cid);
-    this.loadUserRole();
   },
   watch: {
     "$route.query.id"(newId) {
@@ -320,41 +224,6 @@ export default {
       return d.toLocaleDateString(undefined, options);
     },
 
-    isEventDayStrict(date) {
-      if (!date) return false;
-      const d = new Date(date);
-      const today = new Date();
-      return (
-        d.getFullYear() === today.getFullYear() &&
-        d.getMonth() === today.getMonth() &&
-        d.getDate() === today.getDate()
-      );
-    },
-
-    _composeName(name, surname) {
-      const n = (name || "").toString().trim();
-      const s = (surname || "").toString().trim();
-      if (!n && !s) return "";
-      return `${n} ${s}`.trim();
-    },
-    _normFullName(name, surname) {
-      return this._normString(this._composeName(name, surname));
-    },
-    _normString(str) {
-      const s = (str || "").toString().trim().toLowerCase();
-      if (!s) return "";
-      const squashed = s.replace(/\s+/g, " ");
-      try {
-        return squashed.normalize("NFD").replace(/\p{Diacritic}/gu, "");
-      } catch {
-        return squashed
-          .replace(/[čćČĆ]/g, (m) => ({ č: "c", ć: "c", Č: "c", Ć: "c" }[m]))
-          .replace(/[đĐ]/g, "d")
-          .replace(/[šŠ]/g, "s")
-          .replace(/[žŽ]/g, "z");
-      }
-    },
-
     watchGrades() {
       if (this.stopGradesWatcher) {
         this.stopGradesWatcher();
@@ -383,9 +252,6 @@ export default {
 
           this.submittedJudgeIds = judgeIds;
 
-          const finalUid = getAuth().currentUser?.uid || null;
-          this.mySubmitted = finalUid ? judgeIds.has(finalUid) : false;
-
           const c = this.competition || {};
           const expectedJudges =
             Array.isArray(c.judgeEmails) && c.judgeEmails.length
@@ -402,28 +268,11 @@ export default {
 
           this.expectedTotalGrades = expectedJudges;
         },
-        (err) => console.error("[CompetitionR] grades onSnapshot error:", err)
+        (err) => console.error("[Competition] grades onSnapshot error:", err)
       );
     },
-
     afterCompetitionLoaded() {
       this.watchGrades();
-    },
-
-    async loadUserRole() {
-      try {
-        const uid = getAuth().currentUser?.uid;
-        if (!uid) return;
-        const userDoc = await getDoc(doc(db, "users", uid));
-        if (userDoc.exists()) {
-          const data = userDoc.data() || {};
-          this.userRole = (data.role || data.type || "")
-            .toString()
-            .toLowerCase();
-        }
-      } catch (e) {
-        console.warn("[CompetitionR] Could not load user role:", e);
-      }
     },
   },
   beforeUnmount() {
@@ -436,14 +285,6 @@ export default {
 </script>
 
 <style scoped>
-.competitions-container {
-  display: flex;
-  height: 100vh;
-  font-family: "Roboto", sans-serif;
-  color: #fff;
-  background: #000;
-}
-
 .logo img {
   width: 100%;
 }
