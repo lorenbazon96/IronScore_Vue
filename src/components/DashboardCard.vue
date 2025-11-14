@@ -70,8 +70,8 @@ export default {
     },
     getColor(alpha = 1) {
       if (this.title.includes("Weight")) return `rgba(255, 193, 7, ${alpha})`;
-      if (this.title.includes("Workouts")) return `rgba(0, 255, 255, ${alpha})`;
-      if (this.title.includes("BMI")) return `rgba(255, 87, 34, ${alpha})`;
+      if (this.title.includes("Workouts")) return `rgba(255, 193, 7, ${alpha})`;
+      if (this.title.includes("BMI")) return `rgba(255, 193, 7, ${alpha})`;
       return `rgba(255, 255, 255, ${alpha})`;
     },
     navigate() {
@@ -94,3 +94,4 @@ canvas {
   height: 200px !important;
 }
 </style>
+
