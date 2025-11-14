@@ -15,8 +15,7 @@
           >
           <p><strong>Name:</strong> {{ name }}</p>
           <p><strong>Surname:</strong> {{ surname }}</p>
-          <p><strong>Email:</strong> {{ email }}</p>
-          <p><strong>Age:</strong> {{ age }}</p>
+
         </div>
 
         <nav class="menu d-flex flex-column gap-2">
