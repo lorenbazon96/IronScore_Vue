@@ -209,8 +209,8 @@ export default {
           {
             label: "BMI",
             data: [],
-            borderColor: "rgba(255, 87, 34, 1)",
-            backgroundColor: "rgba(255, 87, 34, 0.2)",
+            borderColor: "rgba(255, 193, 7, 1)",
+            backgroundColor: "rgba(255, 193, 7, 0.2)",
             tension: 0.3,
             fill: true,
             pointRadius: 3,
@@ -361,3 +361,4 @@ export default {
   background-color: #000 !important;
 }
 </style>
+
