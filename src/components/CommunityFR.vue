@@ -15,8 +15,7 @@
           >
           <p><strong>Name:</strong> {{ userStore.name }}</p>
           <p><strong>Surname:</strong> {{ userStore.surname }}</p>
-          <p><strong>Email:</strong> {{ userStore.email }}</p>
-          <p><strong>Age:</strong> {{ userStore.age }}</p>
+
         </div>
         <nav class="menu">
           <router-link to="/competitionsr" class="menu-item"
