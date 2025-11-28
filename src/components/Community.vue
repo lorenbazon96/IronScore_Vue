@@ -9,13 +9,28 @@
             class="img-fluid"
           />
         </div>
-        <div class="user-info border-top pt-2 mb-3">
-          <router-link to="/edit-account" class="edit d-block mb-2"
-            >Edit Account</router-link
+        <div class="user-info mb-3 border-top pt-2">
+          <div
+            class="user-info-inner d-flex justify-content-between align-items-center mt-2"
           >
-          <p><strong>Name:</strong> {{ userStore.name }}</p>
-          <p><strong>Surname:</strong> {{ userStore.surname }}</p>
-         
+            <div class="d-flex align-items-center">
+              <img src="@/assets/user.png" alt="User" class="user-icon me-2" />
+              <span class="fw-bold user-name">
+                {{ userStore.name }} {{ userStore.surname }}
+              </span>
+            </div>
+
+            <router-link
+              to="/edit-account"
+              class="settings-link d-flex align-items-center"
+            >
+              <img
+                src="@/assets/setting1.png"
+                alt="Settings"
+                class="settings-icon"
+              />
+            </router-link>
+          </div>
         </div>
         <nav class="menu d-flex flex-column gap-2">
           <router-link to="/dashboard" class="menu-item">Dashboard</router-link>
@@ -30,68 +45,98 @@
         </nav>
       </aside>
 
-      <main class="col-12 col-md-9 community-content">
-        <header class="community-header">
+      <main
+        class="col-12 col-md-9 community-new-content p-4 bg-black text-white"
+      >
+        <header
+          class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4"
+        >
           <h2 class="title text-warning fw-bold text-uppercase mb-2 mb-md-0">
-            Community
+            COMMUNITY
           </h2>
           <router-link
             to="/"
-            class="btn btn-link text-warning fw-bold p-0 logout-link"
-            >Log Out</router-link
+            class="btn btn-link text-warning fw-bold p-0 logout-link d-flex align-items-center"
           >
+            <img
+              src="@/assets/logout.png"
+              alt="Logout"
+              class="logout-icon me-2"
+            />
+            Log Out
+          </router-link>
         </header>
 
-        <div v-if="loading" class="text-white">Loading…</div>
-        <div v-else-if="notFound" class="text-white">Post not found.</div>
+        <div v-if="loading" class="text-white text-center mt-5">Loading…</div>
+        <div v-else-if="notFound" class="text-white text-center mt-5">
+          Post not found.
+        </div>
 
-        <div v-else-if="post" class="text-white bg-black p-0">
-          <div class="bg-dark p-3 rounded mb-4">
-            <strong>{{ post.author }}</strong>
-            <p class="mb-1">{{ post.content }}</p>
-            <small>{{ post.timestamp }}</small>
-            <div class="mt-2 d-flex align-items-center gap-3">
-              <button @click="likePost" class="btn btn-link text-warning p-0">
-                {{ hasLikedPost() ? "Unlike 👎" : "Like 👍" }}
-              </button>
-              <span>{{ postLikesCount() }} 👍</span>
+        <div v-else class="single-post-scroll">
+          <template v-if="post">
+            <div class="post-card">
+              <div class="post-header d-flex align-items-center">
+                <img src="@/assets/user.png" class="post-avatar" />
+                <div class="ms-2">
+                  <div class="post-author">{{ post.author }}</div>
+                  <div class="post-date">{{ post.timestamp }}</div>
+                </div>
+              </div>
+
+              <div class="post-content">“{{ post.content }}”</div>
+
+              <div class="post-actions d-flex align-items-center mt-3 gap-3">
+                <button @click="likePost" class="post-like-btn">
+                  <span v-if="hasLikedPost()">👍 Unlike</span>
+                  <span v-else>👍 Like</span>
+                </button>
+                <span class="text-white-50">{{ postLikesCount() }} likes</span>
+              </div>
             </div>
-          </div>
 
-          <div
-            v-for="(comment, cIndex) in post.comments"
-            :key="cIndex"
-            class="bg-secondary p-3 rounded mb-2"
-          >
-            <strong>{{ comment.author }}</strong>
-            <p class="mb-1">{{ comment.text }}</p>
-            <small>{{ comment.timestamp }}</small>
-            <div class="mt-2 d-flex align-items-center gap-3">
-              <button
-                @click="likeComment(cIndex)"
-                class="btn btn-link text-warning p-0"
-              >
-                {{ hasLikedComment(cIndex) ? "Unlike 👎" : "Like 👍" }}
-              </button>
-              <span>{{ commentLikesCount(cIndex) }} 👍</span>
-            </div>
-          </div>
-
-          <div class="mt-4">
-            <input
-              v-model="newComment"
-              type="text"
-              class="form-control mb-2"
-              placeholder="Type your comment..."
-              @keyup.enter="submitComment"
-            />
-            <button
-              @click="submitComment"
-              class="btn btn-warning fw-bold w-100"
+            <div
+              v-for="(comment, cIndex) in post.comments || []"
+              :key="cIndex"
+              class="comment-card"
             >
-              Add new comment
-            </button>
-          </div>
+              <div class="comment-header d-flex align-items-center">
+                <img src="@/assets/user.png" class="comment-avatar" />
+                <div class="ms-2">
+                  <div class="comment-author">{{ comment.author }}</div>
+                  <div class="comment-date">{{ comment.timestamp }}</div>
+                </div>
+              </div>
+
+              <div class="comment-text">{{ comment.text }}</div>
+
+              <div class="comment-actions d-flex align-items-center mt-2 gap-3">
+                <button @click="likeComment(cIndex)" class="comment-like-btn">
+                  <span v-if="hasLikedComment(cIndex)">👍 Unlike</span>
+                  <span v-else>👍 Like</span>
+                </button>
+                <span class="text-white-50"
+                  >{{ commentLikesCount(cIndex) }} likes</span
+                >
+              </div>
+            </div>
+
+            <div class="new-comment-wrapper">
+              <input
+                v-model="newComment"
+                type="text"
+                class="new-comment-input"
+                placeholder="Write a comment..."
+                @keyup.enter="submitComment"
+              />
+
+              <button
+                @click="submitComment"
+                class="btn btn-warning fw-bold w-100"
+              >
+                Add comment
+              </button>
+            </div>
+          </template>
         </div>
       </main>
     </div>
@@ -148,7 +193,6 @@ export default {
           id: snap.id,
           author: data.author || "",
           content: data.content || "",
-
           likesBy: Array.isArray(data.likesBy)
             ? data.likesBy
             : data.likes
@@ -277,67 +321,190 @@ export default {
   color: #ffc107 !important;
 }
 
-.community-content {
-  flex: 1;
-  padding: 30px;
-  background: #000;
-  overflow-y: auto;
+.bg-darka {
+  background-color: black !important;
 }
 
-.community-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+.user-info {
+  border-top: 1px solid #333;
+  padding: 10px 15px 0 15px;
+}
+
+.user-icon {
+  width: 28px;
+  height: 28px;
+}
+
+.settings-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.settings-link {
   color: #ffc107;
-  text-transform: uppercase;
-  font-weight: 900;
+  text-decoration: none;
 }
 
-.title {
-  font-weight: bold;
-  color: #ffc107;
+.settings-link:hover .settings-icon {
+  transform: scale(1.05);
 }
 
-.post {
-  background-color: #222;
-  border-radius: 5px;
+.user-name {
+  font-size: 16px;
 }
+
+.user-info-inner {
+  max-width: 260px;
+  margin: 0 auto;
+}
+
+.logout-icon {
+  width: 20px;
+  height: 20px;
+}
+
 .logout-link {
   color: #ffc107 !important;
   font-size: 14px;
   text-transform: uppercase;
 }
-.post input[type="text"] {
-  background: #111;
-  color: #fff;
-  border: 1px solid #555;
+
+.community-new-content {
+  height: 100vh;
+  flex: 1;
+  padding: 20px 30px;
+  background: #000;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
-.post small {
-  color: #aaa;
+.title {
+  font-weight: bold;
 }
 
-.post button {
-  font-size: 0.9rem;
-}
-.comment-box {
-  background-color: #111;
-  border: 1px solid #333;
-  border-radius: 5px;
-  color: #fff;
-  text-align: left;
-}
-.comment-box small {
-  color: #aaa;
+.single-post-scroll {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-right: 8px;
 }
 
-.edit {
+.post-card {
+  background: #151515;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #222;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.post-card:hover {
+  background: #1c1c1c;
+  transform: translateY(-2px);
+}
+
+.post-header {
+  margin-bottom: 12px;
+}
+
+.post-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  opacity: 0.85;
+}
+
+.post-author {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.post-date {
+  font-size: 12px;
+  color: #888;
+}
+
+.post-content {
+  font-size: 17px;
+  line-height: 1.4;
+  color: #ddd;
+  font-style: italic;
+  border-left: 3px solid #ffc107;
+  padding-left: 10px;
+}
+
+.post-like-btn {
+  border: none;
+  background: none;
   color: #ffc107;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0;
 }
 
-.bg-darka {
-  background-color: #000 !important;
+.comment-card {
+  background: #111;
+  padding: 18px;
+  border-radius: 10px;
+  border: 1px solid #222;
+}
+
+.comment-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  opacity: 0.85;
+}
+
+.comment-author {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.comment-date {
+  font-size: 11px;
+  color: #777;
+}
+
+.comment-text {
+  color: #ddd;
+  font-size: 15px;
+  margin-top: 8px;
+  border-left: 3px solid #ffc107;
+  padding-left: 10px;
+}
+
+.comment-like-btn {
+  border: none;
+  background: none;
+  color: #ffc107;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0;
+}
+
+.new-comment-wrapper {
+  position: sticky;
+  bottom: 0;
+  background: #000;
+  padding-top: 10px;
+}
+
+.new-comment-input {
+  width: 100%;
+  background: #202020;
+  border: 1px solid #333;
+  padding: 10px 14px;
+  color: #fff;
+  font-size: 14px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.new-comment-input::placeholder {
+  color: #777;
 }
 </style>
-

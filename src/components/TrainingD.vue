@@ -9,13 +9,28 @@
             class="img-fluid"
           />
         </div>
-        <div class="user-info border-top pt-2 mb-3">
-          <router-link to="/edit-account" class="edit d-block mb-2"
-            >Edit Account</router-link
+        <div class="user-info mb-3 border-top pt-2">
+          <div
+            class="user-info-inner d-flex justify-content-between align-items-center mt-2"
           >
-          <p><strong>Name:</strong> {{ userStore.name }}</p>
-          <p><strong>Surname:</strong> {{ userStore.surname }}</p>
+            <div class="d-flex align-items-center">
+              <img src="@/assets/user.png" alt="User" class="user-icon me-2" />
+              <span class="fw-bold user-name">
+                {{ userStore.name }} {{ userStore.surname }}
+              </span>
+            </div>
 
+            <router-link
+              to="/edit-account"
+              class="settings-link d-flex align-items-center"
+            >
+              <img
+                src="@/assets/setting1.png"
+                alt="Settings"
+                class="settings-icon"
+              />
+            </router-link>
+          </div>
         </div>
         <nav class="menu d-flex flex-column gap-2">
           <router-link to="/dashboard" class="menu-item">Dashboard</router-link>
@@ -35,8 +50,13 @@
           <h2 class="title trainings-title">Trainings</h2>
           <router-link
             to="/"
-            class="btn btn-link text-warning fw-bold p-0 logout-link"
+            class="btn btn-link text-warning fw-bold p-0 logout-link d-flex align-items-center"
           >
+            <img
+              src="@/assets/logout.png"
+              alt="Logout"
+              class="logout-icon me-2"
+            />
             Log Out
           </router-link>
         </header>
@@ -871,5 +891,43 @@ export default {
 
 .bg-darka {
   background-color: #000 !important;
+}
+
+.user-info {
+  border-top: 1px solid #333;
+  padding: 10px 15px 0 15px;
+}
+
+.user-icon {
+  width: 28px;
+  height: 28px;
+}
+
+.settings-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.settings-link {
+  color: #ffc107;
+  text-decoration: none;
+}
+
+.settings-link:hover .settings-icon {
+  transform: scale(1.05);
+}
+
+.user-name {
+  font-size: 16px;
+}
+
+.user-info-inner {
+  max-width: 260px;
+  margin: 0 auto;
+}
+
+.logout-icon {
+  width: 20px;
+  height: 20px;
 }
 </style>

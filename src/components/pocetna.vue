@@ -10,12 +10,27 @@
         <div class="col-12 col-md-4">
           <div class="w-100 py-5 my-1">
             <router-link to="/login">
-              <button class="btn btn-custom btn-lg sirina-b mb-3">
+              <button
+                class="btn btn-custom btn-lg sirina-b mb-3 d-flex align-items-center justify-content-center"
+              >
+                <img
+                  src="@/assets/login.png"
+                  alt="Log in"
+                  class="btn-icon mx-2"
+                />
                 Log In Now
               </button>
             </router-link>
+
             <router-link to="/register">
-              <button class="btn btn-custom btn-lg sirina-b mb-3">
+              <button
+                class="btn btn-custom btn-lg sirina-b mb-3 d-flex align-items-center justify-content-center"
+              >
+                <img
+                  src="@/assets/new.png"
+                  alt="Create account"
+                  class="btn-icon mx-2"
+                />
                 Create an Account
               </button>
             </router-link>
@@ -226,5 +241,11 @@ a:hover {
   .feature-list {
     font-size: 14px !important;
   }
+}
+
+.btn-icon {
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
 }
 </style>

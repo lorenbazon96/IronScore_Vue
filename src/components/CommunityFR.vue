@@ -9,15 +9,30 @@
             class="img-fluid"
           />
         </div>
-        <div class="user-info border-top pt-2 mb-3">
-          <router-link to="/edit-r-account" class="edit d-block mb-2"
-            >Edit Account</router-link
+        <div class="user-info mb-3 border-top pt-2">
+          <div
+            class="user-info-inner d-flex justify-content-between align-items-center mt-2"
           >
-          <p><strong>Name:</strong> {{ userStore.name }}</p>
-          <p><strong>Surname:</strong> {{ userStore.surname }}</p>
+            <div class="d-flex align-items-center">
+              <img src="@/assets/user.png" alt="User" class="user-icon me-2" />
+              <span class="fw-bold user-name">
+                {{ userStore.name }} {{ userStore.surname }}
+              </span>
+            </div>
 
+            <router-link
+              to="/edit-r-account"
+              class="settings-link d-flex align-items-center"
+            >
+              <img
+                src="@/assets/setting1.png"
+                alt="Settings"
+                class="settings-icon"
+              />
+            </router-link>
+          </div>
         </div>
-        <nav class="menu">
+        <nav class="menu d-flex flex-column gap-2">
           <router-link to="/competitionsr" class="menu-item"
             >competitions</router-link
           >
@@ -38,9 +53,15 @@
           </h2>
           <router-link
             to="/"
-            class="btn btn-link text-warning fw-bold p-0 logout-link"
-            >Log Out</router-link
+            class="btn btn-link text-warning fw-bold p-0 logout-link d-flex align-items-center"
           >
+            <img
+              src="@/assets/logout.png"
+              alt="Logout"
+              class="logout-icon me-2"
+            />
+            Log Out
+          </router-link>
         </header>
 
         <section class="post-list">
@@ -48,22 +69,30 @@
             v-for="post in posts"
             :key="post.id"
             :to="`/communitypr?id=${post.id}`"
-            class="single-post"
+            class="post-card router-post-link"
           >
-            <div class="post-author">{{ post.author }}</div>
-            <div class="post-content">"{{ post.content }}"</div>
-            <div class="post-date">{{ post.timestamp }}</div>
+            <div class="post-header d-flex align-items-center">
+              <img src="@/assets/user.png" class="post-avatar" />
+
+              <div class="ms-2">
+                <div class="post-author">{{ post.author }}</div>
+                <div class="post-date">{{ post.timestamp }}</div>
+              </div>
+            </div>
+
+            <div class="post-content">“{{ post.content }}”</div>
           </router-link>
         </section>
 
-        <input
-          type="text"
-          placeholder="Insert new post"
-          class="new-post mt-5"
-          v-model="newPostContent"
-        />
-        <div class="add-post-button-wrapper">
-          <button class="btn btn-warning fw-bold w-100" @click="addPost">
+        <div class="new-post-wrapper">
+          <input
+            type="text"
+            placeholder="Insert new post"
+            class="new-post-input"
+            v-model="newPostContent"
+          />
+
+          <button class="btn btn-warning fw-bold new-post-btn" @click="addPost">
             Add new post
           </button>
         </div>
@@ -158,16 +187,47 @@ export default {
 .active-item {
   color: #ffc107 !important;
 }
-.community-new-content {
-  flex: 1;
-  padding: 40px 30px;
-  background: #000;
-  color: #fff;
-  overflow-y: auto;
+
+.bg-darka {
+  background-color: black !important;
 }
 
-.title {
-  font-weight: bold;
+.user-info {
+  border-top: 1px solid #333;
+  padding: 10px 15px 0 15px;
+}
+
+.user-icon {
+  width: 28px;
+  height: 28px;
+}
+
+.settings-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.settings-link {
+  color: #ffc107;
+  text-decoration: none;
+}
+
+.settings-link:hover .settings-icon {
+  transform: scale(1.05);
+}
+
+.user-name {
+  font-size: 16px;
+}
+
+.user-info-inner {
+  max-width: 260px;
+  margin: 0 auto;
+}
+
+.logout-icon {
+  width: 20px;
+  height: 20px;
 }
 
 .logout-link {
@@ -176,56 +236,112 @@ export default {
   text-transform: uppercase;
 }
 
+.community-new-content {
+  height: 100vh;
+  flex: 1;
+  padding: 20px 30px;
+  background: #000;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-weight: bold;
+}
+
 .post-list {
+  flex: 1;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  max-height: 500px;
-  overflow-y: auto;
-  padding-right: 10px;
+  padding-right: 8px;
+  padding-bottom: 10px;
 }
 
-.single-post {
-  background-color: #222;
+.post-card {
+  background: #151515;
   padding: 20px;
-  border-radius: 5px;
+  border-radius: 12px;
+  border: 1px solid #222;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.post-card:hover {
+  background: #1c1c1c;
+  transform: translateY(-2px);
+}
+
+.post-header {
+  margin-bottom: 12px;
+}
+
+.post-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  opacity: 0.85;
 }
 
 .post-author {
-  font-weight: bold;
-  margin-bottom: 10px;
-  text-align: left;
-}
-
-.post-content {
-  font-size: 16px;
-  margin-bottom: 10px;
+  font-weight: 700;
+  font-size: 15px;
 }
 
 .post-date {
-  font-size: 13px;
-  color: #aaa;
+  font-size: 12px;
+  color: #888;
 }
 
-.add-post-button-wrapper {
-  margin-top: 40px;
+.post-content {
+  font-size: 17px;
+  line-height: 1.4;
+  color: #ddd;
+  font-style: italic;
+  border-left: 3px solid #ffc107;
+  padding-left: 10px;
 }
 
-.new-post {
-  background: rgb(30, 30, 30);
+.new-post-wrapper {
+  position: sticky;
+  bottom: 0;
+  background: #000;
+  padding: 8px 0 4px;
+  z-index: 10;
+}
+
+.new-post-input {
   width: 100%;
-  min-height: 60px !important;
-  margin-top: 60px;
-  padding: 10px 10px;
-  color: #ffff;
-  font-size: 15px;
-  border: 50px;
+  background: #202020;
+  border: 1px solid #333;
+  padding: 10px 14px;
+  color: #fff;
+  font-size: 14px;
+  border-radius: 8px;
+  margin-bottom: 12px;
 }
 
-.edit {
-  color: #ffc107;
+.new-post-input::placeholder {
+  color: #777;
 }
-.bg-darka {
-  background-color: black !important;
+
+.new-post-btn {
+  width: 100%;
+  padding: 10px;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  border-radius: 8px;
+}
+
+.router-post-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.router-post-link:hover {
+  text-decoration: none;
 }
 </style>

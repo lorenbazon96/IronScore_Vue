@@ -1,8 +1,11 @@
 <template>
-  <div class="card bg-dark text-white p-3 text-center">
+  <div class="card bg-dark text-white p-3">
     <h5 class="text-white mb-3">{{ title }}</h5>
     <canvas ref="chartCanvas" class="mb-3"></canvas>
-    <button class="btn btn-warning fw-bold w-100" @click="navigate">
+    <button
+      class="btn btn-warning btn-sm fw-bold flex-grow-1 me-2"
+      @click="navigate"
+    >
       {{ buttonText }}
     </button>
   </div>
@@ -94,4 +97,3 @@ canvas {
   height: 200px !important;
 }
 </style>
-

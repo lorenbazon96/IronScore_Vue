@@ -1,32 +1,42 @@
 <template>
   <div class="login-container">
     <div class="back-arrow" @click="goBack">
-      <img
-        src="@/assets/left-arrow-back-svgrepo-com.svg"
-        alt="Back"
-        class="arrow-img"
-      />
+      <img src="@/assets/home.png" alt="Back" class="arrow-img" />
     </div>
+
     <div class="logo-section">
       <img src="@/assets/logo.png" alt="Ironscore Logo" class="logo" />
     </div>
+
     <div class="form-section">
-      <input
-        type="email"
-        v-model="email"
-        placeholder="Your mail"
-        class="input-field"
-      />
-      <input
-        type="password"
-        v-model="password"
-        placeholder="Your password"
-        class="input-field"
-      />
+      <div class="input-wrapper">
+        <img src="@/assets/email.png" alt="Email" class="input-icon" />
+        <input
+          type="email"
+          v-model="email"
+          placeholder="Your mail"
+          class="input-field input-with-icon"
+        />
+      </div>
+
+      <div class="input-wrapper">
+        <img src="@/assets/password.png" alt="Password" class="input-icon" />
+        <input
+          type="password"
+          v-model="password"
+          placeholder="Your password"
+          class="input-field input-with-icon"
+        />
+      </div>
+
       <router-link to="/forgot-password" class="forgot-password">
         Forgot password?
       </router-link>
-      <button class="login-button sirina-b" @click="login">Log In</button>
+
+      <button class="login-button sirina-b" @click="login">
+        <img src="@/assets/login.png" alt="Log in" class="btn-icon mx-2" />
+        Log In
+      </button>
     </div>
   </div>
 </template>
@@ -174,5 +184,42 @@ export default {
     width: 40px !important;
     height: 40px !important;
   }
+}
+
+.btn-icon {
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
+}
+
+.input-wrapper {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.input-field {
+  background-color: #d3d3d3;
+  border: none;
+  border-radius: 5px;
+  padding: 12px;
+  font-size: 16px;
+  width: 100%;
+}
+
+.input-with-icon {
+  padding-left: 42px;
+  margin-bottom: 1px;
+}
+
+.input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  pointer-events: none;
+  filter: brightness(0.7);
 }
 </style>
