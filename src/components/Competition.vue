@@ -1,7 +1,6 @@
 <template>
   <div class="container-fluid">
     <div class="row min-vh-100">
-      <!-- SIDEBAR -->
       <aside class="col-12 col-md-3 bg-darka text-white p-3">
         <div class="logo mb-3">
           <img
@@ -34,7 +33,7 @@
           </div>
         </div>
         <nav class="menu d-flex flex-column gap-2">
-          <router-link to="/dashboard" class="menu-item">Dashboard</router-link>
+          <router-link to="/dashboard" class="menu-item">Progress</router-link>
           <router-link to="/competitions" class="menu-item active-item">
             Competitions
           </router-link>
@@ -44,9 +43,7 @@
         </nav>
       </aside>
 
-      <!-- MAIN CONTENT -->
       <main class="competitions-content col-12 col-md-9 bg-black text-white">
-        <!-- TOP BAR -->
         <header
           class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3"
         >
@@ -67,14 +64,11 @@
           </router-link>
         </header>
 
-        <!-- SCROLL ZONA ZA DETAIL -->
         <div class="detail-scroll">
-          <!-- LOADING -->
           <section class="text-white text-start" v-if="loading">
             <p>Loading competition...</p>
           </section>
 
-          <!-- NOT FOUND -->
           <section class="text-white text-start" v-else-if="!competition">
             <h3 class="fw-bold text-uppercase mb-3">Competition not found</h3>
             <router-link
@@ -85,10 +79,8 @@
             </router-link>
           </section>
 
-          <!-- CONTENT -->
           <section v-else class="text-white text-start">
             <div class="detail-inner mx-auto">
-              <!-- HERO KARTICA / SUMMARY -->
               <div class="card competition-header-card mb-3">
                 <div
                   class="card-body d-flex flex-column flex-md-row justify-content-between gap-3"
@@ -119,13 +111,13 @@
                       </span>
                     </div>
 
-                    <!-- kategorije / discipline kao badgeovi -->
-                    <div class="d-flex flex-wrap gap-1 mt-1">
+                    <div
+                      class="d-flex flex-wrap gap-1 mt-1"
+                      v-if="
+                        competition.categories && competition.categories.length
+                      "
+                    >
                       <span
-                        v-if="
-                          competition.categories &&
-                          competition.categories.length
-                        "
                         v-for="cat in competition.categories"
                         :key="cat"
                         class="badge-chip small-badge"
@@ -168,19 +160,16 @@
                 </div>
               </div>
 
-              <!-- OVERVIEW / INFO KARTICA -->
               <div class="card bg-dark text-white details-card mb-3">
                 <div class="card-body">
                   <h5 class="mb-3 text-uppercase text-warning">Overview</h5>
 
-                  <!-- infoLines kao lista -->
                   <ul v-if="infoLines.length" class="nice-list mb-3">
                     <li v-for="(line, i) in infoLines" :key="'info-' + i">
                       {{ line }}
                     </li>
                   </ul>
 
-                  <!-- judging pravila, ako postoje -->
                   <div
                     v-if="competition.judging && competition.judging.length"
                     class="mt-3"
@@ -200,7 +189,6 @@
                 </div>
               </div>
 
-              <!-- STATUS SUDACA / REZULTAT -->
               <div class="card bg-dark text-white judge-status-card mb-3">
                 <div
                   class="card-body d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3"
@@ -445,7 +433,6 @@ export default {
   background-color: #000 !important;
 }
 
-/* SIDEBAR */
 .user-info {
   border-top: 1px solid #333;
   padding: 10px 15px 0 15px;
@@ -497,7 +484,6 @@ export default {
   color: #ffc107 !important;
 }
 
-/* DESNI PANEL LAYOUT */
 .competitions-content {
   flex: 1;
   padding: 20px;
@@ -514,6 +500,7 @@ export default {
 .logout-link {
   color: #ffc107 !important;
   font-size: 13px;
+  text-decoration: none;
 }
 
 .logout-icon {
@@ -521,7 +508,6 @@ export default {
   height: 18px;
 }
 
-/* unutarnji scroll za detalje */
 .detail-scroll {
   flex: 1;
   overflow-y: auto;
@@ -534,7 +520,6 @@ export default {
   max-width: 960px;
 }
 
-/* layout na razini komponente */
 .container-fluid {
   height: 100vh;
   overflow: hidden;
@@ -558,7 +543,6 @@ aside {
   overflow-x: hidden;
 }
 
-/* HERO / STATUS */
 .competition-header-card {
   border-radius: 12px;
   border: 1px solid #333;
@@ -587,7 +571,6 @@ aside {
   color: #aaa;
 }
 
-/* OVERVIEW / LISTE */
 .nice-list {
   padding-left: 1.2rem;
   margin: 0;
@@ -599,7 +582,6 @@ aside {
   font-size: 14px;
 }
 
-/* BADGE CHIPS */
 .badge-chip {
   background-color: #f5f5f5;
   border-radius: 999px;
@@ -614,7 +596,6 @@ aside {
   padding: 1px 6px;
 }
 
-/* JUDGING STATUS */
 .judge-status-card {
   border-radius: 12px;
   border: 1px solid #333;

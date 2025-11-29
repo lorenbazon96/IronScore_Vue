@@ -1,7 +1,6 @@
 <template>
   <div class="container-fluid">
     <div class="row min-vh-100">
-      <!-- SIDEBAR -->
       <aside class="col-12 col-md-3 bg-darka text-white p-3">
         <div class="logo mb-3">
           <img
@@ -45,9 +44,7 @@
         </nav>
       </aside>
 
-      <!-- MAIN CONTENT -->
       <main class="competitions-content col-12 col-md-9 bg-black text-white">
-        <!-- TOP BAR -->
         <header
           class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3"
         >
@@ -68,14 +65,11 @@
           </router-link>
         </header>
 
-        <!-- SCROLL ZONA ZA DETAIL -->
         <div class="detail-scroll">
-          <!-- LOADING -->
           <section class="text-white text-start" v-if="loading">
             <p>Loading competition...</p>
           </section>
 
-          <!-- NOT FOUND -->
           <section class="text-white text-start" v-else-if="!competition">
             <div class="detail-inner mx-auto">
               <h3 class="fw-bold text-uppercase mb-3">Competition not found</h3>
@@ -88,10 +82,8 @@
             </div>
           </section>
 
-          <!-- CONTENT -->
           <section class="text-white text-start" v-else>
             <div class="detail-inner mx-auto">
-              <!-- HERO KARTICA / SUMMARY -->
               <div class="card competition-header-card mb-3">
                 <div
                   class="card-body d-flex flex-column flex-md-row justify-content-between gap-3"
@@ -122,7 +114,6 @@
                       </span>
                     </div>
 
-                    <!-- kategorije -->
                     <div
                       v-if="
                         competition.categories && competition.categories.length
@@ -172,7 +163,6 @@
                 </div>
               </div>
 
-              <!-- OVERVIEW / INFO KARTICA -->
               <div class="card bg-dark text-white details-card mb-3">
                 <div class="card-body">
                   <h5 class="mb-3 text-uppercase text-warning">Overview</h5>
@@ -202,12 +192,10 @@
                 </div>
               </div>
 
-              <!-- JUDGE ACTIONS + STATUS -->
               <div class="card bg-dark text-white judge-status-card mb-3">
                 <div
                   class="card-body d-flex flex-column flex-lg-row justify-content-between gap-3"
                 >
-                  <!-- START JUDGING BLOK -->
                   <div class="flex-grow-1">
                     <h6 class="mb-2 text-uppercase text-warning">Judging</h6>
 
@@ -235,7 +223,6 @@
                       </router-link>
                     </div>
 
-                    <!-- poruke stanja -->
                     <div class="small">
                       <div
                         class="text-warning"
@@ -256,7 +243,6 @@
                     </div>
                   </div>
 
-                  <!-- SEE RESULT BLOK -->
                   <div class="flex-grow-1">
                     <h6 class="mb-2 text-uppercase text-warning">Results</h6>
 
@@ -341,7 +327,6 @@ export default {
       const t = this.competition?.info;
       if (!t) return [];
 
-      // ako već ima ručne prijelome
       if (t.includes("\n")) {
         return t
           .split(/\r?\n/)
@@ -349,7 +334,6 @@ export default {
           .filter(Boolean);
       }
 
-      // fallback: samo vrati jedan "red"
       return [t.trim()];
     },
 
@@ -604,7 +588,6 @@ export default {
   background-color: #000 !important;
 }
 
-/* SIDEBAR */
 .user-info {
   border-top: 1px solid #333;
   padding: 10px 15px 0 15px;
@@ -656,7 +639,6 @@ export default {
   color: #ffc107 !important;
 }
 
-/* DESNI PANEL + SCROLL */
 .competitions-content {
   flex: 1;
   padding: 20px;
@@ -673,6 +655,7 @@ export default {
 .logout-link {
   color: #ffc107 !important;
   font-size: 13px;
+  text-decoration: none;
 }
 
 .logout-icon {
@@ -692,7 +675,6 @@ export default {
   max-width: 960px;
 }
 
-/* layout na razini komponente */
 .container-fluid {
   height: 100vh;
   overflow: hidden;
@@ -716,7 +698,6 @@ aside {
   overflow-x: hidden;
 }
 
-/* HERO / STATUS */
 .competition-header-card {
   border-radius: 12px;
   border: 1px solid #333;
@@ -745,7 +726,6 @@ aside {
   color: #aaa;
 }
 
-/* OVERVIEW */
 .nice-list {
   padding-left: 1.2rem;
   margin: 0;
@@ -757,7 +737,6 @@ aside {
   font-size: 14px;
 }
 
-/* BADGES */
 .badge-chip {
   background-color: #f5f5f5;
   border-radius: 999px;
@@ -772,7 +751,6 @@ aside {
   padding: 1px 6px;
 }
 
-/* JUDGE STATUS KARTICA */
 .judge-status-card {
   border-radius: 12px;
   border: 1px solid #333;

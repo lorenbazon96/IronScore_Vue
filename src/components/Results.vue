@@ -29,7 +29,7 @@
           </div>
         </div>
         <nav class="menu">
-          <router-link to="/dashboard" class="menu-item">Dashboard</router-link>
+          <router-link to="/dashboard" class="menu-item">Progress</router-link>
           <router-link to="/competitions" class="menu-item active-item"
             >competitions</router-link
           >
@@ -322,6 +322,7 @@ export default {
   color: #ffc107 !important;
   font-size: 14px;
   text-transform: uppercase;
+  text-decoration: none;
 }
 
 .edit {

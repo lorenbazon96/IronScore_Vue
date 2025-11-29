@@ -34,7 +34,7 @@
         </div>
         <nav class="menu d-flex flex-column gap-2">
           <router-link to="/dashboard" class="menu-item active-item"
-            >Dashboard</router-link
+            >Progress</router-link
           >
           <router-link to="/competitions" class="menu-item"
             >Competitions</router-link
@@ -315,6 +315,7 @@ export default {
   color: #ffc107 !important;
   font-size: 14px;
   text-transform: uppercase;
+  text-decoration: none;
 }
 .edit {
   color: #ffc107;

@@ -1,7 +1,6 @@
 <template>
   <div class="container-fluid">
     <div class="row min-vh-100">
-      <!-- SIDEBAR -->
       <aside class="col-12 col-md-3 bg-darka text-white p-3">
         <div class="logo mb-3">
           <img
@@ -36,7 +35,7 @@
         </div>
 
         <nav class="menu d-flex flex-column gap-2">
-          <router-link to="/dashboard" class="menu-item">Dashboard</router-link>
+          <router-link to="/dashboard" class="menu-item">Progress</router-link>
           <router-link to="/competitions" class="menu-item active-item"
             >Competitions</router-link
           >
@@ -46,9 +45,7 @@
         </nav>
       </aside>
 
-      <!-- MAIN CONTENT -->
       <main class="competitions-content col-12 col-md-9 bg-black text-white">
-        <!-- TOP BAR -->
         <header
           class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3"
         >
@@ -78,9 +75,7 @@
           </div>
         </header>
 
-        <!-- MY RESULTS SECTION -->
         <section>
-          <!-- Title + quick stats -->
           <div
             class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center mb-3"
           >
@@ -104,7 +99,6 @@
             </div>
           </div>
 
-          <!-- FILTERS (kompaktno) -->
           <div
             class="filters d-flex flex-wrap gap-2 align-items-end mb-3 bg-dark px-3 py-2 rounded-3"
           >
@@ -145,9 +139,7 @@
             </div>
           </div>
 
-          <!-- SCROLL ZONA ZA GRID – samo ovo se skrola -->
           <div class="results-scroll">
-            <!-- GRID OF CARDS -->
             <div v-if="filteredCompetitions.length" class="row g-3">
               <div
                 v-for="competition in filteredCompetitions"
@@ -156,9 +148,7 @@
               >
                 <div class="card competition-card h-100">
                   <div class="card-body d-flex flex-column">
-                    <!-- Gornji red: naziv (link) + pin + status -->
                     <div class="d-flex justify-content-between mb-2">
-                      <!-- Klik na naslov otvara detalje -->
                       <router-link
                         :to="`/competition?id=${competition.id}`"
                         class="d-flex align-items-center text-decoration-none text-dark flex-grow-1"
@@ -190,7 +180,6 @@
                           ></i>
                         </button>
 
-                        <!-- STATUS ICON -->
                         <div class="status-icon">
                           <i
                             v-if="isPast(competition.date)"
@@ -206,12 +195,10 @@
                       </div>
                     </div>
 
-                    <!-- Ostatak kartice vodi na detalje -->
                     <router-link
                       :to="`/competition?id=${competition.id}`"
                       class="text-decoration-none text-dark flex-grow-1 d-block"
                     >
-                      <!-- Datum + lokacija -->
                       <small class="text-muted mb-1 d-flex align-items-center">
                         <i class="fa-regular fa-calendar me-1"></i>
                         {{ formatDate(competition.date) }}
@@ -222,7 +209,6 @@
                         {{ competition.location }}
                       </small>
 
-                      <!-- DODATNI PODACI U KARTICI (prikazuju se samo ako postoje u bazi) -->
                       <div class="mt-1 small d-flex flex-wrap gap-1">
                         <span v-if="competition.category" class="badge-chip">
                           <i class="fa-solid fa-tag me-1"></i>
@@ -245,7 +231,6 @@
                         </span>
                       </div>
 
-                      <!-- kategorije desno -->
                       <div
                         v-if="displayedCategories(competition).length"
                         class="mt-1 d-flex justify-content-end flex-wrap gap-1 category-chips"
@@ -266,7 +251,6 @@
                       </div>
                     </router-link>
 
-                    <!-- Godina dolje desno, čisto radi orijentacije -->
                     <small class="mt-auto text-end text-muted">
                       {{ new Date(competition.date).getFullYear() }}
                     </small>
@@ -275,7 +259,6 @@
               </div>
             </div>
 
-            <!-- EMPTY STATE -->
             <div v-else class="text-center py-5">
               <img
                 src="@/assets/trophy.png"
@@ -308,7 +291,7 @@ export default {
     return {
       competitions: [],
       selectedYear: "all",
-      sortOrder: "date_desc", // date_desc | date_asc | loc_asc | loc_desc
+      sortOrder: "date_desc",
       searchQuery: "",
     };
   },
@@ -333,9 +316,8 @@ export default {
         const pa = a.pinned ? 1 : 0;
         const pb = b.pinned ? 1 : 0;
 
-        // prvo po pinanju (pinned gore)
         if (pa !== pb) {
-          return pb - pa; // 1 prije 0
+          return pb - pa;
         }
 
         const da = new Date(a.date);
@@ -343,12 +325,11 @@ export default {
         const la = (a.location || "").toString().toLowerCase();
         const lb = (b.location || "").toString().toLowerCase();
 
-        // pa onda po odabranom sortOrder
         switch (this.sortOrder) {
           case "date_asc":
             return da - db;
           case "loc_asc":
-            if (la === lb) return db - da; // fallback na datum
+            if (la === lb) return db - da;
             return la.localeCompare(lb);
           case "loc_desc":
             if (la === lb) return db - da;
@@ -404,7 +385,6 @@ export default {
     async togglePin(competition) {
       const newValue = !competition.pinned;
 
-      // 1. odmah promijeni lokalno (UI reagira odmah)
       competition.pinned = newValue;
 
       try {
@@ -412,9 +392,6 @@ export default {
         await updateDoc(ref, { pinned: newValue });
       } catch (error) {
         console.error("Error updating pin:", error);
-        // 2. za sad NE vraćamo staru vrijednost da ne blinka
-        // ako želiš, ovdje možeš staviti neki toast/alert:
-        // alert("Ne mogu spremiti pin u bazu");
       }
     },
     isPast(date) {
@@ -454,7 +431,6 @@ export default {
   background-color: #000 !important;
 }
 
-/* sidebar */
 .user-info {
   border-top: 1px solid #333;
   padding: 10px 15px 0 15px;
@@ -506,7 +482,6 @@ export default {
   color: #ffc107 !important;
 }
 
-/* main */
 .competitions-content {
   flex: 1;
   padding: 20px;
@@ -520,6 +495,7 @@ export default {
 .logout-link {
   color: #ffc107 !important;
   font-size: 13px;
+  text-decoration: none;
 }
 
 .logout-icon {
@@ -527,7 +503,6 @@ export default {
   height: 18px;
 }
 
-/* stats */
 .stats-wrapper {
   gap: 6px;
 }
@@ -553,7 +528,6 @@ export default {
   color: #ffc107;
 }
 
-/* filters */
 .filters {
   border-radius: 10px;
 }
@@ -575,26 +549,23 @@ export default {
   height: auto;
 }
 
-/* DESNI PANEL */
 .competitions-content {
   flex: 1;
   padding: 20px;
   display: flex;
   flex-direction: column;
-  height: 100vh; /* zauzmi cijelu visinu prozora */
-  overflow: hidden; /* ovdje ništa ne skrola, skrola samo dijete */
+  height: 100vh;
+  overflow: hidden;
 }
 
-/* zona s rezultatima ima vlastiti scroll */
 .results-scroll {
-  flex: 1; /* zauzmi sav preostali prostor u sekciji */
-  overflow-y: auto; /* vertikalni scroll samo ovdje */
-  overflow-x: hidden; /* nema horizontalnog skrola */
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding-right: 4px;
-  min-height: 0; /* bitno da flex dijete može scrollati */
+  min-height: 0;
 }
 
-/* scrollbar (opcionalno) */
 .results-scroll::-webkit-scrollbar {
   width: 6px;
 }

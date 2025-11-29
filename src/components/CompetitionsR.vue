@@ -526,6 +526,7 @@ export default {
 .logout-link {
   color: #ffc107 !important;
   font-size: 13px;
+  text-decoration: none;
 }
 
 .logout-icon {

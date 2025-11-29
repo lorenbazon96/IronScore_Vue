@@ -34,7 +34,7 @@
         </div>
         <nav class="menu d-flex flex-column gap-2">
           <router-link to="/dashboard" class="menu-item active-item"
-            >Dashboard</router-link
+            >Progress</router-link
           >
           <router-link to="/competitions" class="menu-item"
             >Competitions</router-link
@@ -67,7 +67,6 @@
           <div class="row justify-content-center">
             <div class="col-12 col-lg-8">
               <div class="card bg-dark text-white p-4 goals-card">
-                <!-- Header kartice -->
                 <div
                   class="d-flex justify-content-between align-items-center mb-3"
                 >
@@ -78,7 +77,6 @@
                     </small>
                   </div>
 
-                  <!-- Krug s postotkom -->
                   <div
                     v-if="goals.length"
                     class="goals-progress-circle d-flex flex-column align-items-center justify-content-center"
@@ -90,16 +88,13 @@
                   </div>
                 </div>
 
-                <!-- Lista ciljeva -->
                 <div class="goal-list border-top border-secondary pt-3 mb-3">
                   <div v-if="goals.length" class="goal-list-inner">
-                    <!-- JEDAN CILJ -->
                     <div
                       v-for="goal in goals"
                       :key="goal.id"
                       class="goal-row d-flex align-items-center"
                     >
-                      <!-- SWITCH LEFT -->
                       <label class="switch me-3">
                         <input
                           type="checkbox"
@@ -109,7 +104,6 @@
                         <span class="slider round"></span>
                       </label>
 
-                      <!-- TEXT -->
                       <div class="flex-grow-1">
                         <p
                           class="mb-1 fw-bold"
@@ -125,7 +119,6 @@
                         </p>
                       </div>
 
-                      <!-- DELETE RIGHT -->
                       <button
                         type="button"
                         class="btn btn-link btn-sm text-muted delete-btn ms-2"
@@ -145,7 +138,6 @@
                   </p>
                 </div>
 
-                <!-- Dodavanje novog cilja -->
                 <div class="add-goal-area pt-3 border-top border-secondary">
                   <h6 class="text-uppercase small text-white-50 mb-2">
                     Add new goal
@@ -306,6 +298,7 @@ export default {
   color: #ffc107 !important;
   font-size: 14px;
   text-transform: uppercase;
+  text-decoration: none;
 }
 
 .edit {
@@ -428,8 +421,6 @@ export default {
   box-shadow: none;
 }
 
-/* Toggle switch (Done / Active) */
-
 .switch {
   position: relative;
   display: inline-block;
@@ -447,7 +438,7 @@ export default {
   position: absolute;
   cursor: pointer;
   inset: 0;
-  background-color: #555; /* off stanje */
+  background-color: #555;
   transition: 0.2s;
   border-radius: 34px;
 }
@@ -464,7 +455,6 @@ export default {
   border-radius: 50%;
 }
 
-/* ON stanje – žuta da se slaže s ostatkom UI-a */
 .switch input:checked + .slider {
   background-color: #ffc107;
 }
@@ -473,7 +463,6 @@ export default {
   transform: translateX(18px);
 }
 
-/* malo “okrugliji” izgled */
 .slider.round {
   border-radius: 34px;
 }

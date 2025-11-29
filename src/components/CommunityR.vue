@@ -361,6 +361,7 @@ export default {
   color: #ffc107 !important;
   font-size: 14px;
   text-transform: uppercase;
+  text-decoration: none;
 }
 
 .community-single-content {

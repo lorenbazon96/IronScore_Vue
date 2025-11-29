@@ -9,6 +9,7 @@
             class="img-fluid"
           />
         </div>
+
         <div class="user-info mb-3 border-top pt-2">
           <div
             class="user-info-inner d-flex justify-content-between align-items-center mt-2"
@@ -32,22 +33,27 @@
             </router-link>
           </div>
         </div>
+
         <nav class="menu d-flex flex-column gap-2">
-          <router-link to="/dashboard" class="menu-item">Dashboard</router-link>
-          <router-link to="/competitions" class="menu-item"
-            >Competitions</router-link
-          >
+          <router-link to="/dashboard" class="menu-item">Progress</router-link>
+          <router-link to="/competitions" class="menu-item">
+            Competitions
+          </router-link>
           <router-link to="/community" class="menu-item">Community</router-link>
           <router-link to="/timer" class="menu-item">Timer</router-link>
-          <router-link to="/trainings" class="menu-item active-item"
-            >Trainings</router-link
-          >
+          <router-link to="/trainings" class="menu-item active-item">
+            Trainings
+          </router-link>
         </nav>
       </aside>
 
-      <main class="col-12 col-md-9 training-content trainings-content p-4">
-        <header class="training-header trainings-header">
-          <h2 class="title trainings-title">Trainings</h2>
+      <main class="col-12 col-md-9 trainings-content bg-black text-white">
+        <header
+          class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4"
+        >
+          <h2 class="title text-warning fw-bold text-uppercase mb-2 mb-md-0">
+            Trainings
+          </h2>
           <router-link
             to="/"
             class="btn btn-link text-warning fw-bold p-0 logout-link d-flex align-items-center"
@@ -61,8 +67,10 @@
           </router-link>
         </header>
 
-        <div class="d-flex gap-4 align-items-start mb-5 flex-wrap">
-          <div class="d-flex flex-column gap-3" style="width: 250px">
+        <div
+          class="d-flex gap-4 align-items-start mb-5 flex-wrap trainings-top-row"
+        >
+          <div class="new-training-actions d-flex flex-column gap-3">
             <router-link
               to="/new-training-daily"
               class="btn btn-warning fw-bold text-start"
@@ -77,11 +85,8 @@
             </router-link>
           </div>
 
-          <section
-            class="training-plan custom-card"
-            style="flex: 1; min-width: 300px"
-          >
-            <h4 class="section-title">
+          <section class="training-plan custom-card flex-grow-1">
+            <h4 class="section-title d-flex align-items-center">
               {{
                 selectedTraining ? selectedTraining.name : "Training preview"
               }}
@@ -93,14 +98,14 @@
               </span>
             </h4>
 
-            <div v-if="!selectedTraining" class="text-muted">
-              Select a training from <strong>MY TRAININGS LIST</strong> to
-              preview it here.
-            </div>
+            <p v-if="!selectedTraining" class="text-muted mb-0">
+              Select a training from
+              <strong>MY TRAININGS LIST</strong> to preview it here.
+            </p>
 
             <div v-else class="d-flex gap-3 mt-3 flex-wrap">
-              <div class="d-flexy flex-column gap-2" style="min-width: 220px">
-                <div class="fw-bold text-uppercase small text-secondary">
+              <div class="plan-selector">
+                <div class="fw-bold text-uppercase small text-secondary mb-1">
                   {{
                     selectedIsWeekly
                       ? "Days"
@@ -114,7 +119,7 @@
                   <button
                     v-for="day in selectedDays"
                     :key="'w-' + day"
-                    class="btn btn-sm"
+                    class="btn btn-sm day-chip"
                     :class="
                       currentDay === day ? 'btn-warning' : 'btn-outline-warning'
                     "
@@ -129,7 +134,7 @@
                     <button
                       v-for="day in selectedDays"
                       :key="'d-' + day"
-                      class="btn btn-sm"
+                      class="btn btn-sm day-chip"
                       :class="
                         currentDay === day
                           ? 'btn-warning'
@@ -144,7 +149,7 @@
                     <button
                       v-for="g in groupsForDay(currentDay)"
                       :key="'dg-' + currentDay + '-' + g"
-                      class="btn btn-sm"
+                      class="btn btn-sm group-chip"
                       :class="
                         currentGroup === g
                           ? 'btn-warning'
@@ -162,7 +167,7 @@
                     <button
                       v-for="g in groupsForDay(null)"
                       :key="'g-' + g"
-                      class="btn btn-sm"
+                      class="btn btn-sm group-chip"
                       :class="
                         currentGroup === g
                           ? 'btn-warning'
@@ -178,12 +183,12 @@
 
               <div class="flex-grow-1">
                 <div class="table-responsive">
-                  <table class="table custom-table text-white">
+                  <table class="table custom-table text-white mb-0">
                     <thead>
                       <tr>
                         <th class="hr">Exercise</th>
-                        <th class="hr" style="width: 90px">Sets</th>
-                        <th class="hr" style="width: 90px">Reps</th>
+                        <th class="hr col-sets">Sets</th>
+                        <th class="hr col-reps">Reps</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -208,16 +213,14 @@
         <section class="custom-card mb-5">
           <h5 class="section-title">MY TRAININGS LIST</h5>
           <div class="table-responsive">
-            <table class="table custom-table text-white">
+            <table class="table custom-table text-white mb-0">
               <thead>
                 <tr>
                   <th class="hr">Training Name</th>
                   <th class="hr">Created</th>
                   <th class="hr">Type</th>
                   <th class="hr">Muscle groups / Days</th>
-                  <th class="hr" style="width: 1%; white-space: nowrap">
-                    Actions
-                  </th>
+                  <th class="hr col-actions">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -226,7 +229,7 @@
                   :key="t.id"
                   :class="t.id === activeTrainingId ? 'highlight-row' : ''"
                   @click="setActive(t)"
-                  style="cursor: pointer"
+                  class="training-row"
                 >
                   <td>{{ t.name }}</td>
                   <td>{{ t.createdLabel }}</td>
@@ -258,6 +261,11 @@
                       ></span>
                       Delete
                     </button>
+                  </td>
+                </tr>
+                <tr v-if="!trainings.length">
+                  <td colspan="5" class="text-center text-muted">
+                    You don't have any trainings yet.
                   </td>
                 </tr>
               </tbody>
@@ -315,12 +323,10 @@ export default {
     selectedIsDaily() {
       return this.selectedTraining?.type === "daily";
     },
-
     dailyHasDays() {
       if (!this.selectedIsDaily) return false;
       return (this.selectedTraining?.exercises || []).some((e) => !!e.day);
     },
-
     selectedDays() {
       if (!this.selectedTraining) return [];
       if (this.selectedIsWeekly) {
@@ -339,7 +345,6 @@ export default {
       }
       return [];
     },
-
     activeExercises() {
       if (!this.selectedTraining) return [];
 
@@ -383,25 +388,20 @@ export default {
       );
       return [...new Set(list.map((e) => e.group).filter(Boolean))];
     },
-
     selectDay(day) {
       this.currentDay = day;
-
       if (this.selectedIsWeekly) {
         this.currentGroup = null;
         return;
       }
-
       if (this.selectedIsDaily && this.dailyHasDays) {
         const groups = this.groupsForDay(day);
         this.currentGroup = groups[0] || null;
       }
     },
-
     selectGroup(group) {
       this.currentGroup = group;
     },
-
     setActive(t) {
       this.activeTrainingId = t.id;
 
@@ -424,7 +424,6 @@ export default {
         this.currentGroup = groups[0] || null;
       }
     },
-
     subscribeTrainings() {
       const uid = getAuth().currentUser?.uid;
       if (!uid) return;
@@ -436,14 +435,14 @@ export default {
 
       this._unsubTrainings = onSnapshot(q, (snap) => {
         const list = [];
-        snap.forEach((doc) => {
-          const d = doc.data() || {};
+        snap.forEach((docSnap) => {
+          const d = docSnap.data() || {};
           const createdAt =
             d.createdAt?.toDate?.() instanceof Date
               ? d.createdAt.toDate()
               : d.createdAt || null;
           list.push({
-            id: doc.id,
+            id: docSnap.id,
             name: d.name || "(no name)",
             type: d.type || "daily",
             plan: d.plan || null,
@@ -507,191 +506,6 @@ export default {
   width: 100%;
 }
 
-.user-info {
-  border-top: 1px solid #333;
-  padding-top: 10px;
-}
-
-.menu {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.menu-item {
-  color: #ffffff;
-  font-weight: bold;
-  text-decoration: none;
-  font-size: 20px;
-  text-transform: uppercase;
-}
-
-.active-item {
-  color: #ffc107 !important;
-}
-
-.training-content {
-  flex: 1;
-  padding: 15px;
-  background: #000;
-  overflow-y: auto;
-}
-
-.training-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  color: #ffc107;
-  text-transform: uppercase;
-  font-weight: 900;
-}
-
-.title {
-  font-weight: bold;
-}
-
-.logout-link {
-  color: #ffc107 !important;
-  font-size: 14px;
-  text-transform: uppercase;
-}
-
-.trainings-header {
-  color: #fff;
-}
-
-.trainings-title {
-  font-size: 2rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: #ffc107;
-}
-
-.training-plan {
-  background-color: #2b2b2b;
-  border-radius: 20px;
-  padding: 15px;
-}
-
-.custom-card {
-  background-color: #2b2b2b;
-  border-radius: 20px;
-  padding: 15px;
-  color: #fff;
-}
-
-.section-title {
-  font-weight: bold;
-  font-size: 20px;
-  color: #fff;
-  margin-bottom: 10px;
-  text-transform: uppercase;
-}
-
-.custom-table {
-  background-color: #444 !important;
-}
-.custom-table thead th {
-  color: #fff;
-  font-weight: 600;
-}
-
-.custom-table tbody td {
-  color: #fff;
-  font-size: 17px;
-}
-
-.highlight-row td {
-  background-color: #ffc107 !important;
-  color: #000 !important;
-  font-weight: bold;
-}
-
-.btn.btn-warning {
-  background-color: #ffc107;
-  color: #000;
-  border: none;
-  border-radius: 6px;
-  padding: 10px 15px;
-  font-weight: bold;
-  margin-top: 50px;
-}
-
-.btn.btn-warning:hover {
-  background-color: #ffcd39;
-}
-
-.table td,
-.table th {
-  border: none;
-}
-
-.table > :not(caption) > * > * {
-  padding: 0.5rem 0.5rem;
-  background-color: rgb(43, 43, 43);
-}
-
-.table th {
-  font-size: 17px;
-}
-
-.custom-table tbody tr td:first-child {
-  font-size: 17px;
-}
-
-.hr {
-  border-bottom: 2px solid #888;
-}
-
-.custom-table tbody td[data-v-68c42c0a] {
-  color: #fff;
-  font-size: 15px;
-}
-
-.custom-table thead th.hr {
-  border-bottom: 2px solid #888;
-}
-
-.edit {
-  color: #ffc107;
-}
-
-.btn-outline-warning {
-  border-color: #ffc107;
-  color: #ffc107;
-  max-height: fit-content;
-  padding: 0.7em;
-  border-radius: 5px;
-}
-.btn-outline-warning:hover {
-  background-color: #ffc107;
-  color: #000;
-  max-height: fit-content;
-  padding: 0.7em;
-  border-radius: 5px;
-}
-
-.d-flexy {
-  display: flex !important;
-  align-items: flex-end;
-}
-
-.btn-outline-danger {
-  border-color: #ffffff;
-  color: #ffffff;
-}
-.btn-outline-danger:hover:enabled {
-  background-color: #000000;
-  color: #fff;
-}
-
-.section-title {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .bg-darka {
   background-color: #000 !important;
 }
@@ -699,6 +513,11 @@ export default {
 .user-info {
   border-top: 1px solid #333;
   padding: 10px 15px 0 15px;
+}
+
+.user-info-inner {
+  max-width: 260px;
+  margin: 0 auto;
 }
 
 .user-icon {
@@ -724,13 +543,171 @@ export default {
   font-size: 16px;
 }
 
-.user-info-inner {
-  max-width: 260px;
-  margin: 0 auto;
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.menu-item {
+  color: #ffffff;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 20px;
+  text-transform: uppercase;
+}
+
+.active-item {
+  color: #ffc107 !important;
+}
+
+.logout-link {
+  color: #ffc107 !important;
+  font-size: 14px;
+  text-transform: uppercase;
+  text-decoration: none;
 }
 
 .logout-icon {
   width: 20px;
   height: 20px;
+}
+
+.trainings-content {
+  flex: 1;
+  padding: 30px;
+  background: #000;
+  overflow-y: auto;
+}
+
+.trainings-top-row {
+  align-items: stretch;
+}
+
+.new-training-actions {
+  width: 260px;
+}
+
+.custom-card,
+.training-plan {
+  background-color: #111;
+  border-radius: 16px;
+  padding: 18px 20px 22px;
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.7);
+}
+
+.title {
+  font-weight: bold;
+}
+
+.section-title {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #fff;
+  margin-bottom: 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.plan-selector {
+  min-width: 220px;
+}
+
+.btn-outline-warning {
+  border-color: #ffc107;
+  color: #ffc107;
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+
+.btn-outline-warning:hover {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.day-chip,
+.group-chip {
+  white-space: nowrap;
+}
+
+.custom-table {
+  background-color: #222 !important;
+}
+
+.table > :not(caption) > * > * {
+  padding: 0.5rem 0.6rem;
+  background-color: #222;
+  border-bottom: 1px solid #333;
+}
+
+.custom-table thead th {
+  color: #fff;
+  font-weight: 600;
+  border-bottom: 2px solid #555;
+  font-size: 0.9rem;
+}
+
+.custom-table tbody td {
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.hr {
+  border-bottom: 2px solid #888;
+}
+
+.col-sets,
+.col-reps {
+  width: 90px;
+  text-align: center;
+}
+
+.col-actions {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.training-row {
+  cursor: pointer;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.training-row:hover td {
+  background-color: #333 !important;
+}
+
+.highlight-row td {
+  background-color: #ffc107 !important;
+  color: #000 !important;
+  font-weight: 600;
+}
+
+.btn.btn-warning {
+  background-color: #ffc107;
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 15px;
+  font-weight: bold;
+}
+
+.btn.btn-warning:hover {
+  background-color: #ffcd39;
+}
+
+.btn-outline-danger {
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+.btn-outline-danger:hover:enabled {
+  background-color: #000000;
+  color: #fff;
+}
+
+.d-flexy {
+  display: flex !important;
+  align-items: flex-end;
 }
 </style>

@@ -1,7 +1,6 @@
 <template>
   <div class="container-fluid">
     <div class="row min-vh-100">
-      <!-- SIDEBAR -->
       <aside class="col-12 col-md-3 sidebar bg-darka text-white p-3">
         <div class="logo mb-3">
           <img
@@ -36,7 +35,7 @@
         </div>
 
         <nav class="menu d-flex flex-column gap-2">
-          <router-link to="/dashboard" class="menu-item">Dashboard</router-link>
+          <router-link to="/dashboard" class="menu-item">Progress</router-link>
           <router-link to="/competitions" class="menu-item"
             >Competitions</router-link
           >
@@ -48,7 +47,6 @@
         </nav>
       </aside>
 
-      <!-- MAIN CONTENT -->
       <main class="col-12 col-md-9 timer-content bg-black text-white">
         <header
           class="timer-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4"
@@ -69,9 +67,7 @@
           </router-link>
         </header>
 
-        <!-- SVE OKO TIMERA JE U OVOJ WRAPPER ZONI -->
         <div class="timer-wrapper" :class="{ 'timer-running': isRunning }">
-          <!-- SET TIME PANEL -->
           <div class="set-time">
             <label class="set-time-label">Set time:</label>
             <input
@@ -90,10 +86,8 @@
             <button @click="setTime">Set</button>
           </div>
 
-          <!-- DISPLAY -->
           <div id="display">{{ formattedTime }}</div>
 
-          <!-- CONTROLS -->
           <div class="controls">
             <button
               @click="startTimer"
@@ -166,7 +160,7 @@ export default {
         this.timer = null;
       }
       this.isRunning = false;
-      this.setTime(); // vrati na zadani input (npr. 0:30)
+      this.setTime();
     },
   },
   beforeUnmount() {
@@ -176,8 +170,6 @@ export default {
 </script>
 
 <style scoped>
-/* SIDEBAR */
-
 .logo img {
   width: 100%;
 }
@@ -241,14 +233,13 @@ export default {
   color: #ffc107 !important;
   font-size: 14px;
   text-transform: uppercase;
+  text-decoration: none;
 }
 
 .logout-icon {
   width: 20px;
   height: 20px;
 }
-
-/* MAIN LAYOUT */
 
 .timer-content {
   flex: 1;
@@ -274,8 +265,6 @@ export default {
   font-weight: bold;
 }
 
-/* CENTRALNI TIMER WRAPPER */
-
 .timer-wrapper {
   flex: 1;
   display: flex;
@@ -283,8 +272,6 @@ export default {
   justify-content: center;
   align-items: center;
 }
-
-/* SET TIME PANEL */
 
 .set-time {
   display: flex;
@@ -341,8 +328,6 @@ export default {
   background: #ffdb4d;
 }
 
-/* DIGITALNI DISPLAY */
-
 #display {
   font-size: 120px;
   font-weight: 900;
@@ -354,7 +339,6 @@ export default {
   font-family: "Roboto Mono", monospace;
 }
 
-/* pulse kad timer radi */
 .timer-running #display {
   animation: pulse 1s infinite ease-in-out;
 }
@@ -370,8 +354,6 @@ export default {
     text-shadow: 0 0 10px #ffc107;
   }
 }
-
-/* GUMBI */
 
 .controls {
   display: flex;

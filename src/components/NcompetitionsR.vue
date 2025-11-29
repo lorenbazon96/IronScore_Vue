@@ -1,6 +1,7 @@
 <template>
   <div class="container-fluid">
     <div class="row min-vh-100">
+
       <aside class="col-12 col-md-3 sidebar bg-darka text-white p-3">
         <div class="logo mb-3">
           <img
@@ -9,6 +10,7 @@
             class="img-fluid"
           />
         </div>
+
         <div class="user-info mb-3 border-top pt-2">
           <div
             class="user-info-inner d-flex justify-content-between align-items-center mt-2"
@@ -32,19 +34,19 @@
             </router-link>
           </div>
         </div>
+
         <nav class="menu d-flex flex-column gap-2">
-          <router-link to="/competitionsr" class="menu-item active-item"
-            >competitions</router-link
-          >
-          <router-link to="/communityfr" class="menu-item"
-            >Community</router-link
-          >
+          <router-link to="/competitionsr" class="menu-item active-item">
+            Competitions
+          </router-link>
+          <router-link to="/communityfr" class="menu-item">
+            Community
+          </router-link>
         </nav>
       </aside>
 
-      <main
-        class="col-12 col-md-9 competitions-content p-4 bg-black text-white"
-      >
+
+      <main class="col-12 col-md-9 competitions-content bg-black text-white">
         <header
           class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4"
         >
@@ -64,103 +66,151 @@
           </router-link>
         </header>
 
-        <section>
+        <section class="form-wrapper">
           <h3 class="text-white text-uppercase fw-bold mb-3">
             Create New Competition
           </h3>
+          <p class="small mb-4">
+            Fill in competition information, referees and categories. Unused
+            referee/category rows can stay empty.
+          </p>
+
           <div class="row justify-content-center">
-            <div class="col-md-10">
-              <div class="card text-white p-4 border border-secondary">
+            <div class="col-lg-10">
+              <div
+                class="card competition-form-card text-white border border-secondary"
+              >
                 <form @submit.prevent="addCompetition">
-                  <div class="mb-3">
-                    <label
-                      for="name"
-                      class="form-label d-flex align-items-start"
-                      >Name of competition:</label
-                    >
-                    <input
-                      type="text"
-                      v-model="competition.name"
-                      class="form-control bg-dark text-white border-secondary"
-                      id="name"
-                      placeholder="Arnold Classic"
-                    />
+
+                  <div class="section-header mb-3">
+                    <h5 class="section-title mb-0">Basic information</h5>
                   </div>
 
-                  <div class="mb-3">
-                    <label
-                      for="date"
-                      class="form-label d-flex align-items-start"
-                      >Date</label
-                    >
-                    <input
-                      type="date"
-                      v-model="competition.date"
-                      class="form-control bg-dark text-white border-secondary"
-                      id="date"
-                    />
+                  <div class="row">
+                    <div class="col-12 mb-3">
+                      <label
+                        for="name"
+                        class="form-label d-flex align-items-start"
+                      >
+                        Name of competition
+                      </label>
+                      <input
+                        type="text"
+                        v-model="competition.name"
+                        class="form-control form-control-dark"
+                        id="name"
+                        placeholder="Mr Bean Classic"
+                      />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                      <label
+                        for="date"
+                        class="form-label d-flex align-items-start"
+                      >
+                        Date
+                      </label>
+                      <input
+                        type="date"
+                        v-model="competition.date"
+                        class="form-control form-control-dark"
+                        id="date"
+                      />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                      <label
+                        for="location"
+                        class="form-label d-flex align-items-start"
+                      >
+                        Location
+                      </label>
+                      <input
+                        type="text"
+                        v-model="competition.location"
+                        class="form-control form-control-dark"
+                        id="location"
+                        placeholder="Pula, Croatia"
+                      />
+                    </div>
                   </div>
 
-                  <div class="mb-3">
-                    <label
-                      for="location"
-                      class="form-label d-flex align-items-start"
-                      >Location</label
-                    >
-                    <input
-                      type="text"
-                      v-model="competition.location"
-                      class="form-control bg-dark text-white border-secondary"
-                      id="location"
-                      placeholder="London"
-                    />
+                  <hr class="section-divider" />
+
+      
+                  <div class="section-header mb-2">
+                    <h5 class="section-title mb-0">Referees</h5>
+                    <span class="section-subtitle">
+                      Up to {{ competition.referees.length }} referees — leave
+                      unused rows empty.
+                    </span>
                   </div>
 
-                  <div class="mb-3">
-                    <label class="form-label d-flex align-items-start"
-                      >Referees</label
-                    >
-                    <input
+                  <div class="row">
+                    <div
+                      class="col-md-6 mb-2"
                       v-for="(ref, index) in competition.referees"
-                      :key="index"
-                      type="text"
-                      v-model="competition.referees[index]"
-                      class="form-control bg-dark text-white border-secondary mb-1"
-                      :placeholder="'Referee ' + (index + 1)"
-                    />
+                      :key="'ref-' + index"
+                    >
+                      <input
+                        type="text"
+                        v-model="competition.referees[index]"
+                        class="form-control form-control-dark"
+                        :placeholder="'Referee ' + (index + 1)"
+                      />
+                    </div>
                   </div>
 
-                  <div class="mb-3">
-                    <label class="form-label d-flex align-items-start"
-                      >Categories</label
-                    >
-                    <input
+                  <hr class="section-divider" />
+
+
+                  <div class="section-header mb-2">
+                    <h5 class="section-title mb-0">Categories</h5>
+                    <span class="section-subtitle">
+                      Up to {{ competition.categories.length }} categories.
+                    </span>
+                  </div>
+
+                  <div class="row">
+                    <div
+                      class="col-md-6 mb-2"
                       v-for="(cat, index) in competition.categories"
-                      :key="index"
-                      type="text"
-                      v-model="competition.categories[index]"
-                      class="form-control bg-dark text-white border-secondary mb-1"
-                      :placeholder="'Category ' + (index + 1)"
-                    />
+                      :key="'cat-' + index"
+                    >
+                      <input
+                        type="text"
+                        v-model="competition.categories[index]"
+                        class="form-control form-control-dark"
+                        :placeholder="'Category ' + (index + 1)"
+                      />
+                    </div>
                   </div>
 
+                  <hr class="section-divider" />
+
+         
                   <div class="mb-3">
-                    <label
-                      for="info"
-                      class="form-label d-flex align-items-start"
-                      >More information</label
-                    >
+                    <div class="section-header mb-1">
+                      <h5 class="section-title mb-0">Additional information</h5>
+                      <span class="section-subtitle">
+                        Conditions, format, schedule, award ceremony, notes for
+                        judges…
+                      </span>
+                    </div>
                     <textarea
                       v-model="competition.info"
-                      class="form-control bg-dark text-white border-secondary"
+                      class="form-control form-control-dark"
                       id="info"
-                      rows="3"
-                      placeholder="conditions, course of the competition, time of award ceremony,..."
+                      rows="4"
+                      placeholder="Example: check-in time, judging criteria, mandatory music format, athletes meeting time..."
                     ></textarea>
                   </div>
 
-                  <button type="submit" class="btn btn-warning w-100 fw-bold">
-                    Submit
+                  <button
+                    type="submit"
+                    class="btn btn-warning w-100 fw-bold mt-2"
+                  >
+                    Submit competition
                   </button>
                 </form>
               </div>
@@ -226,6 +276,7 @@ export default {
         });
 
         alert("Competition added successfully!");
+
         this.competition = {
           name: "",
           date: "",
@@ -248,66 +299,19 @@ export default {
   width: 100%;
 }
 
-.user-info {
-  border-top: 1px solid #333;
-  padding-top: 10px;
-}
-
-.menu {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.menu-item {
-  color: #ffffff;
-  font-weight: bold;
-  text-decoration: none;
-  font-size: 20px;
-  text-transform: uppercase;
-}
-
-.active-item {
-  color: #ffc107 !important;
-}
-
-.competitions-content {
-  flex: 1;
-  padding: 30px;
-  background: #000;
-  overflow-y: auto;
-}
-
-.title {
-  font-weight: bold;
-}
-
-.logout-link {
-  color: #ffc107 !important;
-  font-size: 14px;
-  text-transform: uppercase;
-}
-
-input::placeholder,
-textarea::placeholder {
-  color: #bbb;
-}
-
-.card {
-  background-color: rgb(17, 17, 17);
-}
-
-.edit {
-  color: #ffc107;
-}
-
 .bg-darka {
   background-color: #000 !important;
 }
 
+
 .user-info {
   border-top: 1px solid #333;
   padding: 10px 15px 0 15px;
+}
+
+.user-info-inner {
+  max-width: 260px;
+  margin: 0 auto;
 }
 
 .user-icon {
@@ -333,13 +337,101 @@ textarea::placeholder {
   font-size: 16px;
 }
 
-.user-info-inner {
-  max-width: 260px;
-  margin: 0 auto;
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.menu-item {
+  color: #ffffff;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 20px;
+  text-transform: uppercase;
+}
+
+.active-item {
+  color: #ffc107 !important;
+}
+
+.logout-link {
+  color: #ffc107 !important;
+  font-size: 14px;
+  text-transform: uppercase;
+  text-decoration: none;
 }
 
 .logout-icon {
   width: 20px;
   height: 20px;
+}
+
+
+.competitions-content {
+  flex: 1;
+  padding: 30px;
+  background: #000;
+  overflow-y: auto;
+}
+
+.title {
+  font-weight: bold;
+}
+
+
+.form-wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.competition-form-card {
+  background-color: #111;
+  border-radius: 16px;
+  padding: 24px 24px 28px;
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.7);
+}
+
+
+.form-control-dark {
+  background-color: #000;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 10px;
+  font-size: 0.95rem;
+}
+
+.form-control-dark:focus {
+  outline: none;
+  border-color: #ffc107;
+  box-shadow: 0 0 0 0.15rem rgba(255, 193, 7, 0.25);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #999;
+}
+
+.section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.section-title {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #ffc107;
+}
+
+.section-subtitle {
+  font-size: 0.8rem;
+  color: #aaa;
+}
+
+.section-divider {
+  border-color: #333;
+  margin: 1rem 0 1.1rem;
 }
 </style>

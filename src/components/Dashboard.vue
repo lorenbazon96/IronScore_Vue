@@ -34,7 +34,7 @@
         </div>
         <nav class="menu d-flex flex-column gap-2">
           <router-link to="/dashboard" class="menu-item active-item"
-            >Dashboard</router-link
+            >Progress</router-link
           >
           <router-link to="/competitions" class="menu-item"
             >Competitions</router-link
@@ -49,7 +49,7 @@
         <header
           class="dashboard-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 text-warning text-uppercase fw-bold"
         >
-          <h2 class="title mb-2 mb-md-0">Dashboard</h2>
+          <h2 class="title mb-2 mb-md-0">Progress</h2>
           <router-link
             to="/"
             class="btn btn-link text-warning fw-bold p-0 logout-link d-flex align-items-center"
@@ -266,6 +266,7 @@ export default {
   color: #ffc107 !important;
   font-size: 14px;
   text-transform: uppercase;
+  text-decoration: none;
 }
 
 .edit {

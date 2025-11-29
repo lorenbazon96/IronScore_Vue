@@ -1,23 +1,28 @@
 <template>
   <div class="login-container">
     <div class="back-arrow" @click="goBack">
-      <img
-        src="@/assets/left-arrow-back-svgrepo-com.svg"
-        alt="Back"
-        class="arrow-img"
-      />
+      <img src="@/assets/home.png" alt="Home" class="arrow-img" />
     </div>
+
     <div class="logo-section">
       <img src="@/assets/logo.png" alt="Ironscore Logo" class="logo" />
     </div>
+
     <div class="form-section">
-      <input
-        type="email"
-        v-model="email"
-        placeholder="Your mail"
-        class="input-field"
-      />
-      <button class="login-button sirina-b" @click="send">Send</button>
+      <div class="input-wrapper">
+        <img src="@/assets/email.png" alt="Email" class="input-icon" />
+        <input
+          type="email"
+          v-model="email"
+          placeholder="Your mail"
+          class="input-field input-with-icon"
+        />
+      </div>
+
+      <button class="login-button sirina-b" @click="send">
+        <img src="@/assets/login.png" alt="Send" class="btn-icon mx-2" />
+        Send
+      </button>
     </div>
   </div>
 </template>
@@ -27,7 +32,7 @@ import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../firebase";
 
 export default {
-  name: "Login",
+  name: "ForgotPassword",
   data() {
     return {
       email: "",
@@ -96,21 +101,35 @@ export default {
   flex-direction: column;
 }
 
+.input-wrapper {
+  position: relative;
+  margin-bottom: 20px;
+}
+
 .input-field {
   background-color: #d3d3d3;
   border: none;
   border-radius: 5px;
   padding: 12px;
-  margin-bottom: 20px;
   font-size: 16px;
+  width: 100%;
 }
 
-.forgot-password {
-  color: white;
-  font-size: 14px;
-  text-align: right;
-  margin-bottom: 20px;
-  cursor: pointer;
+.input-with-icon {
+  padding-left: 42px;
+  margin-bottom: 1px;
+}
+
+.input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  pointer-events: none;
+  filter: brightness(0.7);
 }
 
 .login-button {
@@ -119,6 +138,10 @@ export default {
   font-weight: bold;
   border-radius: 5px;
   font-size: 15px;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .login-button:hover {
@@ -130,6 +153,12 @@ export default {
   width: 100%;
   padding: 1em;
   margin-top: 5px;
+}
+
+.btn-icon {
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
 }
 
 @media (max-width: 477.98px) {
