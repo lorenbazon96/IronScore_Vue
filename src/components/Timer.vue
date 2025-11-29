@@ -1,6 +1,7 @@
 <template>
   <div class="container-fluid">
     <div class="row min-vh-100">
+      <!-- SIDEBAR -->
       <aside class="col-12 col-md-3 sidebar bg-darka text-white p-3">
         <div class="logo mb-3">
           <img
@@ -9,6 +10,7 @@
             class="img-fluid"
           />
         </div>
+
         <div class="user-info mb-3 border-top pt-2">
           <div
             class="user-info-inner d-flex justify-content-between align-items-center mt-2"
@@ -32,6 +34,7 @@
             </router-link>
           </div>
         </div>
+
         <nav class="menu d-flex flex-column gap-2">
           <router-link to="/dashboard" class="menu-item">Dashboard</router-link>
           <router-link to="/competitions" class="menu-item"
@@ -45,7 +48,8 @@
         </nav>
       </aside>
 
-      <main class="col-12 col-md-9 timer-content p-4 bg-black text-white">
+      <!-- MAIN CONTENT -->
+      <main class="col-12 col-md-9 timer-content bg-black text-white">
         <header
           class="timer-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4"
         >
@@ -64,19 +68,41 @@
             Log Out
           </router-link>
         </header>
-        <div class="set-time">
-          <label>Set time:</label>
-          <input type="number" v-model.number="inputMinutes" min="0" max="59" />
-          <span>:</span>
-          <input type="number" v-model.number="inputSeconds" min="0" max="59" />
-          <button @click="setTime">Set</button>
-        </div>
 
-        <div id="display">{{ formattedTime }}</div>
+        <!-- SVE OKO TIMERA JE U OVOJ WRAPPER ZONI -->
+        <div class="timer-wrapper" :class="{ 'timer-running': isRunning }">
+          <!-- SET TIME PANEL -->
+          <div class="set-time">
+            <label class="set-time-label">Set time:</label>
+            <input
+              type="number"
+              v-model.number="inputMinutes"
+              min="0"
+              max="59"
+            />
+            <span class="set-time-separator">:</span>
+            <input
+              type="number"
+              v-model.number="inputSeconds"
+              min="0"
+              max="59"
+            />
+            <button @click="setTime">Set</button>
+          </div>
 
-        <div class="controls">
-          <button @click="startTimer" :disabled="isRunning">Start</button>
-          <button @click="resetTimer">Reset</button>
+          <!-- DISPLAY -->
+          <div id="display">{{ formattedTime }}</div>
+
+          <!-- CONTROLS -->
+          <div class="controls">
+            <button
+              @click="startTimer"
+              :disabled="isRunning || totalSeconds <= 0"
+            >
+              Start
+            </button>
+            <button @click="resetTimer">Reset</button>
+          </div>
         </div>
       </main>
     </div>
@@ -112,9 +138,17 @@ export default {
       const mins = Number(this.inputMinutes) || 0;
       const secs = Number(this.inputSeconds) || 0;
       this.totalSeconds = Math.max(0, mins * 60 + secs);
+      if (this.totalSeconds === 0) {
+        this.isRunning = false;
+        if (this.timer) {
+          clearInterval(this.timer);
+          this.timer = null;
+        }
+      }
     },
     startTimer() {
       if (this.isRunning || this.totalSeconds <= 0) return;
+
       this.isRunning = true;
       this.timer = setInterval(() => {
         if (this.totalSeconds > 0) {
@@ -132,7 +166,7 @@ export default {
         this.timer = null;
       }
       this.isRunning = false;
-      this.setTime();
+      this.setTime(); // vrati na zadani input (npr. 0:30)
     },
   },
   beforeUnmount() {
@@ -142,140 +176,10 @@ export default {
 </script>
 
 <style scoped>
-* {
-  box-sizing: border-box;
-}
-
-body,
-html {
-  margin: 0;
-  font-family: "Segoe UI", sans-serif;
-}
+/* SIDEBAR */
 
 .logo img {
   width: 100%;
-}
-
-.menu {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.menu-item {
-  color: #ffffff;
-  font-weight: bold;
-  text-decoration: none;
-  font-size: 20px;
-  text-transform: uppercase;
-}
-.active-item {
-  color: #ffc107 !important;
-}
-
-.logout-link {
-  color: #ffc107 !important;
-  font-size: 14px;
-  text-transform: uppercase;
-}
-
-.set-time {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 20px 0;
-}
-
-.set-time input {
-  width: 60px;
-  padding: 5px;
-  font-size: 18px;
-  text-align: center;
-  border-radius: 10px;
-}
-
-.set-time button {
-  background-color: #ffc107;
-  color: #000;
-  border: none;
-  padding: 8px 16px;
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 10px;
-}
-
-#setTimeBtn:hover {
-  background-color: #ffb300;
-}
-
-#display {
-  font-size: 96px;
-  text-align: center;
-  margin: 40px 0;
-  font-weight: bold;
-}
-
-.controls {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-}
-
-.controls button {
-  padding: 14px 28px;
-  font-size: 18px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  min-width: 120px;
-}
-
-.controls button:first-child {
-  background-color: #ffc107;
-  color: black;
-}
-
-.controls button:last-child {
-  background-color: #d32f2f;
-  color: white;
-}
-
-.timer-content {
-  flex: 1;
-  padding: 30px;
-  background: #000;
-  overflow-y: auto;
-
-  height: 100vh;
-}
-
-.timer-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  color: #ffc107;
-  text-transform: uppercase;
-  font-weight: 900;
-}
-
-.title {
-  font-weight: bold;
-}
-.time-container {
-  display: flex;
-  height: 100vh;
-  font-family: "Roboto", sans-serif;
-  color: #fff;
-  background: #000;
-}
-.user-info {
-  border-top: 1px solid #333;
-  padding-top: 10px;
-}
-
-.edit {
-  color: #ffc107;
 }
 
 .bg-darka {
@@ -285,6 +189,11 @@ html {
 .user-info {
   border-top: 1px solid #333;
   padding: 10px 15px 0 15px;
+}
+
+.user-info-inner {
+  max-width: 260px;
+  margin: 0 auto;
 }
 
 .user-icon {
@@ -310,13 +219,198 @@ html {
   font-size: 16px;
 }
 
-.user-info-inner {
-  max-width: 260px;
-  margin: 0 auto;
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.menu-item {
+  color: #ffffff;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 20px;
+  text-transform: uppercase;
+}
+
+.active-item {
+  color: #ffc107 !important;
+}
+
+.logout-link {
+  color: #ffc107 !important;
+  font-size: 14px;
+  text-transform: uppercase;
 }
 
 .logout-icon {
   width: 20px;
   height: 20px;
+}
+
+/* MAIN LAYOUT */
+
+.timer-content {
+  flex: 1;
+  padding: 30px;
+  background: #000;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.timer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  color: #ffc107;
+  text-transform: uppercase;
+  font-weight: 900;
+}
+
+.title {
+  font-weight: bold;
+}
+
+/* CENTRALNI TIMER WRAPPER */
+
+.timer-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* SET TIME PANEL */
+
+.set-time {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #111;
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: 1px solid #222;
+  margin-bottom: 30px;
+}
+
+.set-time-label {
+  font-size: 14px;
+  text-transform: uppercase;
+  color: #ccc;
+}
+
+.set-time input {
+  width: 60px;
+  padding: 8px;
+  font-size: 20px;
+  border-radius: 8px;
+  background: #000;
+  border: 1px solid #444;
+  color: #ffc107;
+  text-align: center;
+  font-weight: bold;
+}
+
+.set-time input:focus {
+  outline: none;
+  border-color: #ffc107;
+}
+
+.set-time-separator {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.set-time button {
+  background: #ffc107;
+  color: #000;
+  padding: 10px 20px;
+  font-size: 18px;
+  border-radius: 10px;
+  font-weight: bold;
+  border: none;
+  transition: 0.2s;
+  cursor: pointer;
+}
+
+.set-time button:hover {
+  background: #ffdb4d;
+}
+
+/* DIGITALNI DISPLAY */
+
+#display {
+  font-size: 120px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  text-align: center;
+  margin: 40px 0;
+  color: #ffffff;
+  text-shadow: 0 0 25px #ffc107aa;
+  font-family: "Roboto Mono", monospace;
+}
+
+/* pulse kad timer radi */
+.timer-running #display {
+  animation: pulse 1s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    text-shadow: 0 0 10px #ffc107;
+  }
+  50% {
+    text-shadow: 0 0 35px #ffc107;
+  }
+  100% {
+    text-shadow: 0 0 10px #ffc107;
+  }
+}
+
+/* GUMBI */
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 10px;
+}
+
+.controls button {
+  padding: 16px 32px;
+  font-size: 20px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  min-width: 150px;
+  font-weight: bold;
+  transition: 0.2s ease;
+}
+
+.controls button:first-child {
+  background-color: #ffc107;
+  color: black;
+}
+
+.controls button:first-child:hover:enabled {
+  background-color: #ffdb4d;
+}
+
+.controls button:first-child:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.controls button:last-child {
+  background-color: #d32f2f;
+  color: white;
+}
+
+.controls button:last-child:hover {
+  background-color: #f44444;
 }
 </style>

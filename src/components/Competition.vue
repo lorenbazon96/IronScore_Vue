@@ -1,6 +1,7 @@
 <template>
   <div class="container-fluid">
     <div class="row min-vh-100">
+      <!-- SIDEBAR -->
       <aside class="col-12 col-md-3 bg-darka text-white p-3">
         <div class="logo mb-3">
           <img
@@ -34,23 +35,28 @@
         </div>
         <nav class="menu d-flex flex-column gap-2">
           <router-link to="/dashboard" class="menu-item">Dashboard</router-link>
-          <router-link to="/competitions" class="menu-item active-item"
-            >Competitions</router-link
-          >
+          <router-link to="/competitions" class="menu-item active-item">
+            Competitions
+          </router-link>
           <router-link to="/community" class="menu-item">Community</router-link>
           <router-link to="/timer" class="menu-item">Timer</router-link>
           <router-link to="/trainings" class="menu-item">Trainings</router-link>
         </nav>
       </aside>
 
-      <main
-        class="competitions-content col-12 col-md-9 p-4 bg-black text-white"
-      >
-        <header class="d-flex justify-content-between align-items-center mb-4">
-          <h2 class="text-warning fw-bold text-uppercase">Competitions</h2>
+      <!-- MAIN CONTENT -->
+      <main class="competitions-content col-12 col-md-9 bg-black text-white">
+        <!-- TOP BAR -->
+        <header
+          class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3"
+        >
+          <h2 class="title text-warning text-uppercase fw-bold mb-2 mb-md-0">
+            Competitions
+          </h2>
+
           <router-link
             to="/"
-            class="btn btn-link text-warning fw-bold p-0 logout-link d-flex align-items-center"
+            class="btn btn-link text-warning fw-bold p-0 logout-link d-flex align-items-center text-uppercase"
           >
             <img
               src="@/assets/logout.png"
@@ -61,76 +67,195 @@
           </router-link>
         </header>
 
-        <section class="text-white text-start" v-if="loading">
-          <p>Loading competition...</p>
-        </section>
+        <!-- SCROLL ZONA ZA DETAIL -->
+        <div class="detail-scroll">
+          <!-- LOADING -->
+          <section class="text-white text-start" v-if="loading">
+            <p>Loading competition...</p>
+          </section>
 
-        <section class="text-white text-start" v-else-if="!competition">
-          <h3 class="fw-bold text-uppercase mb-3">Competition not found</h3>
-          <router-link
-            class="btn btn-warning mt-2"
-            :to="{ name: 'Competitions' }"
-            >Back to list</router-link
-          >
-        </section>
-        <section class="text-white text-start" v-else>
-          <h3 class="fw-bold text-uppercase mb-3">{{ competition.name }}</h3>
-          <p class="mb-1">
-            <strong>Date:</strong> {{ formatDate(competition.date) }}
-          </p>
-          <p class="mb-3">
-            <strong>Location:</strong> {{ competition.location }}
-          </p>
+          <!-- NOT FOUND -->
+          <section class="text-white text-start" v-else-if="!competition">
+            <h3 class="fw-bold text-uppercase mb-3">Competition not found</h3>
+            <router-link
+              class="btn btn-warning mt-2"
+              :to="{ name: 'Competitions' }"
+            >
+              Back to list
+            </router-link>
+          </section>
 
-          <p v-if="competition.categories && competition.categories.length">
-            <strong>Categories:</strong> {{ competition.categories.join(", ") }}
-          </p>
+          <!-- CONTENT -->
+          <section v-else class="text-white text-start">
+            <div class="detail-inner mx-auto">
+              <!-- HERO KARTICA / SUMMARY -->
+              <div class="card competition-header-card mb-3">
+                <div
+                  class="card-body d-flex flex-column flex-md-row justify-content-between gap-3"
+                >
+                  <div>
+                    <div class="breadcrumb-small mb-1">
+                      <router-link
+                        to="/competitions"
+                        class="text-muted text-decoration-none small"
+                      >
+                        Competitions
+                      </router-link>
+                      <span class="text-muted small"> / </span>
+                      <span class="text-warning small">Details</span>
+                    </div>
 
-          <ul v-if="infoLines.length" class="nice-list mt-3">
-            <li v-for="(line, i) in infoLines" :key="i">{{ line }}</li>
-          </ul>
+                    <h3 class="fw-bold text-uppercase mb-1">
+                      {{ competition.name }}
+                    </h3>
 
-          <ul v-if="competition.judging && competition.judging.length">
-            <li v-for="(rule, idx) in competition.judging" :key="idx">
-              {{ rule }}
-            </li>
-          </ul>
-          <div
-            class="mt-5 d-flex flex-column flex-md-row justify-content-start gap-3"
-          >
-            <div class="text-center">
-              <button
-                v-if="!canSeeResults"
-                class="btn btn-secondary px-4"
-                disabled
-              >
-                See result
-              </button>
+                    <div class="text-muted small mb-2">
+                      <i class="fa-regular fa-calendar me-1"></i>
+                      {{ formatDate(competition.date) }}
+                      <span v-if="competition.location">
+                        &nbsp;•&nbsp;
+                        <i class="fa-solid fa-location-dot me-1"></i>
+                        {{ competition.location }}
+                      </span>
+                    </div>
 
-              <div class="mt-1 small" v-if="!canSeeResults">
-                <span class="text-warning">
-                  Waiting for all judges ({{ submittedJudgeIds.size }}/{{
-                    expectedTotalGrades
-                  }})
-                </span>
+                    <!-- kategorije / discipline kao badgeovi -->
+                    <div class="d-flex flex-wrap gap-1 mt-1">
+                      <span
+                        v-if="
+                          competition.categories &&
+                          competition.categories.length
+                        "
+                        v-for="cat in competition.categories"
+                        :key="cat"
+                        class="badge-chip small-badge"
+                      >
+                        {{ cat }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div
+                    class="text-md-end d-flex flex-column justify-content-between"
+                  >
+                    <div>
+                      <span
+                        class="status-pill"
+                        :class="
+                          isPast(competition.date)
+                            ? 'status-past'
+                            : 'status-upcoming'
+                        "
+                      >
+                        <i
+                          v-if="isPast(competition.date)"
+                          class="fa-solid fa-calendar-check me-1"
+                        ></i>
+                        <i v-else class="fa-regular fa-clock me-1"></i>
+                        {{ isPast(competition.date) ? "Finished" : "Upcoming" }}
+                      </span>
+                    </div>
+
+                    <div class="mt-2 mt-md-0">
+                      <router-link
+                        to="/competitions"
+                        class="btn btn-outline-light btn-sm"
+                      >
+                        Back to list
+                      </router-link>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <router-link
-                v-else
-                class="btn btn-warning text-black fw-bold px-4"
-                :to="{ name: 'results', query: { id: competition.id } }"
-              >
-                See result
-              </router-link>
-            </div>
+              <!-- OVERVIEW / INFO KARTICA -->
+              <div class="card bg-dark text-white details-card mb-3">
+                <div class="card-body">
+                  <h5 class="mb-3 text-uppercase text-warning">Overview</h5>
 
-            <div class="text-center">
-              <router-link class="btn btn-warning mt-2" to="/competitions">
-                Back to list
-              </router-link>
+                  <!-- infoLines kao lista -->
+                  <ul v-if="infoLines.length" class="nice-list mb-3">
+                    <li v-for="(line, i) in infoLines" :key="'info-' + i">
+                      {{ line }}
+                    </li>
+                  </ul>
+
+                  <!-- judging pravila, ako postoje -->
+                  <div
+                    v-if="competition.judging && competition.judging.length"
+                    class="mt-3"
+                  >
+                    <h6 class="text-uppercase text-warning mb-2">
+                      Judging criteria
+                    </h6>
+                    <ul class="nice-list">
+                      <li
+                        v-for="(rule, idx) in competition.judging"
+                        :key="'judging-' + idx"
+                      >
+                        {{ rule }}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <!-- STATUS SUDACA / REZULTAT -->
+              <div class="card bg-dark text-white judge-status-card mb-3">
+                <div
+                  class="card-body d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3"
+                >
+                  <div class="flex-grow-1">
+                    <h6 class="mb-2 text-uppercase text-warning">
+                      Judging status
+                    </h6>
+                    <p class="small mb-2">
+                      Waiting for all judges ({{ submittedJudgeIds.size }}/{{
+                        expectedTotalGrades
+                      }})
+                    </p>
+
+                    <div class="progress small-progress">
+                      <div
+                        class="progress-bar bg-warning"
+                        role="progressbar"
+                        :style="{
+                          width:
+                            expectedTotalGrades > 0
+                              ? (submittedJudgeIds.size / expectedTotalGrades) *
+                                  100 +
+                                '%'
+                              : '0%',
+                        }"
+                      ></div>
+                    </div>
+                  </div>
+
+                  <div class="text-md-end d-flex flex-column gap-2">
+                    <button
+                      v-if="!canSeeResults"
+                      class="btn btn-secondary"
+                      disabled
+                    >
+                      See result
+                    </button>
+
+                    <router-link
+                      v-else
+                      class="btn btn-warning text-black fw-bold"
+                      :to="{
+                        name: 'results',
+                        query: { id: competition.id },
+                      }"
+                    >
+                      See result
+                    </router-link>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
       </main>
     </div>
   </div>
@@ -244,6 +369,13 @@ export default {
       return d.toLocaleDateString(undefined, options);
     },
 
+    isPast(date) {
+      if (!date) return false;
+      const today = new Date();
+      const compDate = new Date(date);
+      return compDate < today;
+    },
+
     watchGrades() {
       if (this.stopGradesWatcher) {
         this.stopGradesWatcher();
@@ -309,116 +441,19 @@ export default {
   width: 100%;
 }
 
-.user-info {
-  border-top: 1px solid #333;
-  padding-top: 10px;
-}
-
-.menu {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.menu-item {
-  color: #ffffff;
-  font-weight: bold;
-  text-decoration: none;
-  font-size: 20px;
-  text-transform: uppercase;
-}
-
-.active-item {
-  color: #ffc107 !important;
-}
-
-.competitions-content {
-  flex: 1;
-  padding: 30px;
-  background: #000;
-  overflow-y: auto;
-}
-
-.competitions-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  color: #ffc107;
-  text-transform: uppercase;
-  font-weight: 900;
-}
-
-.title {
-  font-weight: bold;
-}
-
-.logout-link {
-  color: #ffc107 !important;
-  font-size: 14px;
-  text-transform: uppercase;
-}
-
-.medal {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: #111;
-  padding: 20px;
-  border-radius: 10px;
-}
-
-.gold-button {
-  background: #ffc107;
-  color: #000;
-  font-weight: bold;
-  padding: 10px 20px;
-  border: none;
-  margin-top: 10px;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.result-item:last-child {
-  border-bottom: none;
-}
-
-.trophy-img {
-  width: 10em;
-  height: auto;
-  margin-bottom: 20px;
-}
-
-.edit {
-  color: #ffc107;
-}
-
-section ul {
-  list-style-type: disc;
-  padding-left: 20px;
-}
-section p,
-section ul {
-  font-size: 14px;
-  color: #fff;
-}
-
 .bg-darka {
   background-color: #000 !important;
 }
-.nice-list {
-  padding-left: 1.2rem;
-  margin: 0;
-}
-.nice-list li {
-  margin-bottom: 0.35rem;
-  line-height: 1.6;
-}
 
+/* SIDEBAR */
 .user-info {
   border-top: 1px solid #333;
   padding: 10px 15px 0 15px;
+}
+
+.user-info-inner {
+  max-width: 260px;
+  margin: 0 auto;
 }
 
 .user-icon {
@@ -444,13 +479,154 @@ section ul {
   font-size: 16px;
 }
 
-.user-info-inner {
-  max-width: 260px;
-  margin: 0 auto;
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.menu-item {
+  color: #ffffff;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 20px;
+  text-transform: uppercase;
+}
+
+.active-item {
+  color: #ffc107 !important;
+}
+
+/* DESNI PANEL LAYOUT */
+.competitions-content {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.title {
+  font-weight: bold;
+}
+
+.logout-link {
+  color: #ffc107 !important;
+  font-size: 13px;
 }
 
 .logout-icon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
+}
+
+/* unutarnji scroll za detalje */
+.detail-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+  min-height: 0;
+}
+
+.detail-inner {
+  max-width: 960px;
+}
+
+/* layout na razini komponente */
+.container-fluid {
+  height: 100vh;
+  overflow: hidden;
+  padding: 0;
+}
+
+.row.min-vh-100 {
+  height: 100%;
+  overflow: hidden;
+}
+
+aside {
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.container-fluid,
+.row,
+.competitions-content {
+  overflow-x: hidden;
+}
+
+/* HERO / STATUS */
+.competition-header-card {
+  border-radius: 12px;
+  border: 1px solid #333;
+}
+
+.breadcrumb-small {
+  font-size: 11px;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.status-upcoming {
+  background-color: rgba(40, 167, 69, 0.15);
+  color: #28a745;
+}
+
+.status-past {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #aaa;
+}
+
+/* OVERVIEW / LISTE */
+.nice-list {
+  padding-left: 1.2rem;
+  margin: 0;
+}
+
+.nice-list li {
+  margin-bottom: 0.35rem;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+/* BADGE CHIPS */
+.badge-chip {
+  background-color: #f5f5f5;
+  border-radius: 999px;
+  padding: 2px 8px;
+  display: inline-flex;
+  align-items: center;
+  color: #333;
+}
+
+.small-badge {
+  font-size: 11px;
+  padding: 1px 6px;
+}
+
+/* JUDGING STATUS */
+.judge-status-card {
+  border-radius: 12px;
+  border: 1px solid #333;
+}
+
+.small-progress {
+  height: 6px;
+  border-radius: 999px;
+  background-color: #222;
+}
+
+.small-progress .progress-bar {
+  border-radius: 999px;
 }
 </style>
