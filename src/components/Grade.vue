@@ -178,7 +178,7 @@ export default {
       competitionId: null,
       competition: null,
       categories: [],
-      fallbackCount: 7,
+      fallbackCount: 50,
       competitors: [],
       grades: [],
       loading: true,
@@ -325,15 +325,25 @@ export default {
         return;
       }
 
-      const existingIdx = this.grades.findIndex((g) => g.index === index);
+      // Allow multiple categories for same competitor
+      // Check if this exact combination (index + category) already exists
+      const existingIdx = this.grades.findIndex(
+        (g) => g.index === index && g.category === category
+      );
 
       const payload = { index, grade: gradeNum, category };
-      if (existingIdx !== -1) this.grades.splice(existingIdx, 1, payload);
-      else this.grades.push(payload);
+      if (existingIdx !== -1) {
+        // Update existing grade for this competitor+category combination
+        this.grades.splice(existingIdx, 1, payload);
+      } else {
+        // Add new grade (allows same competitor with different category)
+        this.grades.push(payload);
+      }
 
       this.competitors[index].grade = "";
       this.competitors[index].category = "";
     },
+
     removeGrade(idx) {
       this.grades.splice(idx, 1);
     },
@@ -379,7 +389,11 @@ export default {
 
         await Promise.all(
           sanitized.map((g) => {
-            const docId = `${uid}_${g.index}`;
+            // Changed document ID to include category - allows multiple categories per competitor
+            const docId = `${uid}_${g.index}_${g.category.replace(
+              /\s+/g,
+              "_"
+            )}`;
             return setDoc(
               doc(gradesCol, docId),
               {
@@ -403,6 +417,7 @@ export default {
         this.saving = false;
       }
     },
+
     isEventDayStrict(date) {
       if (!date) return false;
       const d = new Date(date);

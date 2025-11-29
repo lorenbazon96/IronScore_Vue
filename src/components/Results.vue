@@ -62,41 +62,45 @@
             {{ competition?.name || "Competition" }}
           </h4>
 
-          <div class="bg-white text-black p-4 rounded">
-            <h5 class="text-uppercase fw-bold mb-3">Competitor Results</h5>
+          <div
+            v-if="finalResults.length === 0"
+            class="text-muted bg-white p-4 rounded"
+          >
+            No grades yet.
+          </div>
 
-            <div v-if="finalResults.length === 0" class="text-muted">
-              No grades yet.
+          <div v-else>
+            <div
+              v-for="categoryGroup in finalResults"
+              :key="categoryGroup.category"
+              class="bg-white text-black p-4 rounded mb-4"
+            >
+              <h5 class="text-uppercase fw-bold mb-3 text-warning">
+                {{ categoryGroup.category }}
+              </h5>
+
+              <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Rank</th>
+                    <th>Competitor</th>
+                    <th>Grades</th>
+                    <th>Average Grade</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="(competitor, idx) in categoryGroup.competitors"
+                    :key="competitor.index"
+                  >
+                    <td>{{ idx + 1 }}</td>
+                    <td>Competitor {{ competitor.index + 1 }}</td>
+                    <td>{{ competitor.grades.join(", ") }}</td>
+                    <td>{{ competitor.avg.toFixed(2) }}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-
-            <table v-else class="table table-bordered table-striped">
-              <thead class="table-dark">
-                <tr>
-                  <th>#</th>
-                  <th>Category</th>
-                  <th>Grades</th>
-                  <th>Average Grade</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="row in finalResults" :key="row.index">
-                  <td>Competitor {{ row.index + 1 }}</td>
-                  <td>{{ row.category || "-" }}</td>
-                  <td>
-                    <span v-if="row.grades.length">{{
-                      row.grades.join(", ")
-                    }}</span>
-                    <span v-else>-</span>
-                  </td>
-                  <td>
-                    <span v-if="row.grades.length">{{
-                      row.avg.toFixed(2)
-                    }}</span>
-                    <span v-else>-</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
           </div>
         </section>
       </main>
@@ -204,53 +208,56 @@ export default {
     },
 
     aggregateGrades(rows) {
-      const byIndex = new Map();
+      // Group by category and competitor index
+      const byCategory = new Map();
 
       for (const r of rows) {
         const idx = Number(r.competitorIndex);
         const grade = Number(r.grade);
-        const cat = (r.category || "").toString();
+        const cat = (r.category || "").toString().trim();
 
-        if (Number.isNaN(idx) || Number.isNaN(grade)) continue;
+        if (Number.isNaN(idx) || Number.isNaN(grade) || !cat) continue;
 
-        if (!byIndex.has(idx)) {
-          byIndex.set(idx, { grades: [], categoryCounts: new Map() });
+        if (!byCategory.has(cat)) {
+          byCategory.set(cat, new Map());
         }
-        const slot = byIndex.get(idx);
-        slot.grades.push(grade);
 
-        if (cat) {
-          const c = slot.categoryCounts.get(cat) || 0;
-          slot.categoryCounts.set(cat, c + 1);
+        const categoryMap = byCategory.get(cat);
+        if (!categoryMap.has(idx)) {
+          categoryMap.set(idx, []);
         }
+
+        categoryMap.get(idx).push(grade);
       }
 
-      const count =
-        typeof this.competition?.competitorsCount === "number" &&
-        this.competition.competitorsCount > 0
-          ? this.competition.competitorsCount
-          : Math.max(0, ...Array.from(byIndex.keys()).map((k) => k + 1));
+      // Convert to array format grouped by category
+      const resultsByCategory = [];
 
-      const out = [];
-      const total = count || byIndex.size;
+      for (const [category, competitorsMap] of byCategory.entries()) {
+        const competitors = [];
 
-      for (let i = 0; i < total; i++) {
-        const slot = byIndex.get(i);
-        if (!slot) {
-          out.push({ index: i, category: "", grades: [], avg: 0 });
-          continue;
+        for (const [index, grades] of competitorsMap.entries()) {
+          const avg = this.average(grades);
+          competitors.push({
+            index,
+            grades: grades.sort((a, b) => b - a),
+            avg,
+          });
         }
-        const category = this.pickDominantCategory(slot.categoryCounts) || "";
-        const avg = this.average(slot.grades);
-        out.push({
-          index: i,
+
+        // Sort competitors by average grade (descending)
+        competitors.sort((a, b) => b.avg - a.avg);
+
+        resultsByCategory.push({
           category,
-          grades: slot.grades.sort((a, b) => b - a),
-          avg,
+          competitors,
         });
       }
 
-      this.finalResults = out;
+      // Sort categories alphabetically
+      resultsByCategory.sort((a, b) => a.category.localeCompare(b.category));
+
+      this.finalResults = resultsByCategory;
     },
   },
   computed: {

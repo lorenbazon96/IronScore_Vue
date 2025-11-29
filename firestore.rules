@@ -1,0 +1,62 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+
+    match /posts/{postId} {
+      allow read, write: if true;
+
+      match /comments/{commentId} {
+        allow read, write: if true;
+      }
+    }
+
+    match /competitions/{compId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+  
+
+      // UPDATED: Now supports format: judgeId_competitorIndex_category
+      match /grades/{gradeId} {
+   
+        allow read: if request.auth != null;
+
+       
+        allow create, update: if request.auth != null
+          && gradeId.matches('^' + request.auth.uid + '_\\d+_[^/]+$')
+          && request.resource.data.judgeId == request.auth.uid
+          && request.resource.data.competitionId == compId
+          && request.resource.data.grade is number
+          && request.resource.data.grade > 0
+          && request.resource.data.category is string
+          && request.resource.data.competitorIndex is number;
+
+        allow delete: if false;
+      }
+    }
+
+    match /users/{ownerId}/competitions/{compId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.auth.uid == ownerId;
+
+      // UPDATED: Now supports format: judgeId_competitorIndex_category
+      match /grades/{gradeId} {
+        allow read: if request.auth != null;
+        allow create, update: if request.auth != null
+          && gradeId.matches('^' + request.auth.uid + '_\\d+_[^/]+$')
+          && request.resource.data.judgeId == request.auth.uid
+          && request.resource.data.competitionId == compId
+          && request.resource.data.grade is number
+          && request.resource.data.grade > 0
+          && request.resource.data.category is string
+          && request.resource.data.competitorIndex is number;
+        allow delete: if false;
+      }
+    }
+  }
+}
