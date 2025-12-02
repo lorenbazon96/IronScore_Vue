@@ -250,7 +250,7 @@ export default {
 
 .input-wrapper {
   position: relative;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 .input-with-icon {
