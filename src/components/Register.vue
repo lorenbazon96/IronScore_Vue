@@ -35,10 +35,31 @@
         <option value="referee">Referee</option>
       </select>
 
+      <!-- EXTRA INPUT SAMO ZA SUCA -->
+      <div v-if="userType === 'referee'" class="input-wrapper">
+        <input
+          type="text"
+          v-model="refereeCode"
+          placeholder="Referee registration code"
+          class="input-field"
+        />
+
+        <!-- helper tekst (možeš maknuti u produkciji) -->
+        <small class="helper-text">
+          For testing, use code: <strong>{{ refereeSecret }}</strong>
+        </small>
+
+        <!-- error poruka -->
+        <p v-if="showRefereeError" class="error-text">
+          Pogrešan kod za registraciju suca.
+        </p>
+      </div>
+
       <button
         type="button"
         class="register-button sirina-b d-flex align-items-center justify-content-center"
-        @click="register()"
+        @click="register"
+        :disabled="!canSubmit"
       >
         <img src="@/assets/new.png" alt="Register" class="btn-icon me-2" />
         Register
@@ -59,12 +80,47 @@ export default {
       email: "",
       password: "",
       userType: "",
+      refereeCode: "",
+      refereeSecret: "IRONREF2025", // ⇐ OVDJE JE TA TVOJA "FIKSNA RIJEČ"
     };
+  },
+  computed: {
+    isRefereeCodeValid() {
+      if (this.userType !== "referee") return true;
+      return this.refereeCode.trim() === this.refereeSecret;
+    },
+    showRefereeError() {
+      // prikazujemo error samo kad korisnik nešto upiše, a nije ispravno
+      return (
+        this.userType === "referee" &&
+        this.refereeCode.trim() !== "" &&
+        !this.isRefereeCodeValid
+      );
+    },
+    canSubmit() {
+      // osnovna provjera praznih polja
+      if (!this.email || !this.password || !this.userType) return false;
+
+      // regular user – nema dodatnih uvjeta
+      if (this.userType === "regular") return true;
+
+      // referee – kod mora biti ispravan
+      if (this.userType === "referee") {
+        return this.isRefereeCodeValid;
+      }
+
+      return false;
+    },
   },
   methods: {
     async register() {
       if (!this.userType) {
         alert("Odaberi tip korisnika!");
+        return;
+      }
+
+      // sigurnosna provjera i na submitu (iako je button već disabled ako nije ispravno)
+      if (!this.canSubmit) {
         return;
       }
 
@@ -146,6 +202,7 @@ export default {
   padding: 12px;
   margin-bottom: 20px;
   font-size: 16px;
+  width: 100%;
 }
 
 .input-field:focus {
@@ -164,6 +221,11 @@ export default {
 .register-button:hover {
   background-color: #e0a800;
   color: #000;
+}
+
+.register-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .sirina-b {
@@ -191,15 +253,6 @@ export default {
   margin-bottom: 20px;
 }
 
-.input-field {
-  background-color: #d3d3d3;
-  border: none;
-  border-radius: 5px;
-  padding: 12px;
-  font-size: 16px;
-  width: 100%;
-}
-
 .input-with-icon {
   padding-left: 42px;
   margin-bottom: 1px;
@@ -222,5 +275,18 @@ export default {
   height: 25px;
   object-fit: contain;
   filter: brightness(0.85);
+}
+
+.helper-text {
+  display: block;
+  font-size: 12px;
+  color: #bbbbbb;
+  margin-top: 4px;
+}
+
+.error-text {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #ff4d4f;
 }
 </style>
