@@ -44,6 +44,10 @@
           class="input-field"
         />
 
+        <!-- helper tekst (možeš maknuti u produkciji) 
+        <small class="helper-text">
+          For testing, use code: <strong>{{ refereeSecret }}</strong>
+        </small>-->
 
         <!-- error poruka -->
         <p v-if="showRefereeError" class="error-text">
